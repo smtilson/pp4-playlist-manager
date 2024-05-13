@@ -27,7 +27,7 @@ if not credentials or not credentials.valid:
         credentials.refresh(Request())
     else:
         print("Fetching new tokens...")
-        flow = InstalledAppFlow.from_client_secrets_file("client_secret_2.json",
+        flow = InstalledAppFlow.from_client_secrets_file("client_secrets.json",
                                                  scopes=SCOPES)
         # prompt='consent' should not be necessary
         # authorization_prompt_message='' means that the prompt won't be printed to the console
