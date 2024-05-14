@@ -1,5 +1,5 @@
 # The code in this file is taken from the oauth tutorial and the youtube api tutorial
-# remember to give credit in the project.
+# remember to give credit in the project. At approximately 32 minutes
 
 import os
 import pickle
@@ -40,8 +40,9 @@ if not credentials or not credentials.valid:
             pickle.dump(credentials, f)
 
 
-'''
-yt = build(serviceName='youtube', version='v3',developerKey=API_KEY)
+# the below uses a dev api key for finding public things
+# yt = build(serviceName='youtube', version='v3',developerKey=API_KEY)
+yt = build(serviceName = 'youtube', version='v3', credentials = credentials)
 
 request = yt.playlistItems().list(part="status",
                              playlistId="UUCezIgC97PvUuR4_gbFUs5g")
@@ -52,4 +53,3 @@ print(response)
 
 
 yt.close()
-'''
