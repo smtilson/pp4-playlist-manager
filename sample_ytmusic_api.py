@@ -2,7 +2,7 @@
 from ytmusicapi import YTMusic
 
 
-ytm = YTMusic('test.json')
+ytm = YTMusic('oauth.json')
 
 def search(song: str='', artist: str='') -> list[dict]:
     query = ''

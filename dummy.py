@@ -7,18 +7,23 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
 
-credentials = None
 
-SCOPES = [
-    'https://www.googleapis.com/auth/youtube',
-    'https://www.googleapis.com/auth/youtube.readonly', # given the above, this may not be necessary as well
-    'https://www.googleapis.com/auth/youtubepartner' # I don't think this is necessary
-    ]
-print("Fetching new tokens...")
-flow = InstalledAppFlow.from_client_secrets_file("client_secrets.json",
-                                                 scopes=SCOPES)
-# prompt='consent' should not be necessary
-# authorization_prompt_message='' means that the prompt won't be printed to the console
-flow.run_local_server(port=8080, prompt='consent', authorization_prompt_message='')
-credentials = flow.credentials
-print(credentials)
+credentials = None
+if os.path.exists("token.pickle"):
+    print("Loading Credentials from file...")
+    # "rb" means read bytes
+    with open("token.pickle", "rb") as token:
+        credentials = pickle.load(token)
+
+if not credentials:
+    raise ValueError
+
+yt = build(serviceName = 'youtube', version='v3', credentials = credentials)
+
+request = yt.playlistItems().list(part="status",
+                             playlistId="UUCezIgC97PvUuR4_gbFUs5g")
+
+response = request.execute()
+
+print(response)
+

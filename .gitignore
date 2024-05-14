@@ -10,3 +10,5 @@ cloudinary_python.txt
 yt_api_key.py
 client_secrets.json
 *.pickle
+creds.json
+oauth.json
