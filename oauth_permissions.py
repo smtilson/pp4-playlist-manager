@@ -70,27 +70,3 @@ def retrieve_credentials(user_id: str) -> tuple[str]:
     if credentials and credentials.expired and credentials.refresh_token:
         credentials.refresh(Request())
     return credentials
-
-if os.path.exists("token.pickle"):
-    print("Loading Credentials from file...")
-    # "rb" means read bytes
-    with open("token.pickle", "rb") as token:
-        credentials = pickle.load(token)
-
-if not credentials or not credentials.valid:
-    if credentials and credentials.expired and credentials.refresh_token:
-        print("Refreshing access token...")
-        credentials.refresh(Request())
-    else:
-        print("Fetching new tokens...")
-        flow = InstalledAppFlow.from_client_secrets_file("client_secrets.json",
-                                                 scopes=SCOPES)
-        # prompt='consent' should not be necessary
-        # authorization_prompt_message='' means that the prompt won't be printed to the console
-        flow.run_local_server(port=8080, prompt='consent', authorization_prompt_message='')
-        credentials = flow.credentials
-
-        # "wb" is write bytes
-        with open("token.pickle", "wb") as f:
-            print("Saving credentials ...")
-            pickle.dump(credentials, f)
