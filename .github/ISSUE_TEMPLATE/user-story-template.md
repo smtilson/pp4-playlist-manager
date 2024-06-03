@@ -1,7 +1,7 @@
 ---
-name: User Stroy template
+name: User Story template
 about: 'Template for User Stroies '
-title: "{USER STORY]"
+title: " [USER STORY]"
 labels: ''
 assignees: smtilson
 
