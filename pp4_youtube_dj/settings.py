@@ -62,6 +62,10 @@ MIDDLEWARE = [
     'allauth.account.middleware.AccountMiddleware',
 ]
 
+CSRF_TRUSTED_ORIGINS = [
+    'https://8000-smtilson-pp4playlistman-ym3t1koq57f.ws.codeinstitute-ide.net',
+]
+
 ROOT_URLCONF = 'pp4_youtube_dj.urls'
 
 TEMPLATES_DIR = os.path.join(BASE_DIR, 'templates')
