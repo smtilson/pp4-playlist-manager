@@ -1,14 +1,14 @@
 # The code in this file is taken from the oauth tutorial and the youtube api tutorial
 # remember to give credit in the project. At approximately 32 minutes
-
 import os
 import pickle
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
+from typing import Optional
 
 credentials = None
-
+sean_id = 'CTLP0aZxWx25BZYzbzHjvA'
 SCOPES = [
     'https://www.googleapis.com/auth/youtube',
     'https://www.googleapis.com/auth/youtube.readonly', # given the above, this may not be necessary as well
@@ -33,8 +33,12 @@ def grant_access(user_id: str) -> None:
     Returns access token.
     '''
     credentials = None
-    credentials = retrieve_credentials(user_id) if retrieve_credentials(user_id) else get_credentials(user_id)
-    pass
+    if retrieve_credentials(user_id):
+        credentials = retrieve_credentials(user_id)
+    else:
+        credentials = get_credentials(user_id)
+    # credentials = retrieve_credentials(user_id) if retrieve_credentials(user_id) else get_credentials(user_id)
+    # pass
     return credentials
 
 def save_credentials(user_id: str, access_token,refresh_token) -> Optional[tuple[str]]:
@@ -50,7 +54,8 @@ def save_credentials(user_id: str, access_token,refresh_token) -> Optional[tuple
 
 def get_credentials(user_id: str) -> tuple[str]:
     print("Obtaining credentials from Oauth api.")
-    flow = InstalledAppFlow.from_client_secrets_file("client_secrets.json",
+    # trying with oatuh_creds first
+    flow = InstalledAppFlow.from_client_secrets_file("oauth_yt_creds.json",
                                                  scopes=SCOPES)
     # prompt='consent' should not be necessary
     # authorization_prompt_message='' means that the prompt won't be printed to the console
@@ -70,3 +75,6 @@ def retrieve_credentials(user_id: str) -> tuple[str]:
     if credentials and credentials.expired and credentials.refresh_token:
         credentials.refresh(Request())
     return credentials
+
+if __name__ == "__main__":
+    get_credentials(sean_id)

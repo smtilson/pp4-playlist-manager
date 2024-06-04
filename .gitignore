@@ -11,4 +11,6 @@ yt_api_key.py
 client_secrets.json
 *.pickle
 creds.json
+oauth_creds.json
+oauth_yt_creds.json
 oauth.json
