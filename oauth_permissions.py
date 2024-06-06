@@ -8,6 +8,7 @@ from googleapiclient.discovery import build
 from typing import Optional
 
 credentials = None
+
 sean_id = 'CTLP0aZxWx25BZYzbzHjvA'
 SCOPES = [
     'https://www.googleapis.com/auth/youtube',
