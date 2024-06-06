@@ -12,7 +12,7 @@ SCOPES = [
     #'https://www.googleapis.com/auth/youtube.readonly'
     ]
 
-flow = InstalledAppFlow.from_client_secrets_file("oauth_creds2.json", scopes=SCOPES)
+flow = InstalledAppFlow.from_client_secrets_file("oauth_creds.json", scopes=SCOPES)
 
 # runs a server to open a page so we can ask for credentials.
 # prompt="consent" is a fix he found online

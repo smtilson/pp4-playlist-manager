@@ -11,17 +11,20 @@ from .utils import get_user_profile
 
 SCOPES = [
     'https://www.googleapis.com/auth/youtube',
-    #'https://www.googleapis.com/auth/youtube.readonly'
+    # 'https://www.googleapis.com/auth/youtube.readonly'
     ]
 
 def get_creds():
-    flow = InstalledAppFlow.from_client_secrets_file("oauth_creds.json", scopes=SCOPES)
+    credentials = None
+    try:
+        flow = InstalledAppFlow.from_client_secrets_file("oauth_creds.json", scopes=SCOPES)
 
-    # runs a server to open a page so we can ask for credentials.
-    # prompt="consent" is a fix he found online
-    flow.run_local_server(port=8080,prompt="consent",
-                      authorization_prompt_message='')
+        # runs a server to open a page so we can ask for credentials.
+        # prompt="consent" is a fix he found online
+        flow.run_local_server(port=8080)
 
-    credentials = flow.credentials
+        credentials = flow.credentials
+    finally:
+        flow.close()
     return credentials.to_json()
 

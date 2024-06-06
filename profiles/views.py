@@ -1,10 +1,14 @@
-from django.shortcuts import render, reverse
+from django.shortcuts import render, reverse, get_object_or_404
 from django.http import HttpResponseRedirect
 from .oauth_permission_request import get_creds
 from .models import Profile
 from .utils import get_user_profile
+import json
 
-
+#json1_file = open('json1')
+#json1_str = json1_file.read()
+#json1_data = json.loads(json1_str)
+#json1_data = json.loads(json1_str)[0]
 # Create your views here.
 
 def index(request):
@@ -20,7 +24,7 @@ def test(request):
                'email': user.email,
                'credentials':credentials,
                'test_data':user.test_char_field,
-               'youtube_account': 'none as of yet' }
+               'youtube_account': 'none as of yet'}
     return render(request, "profiles/test.html", context)
 
 def profile(request, user_id):
@@ -47,12 +51,16 @@ def do_test_modify_profile(request):
 def credentials(request):
     return index(request)
 
+def save_creds(request):
+    user = get_object_or_404(Profile,id=request.user.id)
+    
+    user.add_credentials()
+
 def authorization(request):
-    user = get_user_profile(request)
+    user = get_object_or_404(Profile, id=request.user.id)
     credentials = get_creds()
-    #credentials = {i:i+1 for i in range(5)}
+    print(credentials)
     print(type(credentials))
-    input()
     user.add_credentials(credentials)
     context = {'user_id': user.id,
                'email': user.email,
