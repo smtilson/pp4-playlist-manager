@@ -12,7 +12,6 @@ credentials = None
 SCOPES = [
     'https://www.googleapis.com/auth/youtube',
     'https://www.googleapis.com/auth/youtube.readonly', # given the above, this may not be necessary as well
-    'https://www.googleapis.com/auth/youtubepartner' # I don't think this is necessary
     ]
 
 if os.path.exists("token.pickle"):
@@ -27,7 +26,7 @@ if not credentials or not credentials.valid:
         credentials.refresh(Request())
     else:
         print("Fetching new tokens...")
-        flow = InstalledAppFlow.from_client_secrets_file("client_secrets.json",
+        flow = InstalledAppFlow.from_client_secrets_file("oauth_yt_creds.json",
                                                  scopes=SCOPES)
         # prompt='consent' should not be necessary
         # authorization_prompt_message='' means that the prompt won't be printed to the console
