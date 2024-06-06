@@ -4,5 +4,7 @@
 <h2>Index from Profiles Loaded.</h2>
 {% if user.is_authenticated %}
 <a href="{% url 'profile' user.id %}">View profile page.</a>
+<hr>
+<a href="{% url 'test' %}">Test page.</a>
 {% endif %}
 {% endblock content%}
