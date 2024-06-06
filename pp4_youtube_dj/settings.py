@@ -46,6 +46,8 @@ INSTALLED_APPS = [
     'queues',
 ]
 
+AUTH_USER_MODEL = 'profiles.Profile'
+
 # allauth constants
 SITE_ID = 1
 LOGIN_REDIRECT_URL = '/'
