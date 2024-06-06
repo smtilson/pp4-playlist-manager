@@ -30,7 +30,7 @@ if not credentials or not credentials.valid:
                                                  scopes=SCOPES)
         # prompt='consent' should not be necessary
         # authorization_prompt_message='' means that the prompt won't be printed to the console
-        flow.run_local_server(port=8080, prompt='consent', authorization_prompt_message='')
+        flow.run_local_server(port=8080, prompt='consent', authorization_prompt_message='running...')
         credentials = flow.credentials
 
         # "wb" is write bytes
