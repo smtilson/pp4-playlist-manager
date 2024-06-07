@@ -17,5 +17,5 @@ auth_url = credentials['auth_uri']
 token_url = credentials["token_uri"]
 
 oauth = OAuth()
-yt_auth = oauth.create_client('yt_auth')
-token = oauth.yt_auth.authorize_access_token(request)
+yt_auth = oauth.create_client('youtube')
+twitter = oauth.create_client('twitter')

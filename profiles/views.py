@@ -3,6 +3,7 @@ from django.http import HttpResponseRedirect
 from .oauth_permission_request import get_creds, get_creds_url
 from .models import Profile
 from .utils import empty_dict
+from .google_oauth_from_docs import get_authorization_url
 import json
 
 #json1_file = open('json1')
@@ -14,7 +15,20 @@ import json
 # Create your views here.
 
 def index(request):
-    return render(request, "profiles/index.html")
+    if request.method == "GET":
+        return render(request, "profiles/index.html")
+    elif request.method == "POST":
+        print(request.__dir_())
+        credentials = {key: value for key,value in request.items()}
+        context = {'user_id': user.id,
+               "view_name": "test",
+               'email': user.email,
+               'credentials':credentials,
+               'test_data':user.test_char_field,
+               'youtube_account': 'none as of yet'}
+    return render(request, "profiles/test.html", context)
+        
+
 
 def test(request):
     """
@@ -35,7 +49,7 @@ def test_function(request):
     View to run test functions.
     """
     user = get_object_or_404(Profile, id=request.user.id)
-    url = get_creds_url()
+    url = get_authorization_url()
     print(url)
     context = {'user_id': user.id,
                'view_name': "test_function",
