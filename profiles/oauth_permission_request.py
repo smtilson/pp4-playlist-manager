@@ -23,7 +23,7 @@ def retrieve_creds(user:'Profile') -> dict[str,str]:
 
 def get_creds():
     credentials = None
-    flow = InstalledAppFlow.from_client_secrets_file("oauth_creds.json", scopes=SCOPES)
+    flow = InstalledAppFlow.from_client_secrets_file("oauth_creds", scopes=SCOPES)
 
     # runs a server to open a page so we can ask for credentials.
     # prompt="consent" is a fix he found online
