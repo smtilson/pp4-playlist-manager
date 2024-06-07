@@ -5,6 +5,7 @@
 <h2>Profile page for {{user_name}}</h2>
 <h3>Profile Data</h3>
 <ul>
+    <li>View name: {{view_name}}</li>
     <li>User name: {{user_name}}</li>
     <li>Superuser? {{is_superuser}}</li>
     <li>Email: {{email}}</li>
@@ -23,5 +24,13 @@
 <hr>
 <a href="{% url 'remove_authorization' %}">Remove Credentials</a>
 <hr>
-<a href="{% url 'test' %}">Test</a>
+<a href="{% url 'test' %}">Test page</a>
+<hr>
+<a href="{% url 'profile' %}">Current Profile page</a>
+<hr>
+<a href="{% url 'test_function' %}">Test function</a>
+<hr>
+{% if view_name == 'test_function' %}
+<a href="{{test_data}}">URL testing for authorization</a>
+{% endif %}
 {% endblock content %}

@@ -70,8 +70,8 @@ class Profile(AbstractBaseUser, PermissionsMixin):
         self.test_char_field = 'credentials added'
         self.save()
 
-    def get_credentials(self) -> dict[str:str]:
-        print("calling get credentials")
+    @property
+    def credentials(self) -> dict[str:str]:
         credentials = {'token': self.token,
                        'refresh_token': self.refresh_token,
                        'expiry': self.expiry}

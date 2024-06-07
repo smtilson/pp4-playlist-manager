@@ -2,7 +2,7 @@
 # remember to give credit in the project. At approximately 32 minutes
 import os
 import pickle
-from google_auth_oauthlib.flow import InstalledAppFlow
+from google_auth_oauthlib.flow import InstalledAppFlow, Flow
 from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
 from typing import Optional
@@ -12,10 +12,14 @@ credentials = None
 sean_id = 'CTLP0aZxWx25BZYzbzHjvA'
 SCOPES = [
     'https://www.googleapis.com/auth/youtube',
-    'https://www.googleapis.com/auth/youtube.readonly', # given the above, this may not be necessary as well
-    'https://www.googleapis.com/auth/youtubepartner' # I don't think this is necessary
     ]
-
+redirect_uris= [
+            "http://localhost:8000/",
+            "http://localhost:8080/",
+            "https://pp4-playlist-manager-67004a99f0e2.herokuapp.com/",
+            "https://smtilson-pp4playlistman-ym3t1koq57f.ws.codeinstitute-ide.net/"
+        ]
+RURI = redirect_uris[1]
 # should I make a credentials class?
 # it could do various aspects of validation.
 # it could also contain a lot of the below methods.
@@ -56,12 +60,14 @@ def save_credentials(user_id: str, access_token,refresh_token) -> Optional[tuple
 def get_credentials(user_id: str) -> tuple[str]:
     print("Obtaining credentials from Oauth api.")
     # trying with oatuh_creds first
-    flow = InstalledAppFlow.from_client_secrets_file("oauth_yt_creds.json",
+    flow = InstalledAppFlow.from_client_secrets_file("oauth_creds.json",
                                                  scopes=SCOPES)
     # prompt='consent' should not be necessary
     # authorization_prompt_message='' means that the prompt won't be printed to the console
     flow.run_local_server(port=8080, prompt='consent', authorization_prompt_message='')
-    credentials = flow.credentials
+    credentials = flow.credentials.to_json()
+    print(credentials)
+    return credentials
 
 def retrieve_credentials(user_id: str) -> tuple[str]:
     '''
@@ -77,5 +83,24 @@ def retrieve_credentials(user_id: str) -> tuple[str]:
         credentials.refresh(Request())
     return credentials
 
+def get_creds_url():
+    flow = InstalledAppFlow.from_client_secrets_file("oauth_creds.json",
+                                         scopes=SCOPES,
+                                         redirect_uri="http://localhost:8000/")
+    flow.redirect_uri = RURI
+    
+    auth_url, state = flow.authorization_url(prompt='consent')
+    return flow, auth_url, state
+    flow.run_console()
+    print(auth_url)
+    print(state)
+    fetch_result = flow.fetch_token()
+    credentials = flow.credentials
+    print(fetch_result)
+    print(credentials)
+    return
+
+
+
 if __name__ == "__main__":
-    get_credentials(sean_id)
+    pass
