@@ -16,10 +16,12 @@
     {% for key, value in credentials.items %}
     <li>{{key}}:{{value}}</li>
     {% endfor %}
-    <li>{{str_creds}}</li>
+    <li>Message: {{ msg }}</li>
 </ul>
 
-<a href="{% url 'authorization' %}" target="_blank">Credentials</a>
+<a href="{% url 'authorization' %}">Credentials</a>
+<hr>
+<a href="{% url 'remove_authorization' %}">Remove Credentials</a>
 <hr>
 <a href="{% url 'test' %}">Test</a>
 {% endblock content %}

@@ -19,3 +19,5 @@ oauth.json
 creds_sean_yt.json
 creds_dummy.json
 db.sqlite3
+venv/
+Lib/

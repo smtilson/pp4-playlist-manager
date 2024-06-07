@@ -2,7 +2,7 @@ from django.shortcuts import render, reverse, get_object_or_404
 from django.http import HttpResponseRedirect
 from .oauth_permission_request import get_creds
 from .models import Profile
-from .utils import get_user_profile
+from .utils import empty_dict
 import json
 
 #json1_file = open('json1')
@@ -20,7 +20,7 @@ def test(request):
     """
     Test view, to load templates properly.
     """
-    user = get_user_profile(request)
+    user = get_object_or_404(Profile, id=request.user.id)
     credentials = user.get_credentials()
     context = {'user_id': user.id,
                'email': user.email,
@@ -29,45 +29,40 @@ def test(request):
                'youtube_account': 'none as of yet'}
     return render(request, "profiles/test.html", context)
 
-def profile(request, user_id):
-    context = {'user_id': user_id,
-               'email': request.user.email,
-               'is_superuser':request.user.is_superuser,
-               'youtube_account': 'none as of yet' }
-    return render(request, "profiles/profile.html", context)
-
-def do_test_modify_profile(request):
-    user = get_user_profile(request)
-    old = user.test_char_field
-    print(old)
-    user.save_test_modify()
-    print(user.test_char_field)
+def profile(request):
+    user = get_object_or_404(Profile, id=request.user.id)
     context = {'user_id': user.id,
                'email': user.email,
                'is_superuser':user.is_superuser,
-               'old':old,
-               'test_data':user.test_char_field,
                'youtube_account': 'none as of yet' }
-    return render(request, "profiles/test_modify_profile.html", context)
+    return render(request, "profiles/profile.html", context)
 
-def credentials(request):
-    return index(request)
-
-def save_creds(request):
-    user = get_object_or_404(Profile,id=request.user.id)
-    
-    user.add_credentials()
+def remove_authorization(request):
+    user = get_object_or_404(Profile, id=request.user.id)
+    # there should be a modal for this
+    user.remove_credentials()
+    return HttpResponseRedirect(reverse('test'))
 
 def authorization(request):
+    print('hit authorization view')
     user = get_object_or_404(Profile, id=request.user.id)
-    credentials = get_creds()
+    credentials = user.get_credentials()
     print(credentials)
-    print(type(credentials))
-    user.add_credentials(credentials)
+    print(empty_dict(credentials))
+    if not empty_dict(credentials):
+        msg = "This user already has credentials"
+        credentials['status']='old'
+    else:
+        credentials = get_creds()
+        user.add_credentials(credentials)
+        credentials = user.get_credentials()
+        credentials['status'] = 'new'
+        msg = "new credentials fetched"
     context = {'user_id': user.id,
+               'msg': msg,
                'email': user.email,
-               'credentials':credentials,
-               "str_creds":str(credentials),
+               'test_data':user.test_char_field,
+               'credentials': credentials,
                'youtube_account': 'none as of yet' }
     return render(request, "profiles/test.html", context)
 

@@ -59,38 +59,27 @@ class Profile(AbstractBaseUser, PermissionsMixin):
 
     def add_credentials(self, credentials):
         print(credentials)
+        print(type(credentials))
         if isinstance(credentials, str):
             credentials = ast.literal_eval(credentials)
         elif not isinstance(credentials, dict):
             raise TypeError(f"credentials argument is type {type(credentials)}.")
-        print(credentials)
         self.token = credentials['token']
-        print(self.token)
         self.refresh_token = credentials['refresh_token']
-        print(self.refresh_token)
         self.expiry = credentials['expiry']
-        print(self.expiry)
+        self.test_char_field = 'credentials added'
         self.save()
-        print(self.get_credentials())
 
     def get_credentials(self) -> dict[str:str]:
         print("calling get credentials")
         credentials = {'token': self.token,
                        'refresh_token': self.refresh_token,
                        'expiry': self.expiry}
-        print(credentials)
         return credentials
-
-
-
-'''class Profile(models.Model):
-
-
-    username = models.CharField(max_length=100) #maybe should auto match with the youtube username
-    email = models.EmailField()
-    name = models.CharField(max_length=200)
-    associated_youtube_account = models.CharField() #user_id for youtube, how do I get this?
-    token = models.CharField()
-    refresh_token= models.CharField()
-    expiry = models.DateTimeField()
-'''
+    
+    def remove_credentials(self):
+        self.token = ''
+        self.refresh_token = ''
+        self.expiry = ''
+        self.test_char_field = 'credentials removed'
+        self.save()
