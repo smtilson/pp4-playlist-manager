@@ -42,7 +42,7 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
-    'oauth2_provider',
+    #'oauth2_provider',
     'corsheaders',
     'profiles',
     'queues',
@@ -141,6 +141,8 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # attention: Maybe remove this later 
 ACCOUNT_EMAIL_VERIFICATION = 'none'
+
+OATUH2_PROVIDER = 
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
