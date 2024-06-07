@@ -43,7 +43,7 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     #'oauth2_provider',
-    'corsheaders',
+    #'corsheaders',
     'profiles',
     'queues',
 ]
@@ -63,7 +63,7 @@ LOGOUT_REDIRECT_URL = '/'
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
+    #'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -76,16 +76,16 @@ CSRF_TRUSTED_ORIGINS = [
     'https://8000-smtilson-pp4playlistman-ym3t1koq57f.ws.codeinstitute-ide.net',
 ]
 
-CORS_ORIGIN_ALLOW_ALL = True
-CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOW_METHODS = [
+#CORS_ORIGIN_ALLOW_ALL = True
+#CORS_ALLOW_CREDENTIALS = True
+'''CORS_ALLOW_METHODS = [
     "GET",
     "POST",
     "PUT",
     "PATCH",
     "DELETE",
     "OPTIONS",
-]
+]'''
 
 ROOT_URLCONF = 'pp4_youtube_dj.urls'
 
