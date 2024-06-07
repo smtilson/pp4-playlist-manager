@@ -23,5 +23,11 @@
    "files.autoSave": "off",
    "workbench.colorTheme": "Visual Studio Dark",
    "terminal.integrated.gpuAcceleration": "canvas",
-   "editor.defaultFormatter": "HookyQR.beautify"
+   "editor.defaultFormatter": "HookyQR.beautify",
+   "[json]": {
+      "editor.defaultFormatter": "vscode.json-language-features"
+   },
+   "[python]": {
+      "editor.defaultFormatter": "ms-python.black-formatter"
+   }
 }

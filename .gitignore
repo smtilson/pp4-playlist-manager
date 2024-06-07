@@ -13,4 +13,11 @@ client_secrets.json
 creds.json
 oauth_creds.json
 oauth_yt_creds.json
+oauth_creds_same_as2.json
+oauth_creds2.json
 oauth.json
+creds_sean_yt.json
+creds_dummy.json
+db.sqlite3
+venv/
+Lib/

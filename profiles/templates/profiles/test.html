@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h2>Profile page for {{user_name}}</h2>
+<h3>Profile Data</h3>
+<ul>
+    <li>User name: {{user_name}}</li>
+    <li>Superuser? {{is_superuser}}</li>
+    <li>Email: {{email}}</li>
+    {% if old %}
+    <li>old test data: {{old}}</li>
+    {% endif %}
+    <li>test data: {{test_data}}</li>
+    <li>Linked Youtube Account: {{youtube_account}}</li>
+    {% for key, value in credentials.items %}
+    <li>{{key}}:{{value}}</li>
+    {% endfor %}
+    <li>Message: {{ msg }}</li>
+</ul>
+
+<a href="{% url 'authorization' %}">Credentials</a>
+<hr>
+<a href="{% url 'remove_authorization' %}">Remove Credentials</a>
+<hr>
+<a href="{% url 'test' %}">Test</a>
+{% endblock content %}

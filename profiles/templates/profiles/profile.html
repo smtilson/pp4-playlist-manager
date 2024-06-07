@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h2>Profile page for {{user_name}}</h2>
+<h3>Profile Data</h3>
+<ul>
+    <li>User name: {{user_name}}</li>
+    <li>Superuser? {{is_superuser}}</li>
+    <li>Email: {{email}}</li>
+    <li>Linked Youtube Account: {{youtube_account}}</li>
+</ul>
+
+<a href="{% url 'authorization' %}" target="_blank">Link youtube account</a>
+{% endblock content %}

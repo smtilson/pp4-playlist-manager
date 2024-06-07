@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-40-gfdc!ncn+g86bap&bsz*hgi!is&4)#c)!tl1-zty-t(x7p^
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['8000-smtilson-pp4playlistman-ym3t1koq57f.ws.codeinstitute-ide.net','localhost',]
+ALLOWED_HOSTS = ['8000-smtilson-pp4playlistman-ym3t1koq57f.ws.codeinstitute-ide.net','localhost','127.0.0.1','.herokuapp.com',]
 
 
 # Application definition
@@ -45,6 +45,12 @@ INSTALLED_APPS = [
     'profiles',
     'queues',
 ]
+
+AUTH_USER_MODEL = 'profiles.Profile'
+ACCOUNT_USER_MODEL_USERNAME_FIELD = None
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
 
 # allauth constants
 SITE_ID = 1
