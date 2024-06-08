@@ -19,18 +19,20 @@
     {% endfor %}
     <li>Message: {{ msg }}</li>
 </ul>
-
-<a href="{% url 'authorization' %}">Credentials</a>
+{% if not has_tokens %}
+<a href="{{authorization_url}}">Give Youtube DJ permissions.</a>
 <hr>
+{% else %}
 <a href="{% url 'remove_authorization' %}">Remove Credentials</a>
 <hr>
+{% endif %}
 <a href="{% url 'test' %}">Test page</a>
 <hr>
 <a href="{% url 'profile' %}">Current Profile page</a>
 <hr>
-<a href="{% url 'test_function' %}">Test function</a>
+<a href="{% url 'test_function' %}">test function</a>
 <hr>
-{% if view_name == 'test_function' %}
+<a href="{% url 'auth_code' %}">auth code</a>
+<hr>
 <a href="{{test_data}}">URL testing for authorization</a>
-{% endif %}
 {% endblock content %}

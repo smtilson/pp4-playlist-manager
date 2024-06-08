@@ -45,6 +45,8 @@ INSTALLED_APPS = [
     #'oauth2_provider',
     #'corsheaders',
     'profiles',
+    'yt_auth',
+    'yt_query',
     'queues',
 ]
 
