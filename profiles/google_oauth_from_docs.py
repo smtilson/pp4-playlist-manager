@@ -38,3 +38,7 @@ def get_authorization_url():
     ### Step 2: redirect user to googles site
 
     return authorization_url
+
+url_returned_for_sean_account = "http://localhost:8000/?state=g96AagnNUT1sWY4OW0RftFpulDIuTx&code=4/0ATx3LY4gPotL-cs2fHA3miSycYwMuwGi0M2fCg5QCjmuMkAkcixiVsB3tvjiL90EcuDlig&scope=https://www.googleapis.com/auth/youtube.readonly%20https://www.googleapis.com/auth/youtubepartner%20https://www.googleapis.com/auth/youtube"
+returned_state = "g96AagnNUT1sWY4OW0RftFpulDIuTx"
+returned_code = "4/0ATx3LY4gPotL-cs2fHA3miSycYwMuwGi0M2fCg5QCjmuMkAkcixiVsB3tvjiL90EcuDlig"
