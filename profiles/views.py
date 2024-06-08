@@ -23,12 +23,28 @@ def index(request):
         context = {'user_id': user.id,
                "view_name": "test",
                'email': user.email,
-               'credentials':credentials,
+               'test_dict':credentials,
                'test_data':user.test_char_field,
                'youtube_account': 'none as of yet'}
     return render(request, "profiles/test.html", context)
         
 
+def auth_code(request):
+    """
+    Test view, to load templates properly.
+    """
+    user = get_object_or_404(Profile, id=request.user.id)
+    test_dict = {}
+    test_dict['user_credentials']= user.credentials
+    test_dict['build_abs_uri']=request.build_absolute_uri()
+    test_dict['current_full_path']=request.get_full_path()
+    context = {'user_id': user.id,
+               "view_name": "test",
+               'email': user.email,
+               'test_dict':test_dict,
+               'test_data':user.test_char_field,
+               'youtube_account': 'none as of yet'}
+    return render(request, "profiles/test.html", context)
 
 def test(request):
     """
@@ -39,7 +55,7 @@ def test(request):
     context = {'user_id': user.id,
                "view_name": "test",
                'email': user.email,
-               'credentials':credentials,
+               'test_dict':credentials,
                'test_data':user.test_char_field,
                'youtube_account': 'none as of yet'}
     return render(request, "profiles/test.html", context)
@@ -67,7 +83,7 @@ def profile(request):
     context = {'user_id': user.id,
                'email': user.email,
                "view_name":"profile",
-               'credentials':credentials,
+               'test_dict':credentials,
                'test_data':user.test_char_field,
                'youtube_account': 'none as of yet'}
     return render(request, "profiles/test.html", context)
@@ -83,7 +99,7 @@ def remove_authorization(request):
                'email': user.email,
                "view_name":"remove_authorization",
                'test_data':user.test_char_field,
-               'credentials': credentials,
+               'test_dict': credentials,
                'youtube_account': 'none as of yet' }
     return render(request, "profiles/test.html", context)
     #return HttpResponseRedirect(reverse('test'))
@@ -108,7 +124,7 @@ def authorization(request):
                'email': user.email,
                "view_name":"authorization",
                'test_data':user.test_char_field,
-               'credentials': credentials,
+               'test_dict': credentials,
                'youtube_account': 'none as of yet' }
     return render(request, "profiles/test.html", context)
 

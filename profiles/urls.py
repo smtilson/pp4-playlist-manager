@@ -6,6 +6,7 @@ urlpatterns = [
     path("profile", views.profile, name="profile"),
     path("authorization", views.authorization, name="authorization"),
     path("test", views.test, name="test"),
+    path("auth-code", views.auth_code, name="auth_code"),
     path("test_function", views.test_function, name="test_function"),
     path("remove_authorization", views.remove_authorization, name="remove_authorization"),
     path("", views.index, name="index"),

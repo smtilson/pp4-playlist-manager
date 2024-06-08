@@ -12,6 +12,7 @@ client_secrets.json
 *.pickle
 creds.json
 oauth_creds.json
+oauth_creds_old.json
 oauth_yt_creds.json
 oauth_creds_same_as2.json
 oauth_creds2.json
