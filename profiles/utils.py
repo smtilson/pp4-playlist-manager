@@ -4,6 +4,7 @@ import json
 
 
 def get_user_profile(request):
+    # this needs some error handling in case there is no user.
     user = get_object_or_404(Profile, id=request.user.id)
     return user
 
