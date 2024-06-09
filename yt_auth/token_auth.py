@@ -28,40 +28,36 @@ def get_authorization_url():
     return authorization_url
 
 
-url_returned_for_sean_account = "http://localhost:8000/?state=g96AagnNUT1sWY4OW0RftFpulDIuTx&code=4/0ATx3LY4gPotL-cs2fHA3miSycYwMuwGi0M2fCg5QCjmuMkAkcixiVsB3tvjiL90EcuDlig&scope=https://www.googleapis.com/auth/youtube.readonly%20https://www.googleapis.com/auth/youtubepartner%20https://www.googleapis.com/auth/youtube"
-returned_state = "g96AagnNUT1sWY4OW0RftFpulDIuTx"
-returned_code = (
-    "4/0ATx3LY4gPotL-cs2fHA3miSycYwMuwGi0M2fCg5QCjmuMkAkcixiVsB3tvjiL90EcuDlig"
-)
-"""url = request.META['HTTP_HOST'] \
-    + request.META['PATH_INFO'] \
-    + request.META['QUERY_STRING']"""
-
 def get_tokens(authorization_path):
     state = get_data_from_path(authorization_path)[0]
-    # the below is supposed to verify something?
-    flow = Flow.from_client_secrets_file(
-        "oauth_creds.json", scopes=SCOPES, state=state
-    )
-    # Currently this is hard coded, I am not sure how to make it dynamic.
-    flow.redirect_uri = "http://localhost:8000/"
-    # maybe reverse('index')?
-    # flow.redirect_uri = request.build_absolute_uri()
+    flow = Flow.from_client_secrets_file("oauth_creds.json", scopes=SCOPES, state=state)
 
-    authorization_response = flow.redirect_uri + authorization_path
+    authorization_response = REDIRECT_URI + authorization_path
     flow.fetch_token(authorization_response=authorization_response)
     return flow.credentials
 
+def revoke_tokens(request):
+  user = get_user_profile(request)
+  if user.has_tokens:
+     
+  if 'credentials' not in flask.session:
+    return ('You need to <a href="/authorize">authorize</a> before ' +
+            'testing the code to revoke credentials.')
 
-# Store the credentials in the session.
-# ACTION ITEM for developers:
-#     Store user's access and refresh tokens in your data store if
-#     incorporating this code into your real app.
-"""credentials = flow.credentials
-flask.session['credentials'] = {
-    'token': credentials.token,
-    'refresh_token': credentials.refresh_token,
-    'token_uri': credentials.token_uri,
-    'client_id': credentials.client_id,
-    'client_secret': credentials.client_secret,
-    'scopes': credentials.scopes}"""
+  credentials = google.oauth2.credentials.Credentials(
+    **flask.session['credentials'])
+
+  revoke = requests.post('https://oauth2.googleapis.com/revoke',
+      params={'token': credentials.token},
+      headers = {'content-type': 'application/x-www-form-urlencoded'})
+
+  status_code = getattr(revoke, 'status_code')
+  if status_code == 200:
+    return('Credentials successfully revoked.' + print_index_table())
+  else:
+    return('An error occurred.' + print_index_table())
+
+
+
+def refresh_tokens(request):
+    pass
