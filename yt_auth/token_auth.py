@@ -1,8 +1,10 @@
-import google.oauth2.credentials
+import google.oauth2.credentials as g_oa2_creds
 from google_auth_oauthlib.flow import Flow
-from .utils import get_data_from_path, get_user_profile
-from django.shortcuts import reverse
+from .utils import get_data_from_path
 import os
+from .models import Credentials
+from profiles.models import Profile
+from google.auth.transport.requests import Request
 
 os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
 
@@ -38,11 +40,12 @@ def get_tokens(authorization_path):
 
 # I am guessing that this does not work because of the header
 def revoke_tokens(request):
-    user = get_user_profile(request)
+    user = Profile.get_user_profile(request)
     if not user.has_tokens:
         return f"This app does not currently have authorization."
     else:
-        credentials = google.oauth2.credentials.Credentials(
+        # maybe the creation of the object here is not valid.
+        credentials = g_oa2_creds.Credentials(
             **user.credentials.to_dict()
         )
 
@@ -50,6 +53,7 @@ def revoke_tokens(request):
         "https://oauth2.googleapis.com/revoke",
         params={"token": credentials.token},
         #what is this heaeder supposed to be?
+        # apparently this is a standard form for a header. I don't understand why I am getting the 302 error anymore.
         headers={"content-type": "application/x-www-form-urlencoded"},
     )
     print(revoke.__dir__())
@@ -62,5 +66,16 @@ def revoke_tokens(request):
         return "An error occurred."
 
 
-def refresh_tokens(request):
-    pass
+def refresh_tokens(user):
+    # maybe this should be called when we already know the tokens are expired so we can get authorization again.
+    credentials = g_oa2_creds.Credentials(**user.credentials.to_dict())
+    if credentials.expired and credentials.refresh_token:
+        credentials.refresh(Request())
+        if credentials.valid:
+            user.credentials = Credentials.from_google_credentials(credentials)
+            # is this necessary?
+            user.save()
+            return "tokens successfully refreshed."
+        else:
+            raise ValueError("The credentials should have been refreshed but instead they remain invalid.")
+    # it seems that this is done automatically by the service objecct...

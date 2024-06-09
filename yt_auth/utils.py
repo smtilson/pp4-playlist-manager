@@ -1,12 +1,9 @@
-from profiles.models import Profile
-from django.shortcuts import get_object_or_404
+
 import json
+import ast
 
-
-def get_user_profile(request):
-    # this needs some error handling in case there is no user.
-    user = get_object_or_404(Profile, id=request.user.id)
-    return user
+def json_to_dict(json) -> dict:
+    return ast.literal_eval(json)
 
 def empty_dict(dictionary:dict) -> bool:
     return [val for val in dictionary.values() if val]==[]

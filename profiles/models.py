@@ -8,6 +8,9 @@ from django.db import models
 from django.utils import timezone
 from pp4_youtube_dj.settings import DEBUG
 from yt_auth.models import Credentials
+from django.shortcuts import get_object_or_404
+
+
 
 
 # Create your models here.
@@ -76,10 +79,26 @@ class Profile(AbstractBaseUser, PermissionsMixin):
     def has_tokens(self):
         return self.credentials.has_tokens
     
+    @property
+    def valid_credentials(self):
+        if self.credentials.expiry == '':
+            return False
+        return self.credentials.to_google_credentials().valid
+
     def get_absolute_url(self):
         return f"/profiles/{self.pk}/"
 
-    def set_default_credentials(self):
-        self.credentials = Credentials()
+    def set_credentials(self,new_credentials=None):
+        """
+        new_credentials is a google Credentials object.
+        """
+        self.credentials.set_credentials(new_credentials)
         self.credentials.save()
         self.save()
+
+    @classmethod
+    def get_user_profile(cls, request):
+    # this needs some error handling in case there is no user.
+        user = get_object_or_404(cls, id=request.user.id)
+        return user
+
