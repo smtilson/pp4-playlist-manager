@@ -72,12 +72,14 @@ class Profile(AbstractBaseUser, PermissionsMixin):
 
     objects = ProfileManager()
 
+    @property
+    def has_tokens(self):
+        return self.credentials.has_tokens
+    
     def get_absolute_url(self):
         return f"/profiles/{self.pk}/"
 
-    def remove_credentials(self):
-        self.token = ""
-        self.refresh_token = ""
-        self.expiry = ""
-        self.test_char_field = "credentials removed"
+    def set_default_credentials(self):
+        self.credentials = Credentials()
+        self.credentials.save()
         self.save()

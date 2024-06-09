@@ -31,32 +31,35 @@ def get_authorization_url():
 def get_tokens(authorization_path):
     state = get_data_from_path(authorization_path)[0]
     flow = Flow.from_client_secrets_file("oauth_creds.json", scopes=SCOPES, state=state)
-
+    flow.redirect_uri = REDIRECT_URI
     authorization_response = REDIRECT_URI + authorization_path
     flow.fetch_token(authorization_response=authorization_response)
     return flow.credentials
 
+# I am guessing that this does not work because of the header
 def revoke_tokens(request):
-  user = get_user_profile(request)
-  if user.has_tokens:
-     
-  if 'credentials' not in flask.session:
-    return ('You need to <a href="/authorize">authorize</a> before ' +
-            'testing the code to revoke credentials.')
+    user = get_user_profile(request)
+    if not user.has_tokens:
+        return f"This app does not currently have authorization."
+    else:
+        credentials = google.oauth2.credentials.Credentials(
+            **user.credentials.to_dict()
+        )
 
-  credentials = google.oauth2.credentials.Credentials(
-    **flask.session['credentials'])
+    revoke = requests.post(
+        "https://oauth2.googleapis.com/revoke",
+        params={"token": credentials.token},
+        #what is this heaeder supposed to be?
+        headers={"content-type": "application/x-www-form-urlencoded"},
+    )
+    print(revoke.__dir__())
+    print(revoke)
 
-  revoke = requests.post('https://oauth2.googleapis.com/revoke',
-      params={'token': credentials.token},
-      headers = {'content-type': 'application/x-www-form-urlencoded'})
-
-  status_code = getattr(revoke, 'status_code')
-  if status_code == 200:
-    return('Credentials successfully revoked.' + print_index_table())
-  else:
-    return('An error occurred.' + print_index_table())
-
+    status_code = getattr(revoke, "status_code")
+    if status_code == 200:
+        return "Credentials successfully revoked."
+    else:
+        return "An error occurred."
 
 
 def refresh_tokens(request):
