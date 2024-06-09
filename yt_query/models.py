@@ -1,9 +1,8 @@
 from django.db import models
 
 # Create your models here.
-
-class Queue(models.Model):
+class YTVideo(models.Model):
     pass
 
-class Entry(models.Model):
+class YTSong(models.Model):
     pass

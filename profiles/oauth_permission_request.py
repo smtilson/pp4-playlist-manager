@@ -2,7 +2,7 @@
 # remember to give credit in the project. At approximately 32 minutes
 
 import os
-from google_auth_oauthlib.flow import InstalledAppFlow
+from google_auth_oauthlib.flow import InstalledAppFlow, Flow
 from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
 from .models import Profile
@@ -31,4 +31,18 @@ def get_creds():
 
     credentials = flow.credentials
     return credentials.to_json()
+
+def get_creds_url():
+    flow = Flow.from_client_secrets_file("oauth_creds.json",
+                                         scopes=SCOPES,
+                                         redirect_uri="http://localhost:8000/")
+
+    auth_url, state = flow.authorization_url(prompt='consent')
+    print(auth_url)
+    print(state)
+    fetch_result = flow.fetch_token()
+    credentials = flow.credentials
+    print(fetch_result)
+    print(credentials)
+    return auth_url
 

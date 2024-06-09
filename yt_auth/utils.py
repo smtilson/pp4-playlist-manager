@@ -1,4 +1,4 @@
-from .models import Profile
+from profiles.models import Profile
 from django.shortcuts import get_object_or_404
 import json
 

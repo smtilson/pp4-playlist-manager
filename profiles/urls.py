@@ -3,9 +3,9 @@ from . import views
 
 urlpatterns = [
     # attention made test home for dev reasons.
-    path("profile/<int:user_id>", views.profile, name="profile"),
-    path("authorization", views.authorization, name="authorization"),
+    path("profile", views.profile, name="profile"),
     path("test", views.test, name="test"),
+    path("test_function", views.test_function, name="test_function"),
     path("remove_authorization", views.remove_authorization, name="remove_authorization"),
     path("", views.index, name="index"),
 ]

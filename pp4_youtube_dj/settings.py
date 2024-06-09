@@ -42,7 +42,11 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
+    #'oauth2_provider',
+    #'corsheaders',
     'profiles',
+    'yt_auth',
+    'yt_query',
     'queues',
 ]
 
@@ -57,9 +61,11 @@ SITE_ID = 1
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
+# I am unsure about the placement of the corsheders middleware
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    #'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -71,6 +77,17 @@ MIDDLEWARE = [
 CSRF_TRUSTED_ORIGINS = [
     'https://8000-smtilson-pp4playlistman-ym3t1koq57f.ws.codeinstitute-ide.net',
 ]
+
+#CORS_ORIGIN_ALLOW_ALL = True
+#CORS_ALLOW_CREDENTIALS = True
+'''CORS_ALLOW_METHODS = [
+    "GET",
+    "POST",
+    "PUT",
+    "PATCH",
+    "DELETE",
+    "OPTIONS",
+]'''
 
 ROOT_URLCONF = 'pp4_youtube_dj.urls'
 
@@ -126,6 +143,8 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # attention: Maybe remove this later 
 ACCOUNT_EMAIL_VERIFICATION = 'none'
+
+#OATUH2_PROVIDER = 
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/

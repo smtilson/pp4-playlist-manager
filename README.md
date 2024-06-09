@@ -38,6 +38,8 @@ Make sure that when you add the URIs that you have the trailing slash there appr
 
 Request details: redirect_uri=http://localhost:8080/ flowName=GeneralOAuthFlow
 
+Enable IAM api?
+
 external user, enter your email address
 
 
