@@ -2,14 +2,41 @@
 
 {% block content %}
 
-<h2>Profile page for {{user_name}}</h2>
+<h2>Test Profile page for {{user_name}}</h2>
 <h3>Profile Data</h3>
 <ul>
     <li>User name: {{user_name}}</li>
     <li>Superuser? {{is_superuser}}</li>
     <li>Email: {{email}}</li>
     <li>Linked Youtube Account: {{youtube_account}}</li>
+    {% for key, value in test_dict.items %}
+    <li>{{key}}:{{value}}</li>
+    {% endfor %}
+    <li>Message: {{ msg }}</li>
 </ul>
-
-<a href="{% url 'authorization' %}" target="_blank">Link youtube account</a>
+{% if not has_tokens %}
+<a href="{{authorization_url}}">Give Youtube DJ permissions.</a>
+<hr>
+{% else %}
+<a href="{% url 'remove_authorization' %}">Remove Credentials</a>
+<p>Note: Doing this will remove your credentials from our service. To remove the permissions on Google's end, please visit:</p>
+<a href="https://myaccount.google.com/connections" target="_blank">Third party apps and services</a>
+<hr>
+{% endif %}
+<a href="{{url 'create_queue' user_id }}">Create New Queue</a>
+<h2>My Queues</h2>
+{% for queue in user_queues %}
+<div>
+    <h4>{{queue.name}}</h4>
+    <h5>{{queue.date_created}}</h5>
+</div>
+{% endfor %}
+<div>Form for setting name.</div>
+<a href="{% url 'test' %}">Test page</a>
+<hr>
+<a href="{% url 'profile' %}">Current Profile page</a>
+<hr>
+<a href="{% url 'test_function' %}">test function</a>
+<hr>
+<a href="{{test_data}}">URL testing for authorization</a>
 {% endblock content %}

@@ -10,6 +10,8 @@ from pp4_youtube_dj.settings import DEBUG
 from yt_auth.models import Credentials
 from yt_query.yt_api_utils import YT
 from django.shortcuts import get_object_or_404
+# I think this will create a circular import
+#from queues.models import Queue
 
 
 # Create your models here.
@@ -70,6 +72,7 @@ class Profile(AbstractBaseUser, PermissionsMixin):
     is_superuser = models.BooleanField(default=DEBUG)
     is_staff = models.BooleanField(default=DEBUG)
     is_active = models.BooleanField(default=DEBUG)
+    is_guest = models.BooleanField(default=False)
     last_login = models.DateTimeField(null=True, blank=True)
     date_joined = models.DateTimeField(auto_now_add=True)
     credentials = models.OneToOneField(
@@ -138,3 +141,11 @@ class Profile(AbstractBaseUser, PermissionsMixin):
         # this needs some error handling in case there is no user.
         user = get_object_or_404(cls, id=request.user.id)
         return user
+
+
+class GuestProfile(models.Model):
+    # Do I even want this in the database?, I guess I do since I am going from page to page
+    name = models.CharField(max_length=50)
+    is_guest = models.BooleanField(default=True)
+    # I think this will create a circular import error
+    #current_permission = models.OneToOneField(Queue)
