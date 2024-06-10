@@ -1,4 +1,4 @@
-data = """email = models.EmailField(max_length=200, unique=DEBUG)
+profile_class_code_raw = """email = models.EmailField(max_length=200, unique=DEBUG)
     name = models.CharField(max_length=200, null=True, blank=True)
     is_superuser = models.BooleanField(default=DEBUG)
     is_staff = models.BooleanField(default=DEBUG)
@@ -9,9 +9,4 @@ data = """email = models.EmailField(max_length=200, unique=DEBUG)
     youtube_id = models.CharField(max_length=100,null=True,blank=True, default='')
     youtube_url = models.CharField(max_length=100,null=True,blank=True, default='')""""""
 """
-lines = data.split("\n")
-lines = [line.strip() for line in lines]
-print(lines)
-field_names = [line.split("= models")[0].strip() for line in lines]
-field_names = [name for name in field_names if name]
-print(field_names)
+
