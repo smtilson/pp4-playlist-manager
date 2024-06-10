@@ -1,7 +1,7 @@
 from django.db import models
 from .yt_api_utils import YT
 
-
+'''
 # Create your models here.
 class YTVideo(models.Model):
     pass
@@ -18,8 +18,9 @@ class YTVideo(models.Model):
         pass
         
 
-class YTPlayList(models.model):
+class YTPlayList(models.Model):
     pass
 
 class YTSong(models.Model):
     pass
+'''

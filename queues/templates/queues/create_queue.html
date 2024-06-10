@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Create a New Queue</h2>
+
+<form id="queueForm" method="POST" style="margin-top: 1.3em;">
+    {{ queue_form }}
+    {% csrf_token %}
+    <button id="submitButton" type="submit" class="btn btn-signup btn-lg">Create Queue</button>
+</form>
+{% endblock content %}

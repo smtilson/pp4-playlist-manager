@@ -23,9 +23,9 @@
 <a href="https://myaccount.google.com/connections" target="_blank">Third party apps and services</a>
 <hr>
 {% endif %}
-<a href="{{url 'create_queue' user_id }}">Create New Queue</a>
+<a href="{% url 'create_queue' %}">Create New Queue</a>
 <h2>My Queues</h2>
-{% for queue in user_queues %}
+{% for queue in queues %}
 <div>
     <h4>{{queue.name}}</h4>
     <h5>{{queue.date_created}}</h5>

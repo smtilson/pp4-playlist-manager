@@ -1,6 +1,7 @@
 from django.shortcuts import render, reverse, get_object_or_404
 from django.http import HttpResponseRedirect
 from .models import Profile
+from queues.models import Queue
 from yt_auth.token_auth import (
     get_authorization_url,
     get_tokens,
@@ -97,8 +98,9 @@ def profile(request):
     test_dict["msg"] = msg
     test_dict["valid"] = user.valid_credentials
     context["test_dict"] = test_dict
+    context["queues"] = Queue.objects.all().filter(owner=user.id)
 
-    return render(request, "profiles/test.html", context)
+    return render(request, "profiles/profile.html", context)
 
 
 def remove_authorization(request):

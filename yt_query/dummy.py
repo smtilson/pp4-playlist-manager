@@ -21,7 +21,7 @@ SCOPES = ['https://www.googleapis.com/auth/youtube',]
 
 credentials = SEAN.google_credentials
 #print(SEAN.credentials.to_dict())
-#refresh_tokens(SEAN)
+refresh_tokens(SEAN)
 #print(SEAN.credentials.to_dict())
 #input()
 #credentials = retrieve_creds()

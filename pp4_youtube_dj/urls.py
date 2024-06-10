@@ -18,9 +18,10 @@ from django.contrib import admin
 from django.urls import path, include
 
 urlpatterns = [
-    path("accounts/", include("allauth.urls")),
-    path('admin/', admin.site.urls),
+    path("accounts", include("allauth.urls")),
+    path('admin', admin.site.urls),
     # attention made profiles the temp home for dev reasons
     #path("o/", include('oauth2_provider.urls', namespace='oauth2_provider')),
+    path('queues',include("queues.urls"), name="queues-urls"),
     path('',include("profiles.urls"), name="profiles-urls"),
 ]
