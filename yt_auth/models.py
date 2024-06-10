@@ -33,25 +33,18 @@ class Credentials(models.Model):
     )
     account = models.CharField(max_length=300, default="", null=True, blank=True)
     has_tokens = models.BooleanField(default=False)
-
+    #"['http...']"
     def to_google_credentials(self):
         creds_dict = self.to_dict()
+        creds_dict['scopes'] = [creds_dict['scopes'][2:-2]]
         del creds_dict["has_tokens"]
-        return g_oa2_creds.Credentials(creds_dict)
-
-    @classmethod
-    def from_google_credentials(cls, g_credentials):
-        creds = ast.literal_eval(g_credentials.to_json())
-        creds["has_tokens"] = True
-        credentials = Credentials(**creds)
-        credentials.save()
-        return credentials
+        del creds_dict['expiry']
+        return g_oa2_creds.Credentials(**creds_dict)
 
     def to_dict(self):
         return {
             field_name: getattr(self, field_name) for field_name in CREDENTIALS_FIELDS
         }
-
 
     def set_credentials(self, new_credentials:'g_oa2_creds.Credentials'=None) -> None:
         if new_credentials is None:

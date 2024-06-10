@@ -4,9 +4,8 @@ from .models import Profile
 from yt_auth.token_auth import (
     get_authorization_url,
     get_tokens,
-    revoke_tokens,
-    refresh_tokens,
-)
+    save_creds,
+        )
 from yt_auth.models import Credentials
 
 # Create your views here.
@@ -121,7 +120,7 @@ def return_from_authorization(request):
     user = Profile.get_user_profile(request)
     path = request.get_full_path()
     tokens = get_tokens(path)
+    save_creds(tokens)
     print(tokens)
     user.set_credentials(tokens)
-    user.save()
     return HttpResponseRedirect(reverse("profile"))

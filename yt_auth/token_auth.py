@@ -1,9 +1,11 @@
 import google.oauth2.credentials as g_oa2_creds
 from google_auth_oauthlib.flow import Flow
 from .utils import get_data_from_path
+import pickle
 import os
 from .models import Credentials
 from profiles.models import Profile
+from .utils import json_to_dict
 from google.auth.transport.requests import Request
 
 os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
@@ -45,9 +47,7 @@ def revoke_tokens(request):
         return f"This app does not currently have authorization."
     else:
         # maybe the creation of the object here is not valid.
-        credentials = g_oa2_creds.Credentials(
-            **user.credentials.to_dict()
-        )
+        credentials = user.google_credentials
 
     revoke = requests.post(
         "https://oauth2.googleapis.com/revoke",
@@ -68,14 +68,23 @@ def revoke_tokens(request):
 
 def refresh_tokens(user):
     # maybe this should be called when we already know the tokens are expired so we can get authorization again.
-    credentials = g_oa2_creds.Credentials(**user.credentials.to_dict())
-    if credentials.expired and credentials.refresh_token:
-        credentials.refresh(Request())
-        if credentials.valid:
-            user.credentials = Credentials.from_google_credentials(credentials)
-            # is this necessary?
-            user.save()
-            return "tokens successfully refreshed."
-        else:
-            raise ValueError("The credentials should have been refreshed but instead they remain invalid.")
-    # it seems that this is done automatically by the service objecct...
+    credentials = user.google_credentials
+    print(credentials.valid)
+    print(credentials.expired)
+    old_dict = json_to_dict(credentials.to_json())
+    new_dict ={}
+    credentials.refresh(Request())
+    new_dict = json_to_dict(credentials.to_json())
+    user.set_credentials(credentials)
+    print(old_dict == new_dict)
+
+def save_creds(credentials):
+    # "wb" is write bytes
+    with open("token.pickle", "wb") as f:
+        print("Saving credentials ...")
+        pickle.dump(credentials, f)
+
+def retrieve_creds():
+    with open("token.pickle", "rb") as token:
+        credentials = pickle.load(token)
+    return credentials
