@@ -12,8 +12,6 @@ from yt_query.yt_api_utils import YT
 from django.shortcuts import get_object_or_404
 
 
-
-
 # Create your models here.
 
 UNIQUE = not DEBUG
@@ -51,7 +49,21 @@ class ProfileManager(BaseUserManager):
     def create_superuser(self, email, password, **kwargs):
         return self._create_profile(email, password, True, True, **kwargs)
 
-PROFILE_FIELDS = {}
+
+PROFILE_FIELDS = {
+    "email",
+    "name",
+    "is_superuser",
+    "is_staff",
+    "is_active",
+    "last_login",
+    "date_joined",
+    "credentials",
+    "youtube_id",
+    "youtube_url",
+}
+
+
 class Profile(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(max_length=200, unique=DEBUG)
     name = models.CharField(max_length=200, null=True, blank=True)
@@ -61,13 +73,10 @@ class Profile(AbstractBaseUser, PermissionsMixin):
     last_login = models.DateTimeField(null=True, blank=True)
     date_joined = models.DateTimeField(auto_now_add=True)
     credentials = models.OneToOneField(
-        Credentials,
-        on_delete=models.SET_DEFAULT,
-        null=True,
-        default=Credentials
+        Credentials, on_delete=models.SET_DEFAULT, null=True, default=Credentials
     )
-    youtube_id = models.CharField(max_length=100,null=True,blank=True, default='')
-    youtube_url = models.CharField(max_length=100,null=True,blank=True, default='')
+    youtube_id = models.CharField(max_length=100, null=True, blank=True, default="")
+    youtube_url = models.CharField(max_length=100, null=True, blank=True, default="")
 
     USERNAME_FIELD = "email"
     EMAIL_FIELD = "email"
@@ -77,23 +86,23 @@ class Profile(AbstractBaseUser, PermissionsMixin):
 
     def to_dict(self):
         return {
-            field_name: getattr(self, field_name) for field_name in CREDENTIALS_FIELDS
+            field_name: getattr(self, field_name) for field_name in PROFILE_FIELDS
         }
-    
+
     @property
     def has_tokens(self):
         return self.credentials.has_tokens
-    
+
     @property
     def valid_credentials(self):
-        if self.credentials.expiry == '':
+        if self.credentials.expiry == "":
             return False
         return self.google_credentials.valid
 
     def get_absolute_url(self):
         return f"/profiles/{self.pk}/"
 
-    def set_credentials(self,new_credentials=None):
+    def set_credentials(self, new_credentials=None):
         """
         new_credentials is a google Credentials object. Updates credentials to
         with the data from new_credentials. When no object is passed, it resets
@@ -103,7 +112,7 @@ class Profile(AbstractBaseUser, PermissionsMixin):
         self.credentials.save()
         self.find_youtube_data()
         self.save()
-    
+
     def find_youtube_data(self):
         yt = YT(self)
         self.youtube_id, self.youtube_url = yt.find_user_youtube_data()
@@ -113,8 +122,8 @@ class Profile(AbstractBaseUser, PermissionsMixin):
         """
         Removes youtube identification and credentials from system.
         """
-        self.youtube_id = ''
-        self.youtube_url = ''
+        self.youtube_id = ""
+        self.youtube_url = ""
         self.set_credentials()
         self.save()
 
@@ -124,7 +133,6 @@ class Profile(AbstractBaseUser, PermissionsMixin):
 
     @classmethod
     def get_user_profile(cls, request):
-    # this needs some error handling in case there is no user.
+        # this needs some error handling in case there is no user.
         user = get_object_or_404(cls, id=request.user.id)
         return user
-

@@ -1,11 +1,10 @@
 import google.oauth2.credentials as g_oa2_creds
 from google_auth_oauthlib.flow import Flow
-from .utils import get_data_from_path
+from utils import get_data_from_path, json_to_dict
 import pickle
 import os
 from .models import Credentials
 from profiles.models import Profile
-from .utils import json_to_dict
 from google.auth.transport.requests import Request
 
 os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"

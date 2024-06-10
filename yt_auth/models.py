@@ -1,5 +1,5 @@
 from django.db import models
-from .utils import json_to_dict
+from utils import json_to_dict
 import google.oauth2.credentials as g_oa2_creds
 
 

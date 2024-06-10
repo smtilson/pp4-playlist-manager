@@ -3,7 +3,7 @@ from profiles.models import Profile
 import os
 import googleapiclient.discovery
 from yt_auth.token_auth import refresh_tokens, retrieve_creds
-from yt_auth.utils import json_to_dict
+
 
 SEAN = Profile.objects.all().first()
 os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"

@@ -3,7 +3,7 @@ import os
 import googleapiclient.discovery
 from yt_auth.token_auth import retrieve_creds
 from yt_auth.models import Credentials
-from yt_auth.utils import json_to_dict
+from utils import json_to_dict
 from profiles.models import Profile
 from google.oauth2.credentials import Credentials as gCredentials
 
