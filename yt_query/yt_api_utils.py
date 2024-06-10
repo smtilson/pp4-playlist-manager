@@ -13,9 +13,9 @@ class YT:
         return build("youtube", "v3", credentials=credentials)
         
     def find_user_youtube_data(self):
-        request = YT.service.channels().list(part="snippet,contentDetails",mine=True)
+        request = self.service.channels().list(part="snippet,contentDetails",mine=True)
         response = request.execute()
-        items = response['items']
+        items = response['items'][0]
         id = items['id']
-        custom_url = item['snippet']['customUrl']
+        custom_url = items['snippet']['customUrl']
         return id, custom_url

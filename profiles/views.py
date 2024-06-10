@@ -5,7 +5,7 @@ from yt_auth.token_auth import (
     get_authorization_url,
     get_tokens,
     save_creds,
-        )
+)
 from yt_auth.models import Credentials
 
 # Create your views here.
@@ -46,11 +46,11 @@ def test_function(request):
     """
     user = get_object_or_404(Profile, id=request.user.id)
     # this should not in general be necessary
-    '''if user.credentials is None:
+    """if user.credentials is None:
         empty_creds = Credentials()
         empty_creds.save()
         user.credentials = empty_creds
-        user.save()'''
+        user.save()"""
     if not user.has_tokens:
         url = get_authorization_url()
     else:
@@ -78,11 +78,6 @@ def profile(request):
     """
     user = get_object_or_404(Profile, id=request.user.id)
     # this should not in general be necessary
-    '''if user.credentials is None:
-        empty_creds = Credentials()
-        empty_creds.save()
-        user.credentials = empty_creds
-        user.save()'''
     if not user.has_tokens:
         url = get_authorization_url()
         msg = "Profile has no associated youtube account."
@@ -94,13 +89,13 @@ def profile(request):
         "email": user.email,
         "view_name": "profile",
         "has_tokens": user.has_tokens,
-        "test_data": "",
         "authorization_url": url,
         "youtube_account": "none as of yet",
     }
-    test_dict = user.credentials.to_dict()
+    # test_dict = user.credentials.to_dict()
+    test_dict = user.to_dict()
     test_dict["msg"] = msg
-    test_dict['valid'] = user.valid_credentials
+    test_dict["valid"] = user.valid_credentials
     context["test_dict"] = test_dict
 
     return render(request, "profiles/test.html", context)

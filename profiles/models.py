@@ -85,8 +85,9 @@ class Profile(AbstractBaseUser, PermissionsMixin):
     objects = ProfileManager()
 
     def to_dict(self):
+        fields = {name for name in PROFILE_FIELDS if name !="credentials"}
         return {
-            field_name: getattr(self, field_name) for field_name in PROFILE_FIELDS
+            field_name: getattr(self, field_name) for field_name in fields
         }
 
     @property
@@ -110,7 +111,8 @@ class Profile(AbstractBaseUser, PermissionsMixin):
         """
         self.credentials.set_credentials(new_credentials)
         self.credentials.save()
-        self.find_youtube_data()
+        if self.has_tokens:
+            self.find_youtube_data()
         self.save()
 
     def find_youtube_data(self):
