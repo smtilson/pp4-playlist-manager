@@ -27,14 +27,10 @@ class Entry(models.Model):
     title=models.CharField(max_length=100)
     queue=models.ForeignKey(Queue, on_delete=models.CASCADE)
     video_id=models.CharField(max_length=100)
+    duration = models.CharField(max_length=100,default='')
+    #this corresponds to the user who added the video to the queue
+    user = models.ForeignKey(Profile,on_delete=models.SET_NULL,null=True,default=1)
     number=models.IntegerField(default=-1)
     class Meta:
-        ordering=["number"]
-
-    def get_order(self):
-        if self.number == -1:
-            self.queue.length += 1
-            self.number = self.queue.length
-        self.queue.save()
-        self.save()
+        ordering=["-number"]
         

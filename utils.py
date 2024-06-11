@@ -34,5 +34,20 @@ def empty_dict(dictionary:dict) -> bool:
     return [val for val in dictionary.values() if val]==[]
 
 
+def produce_url_code(**kwargs)-> str:
+    for key, value in kwargs.items():
+        if type(value) not in {int, str}:
+            raise ValueError(f"{value} is not an integer or a string")
+        if type(key) not in {int, str}:
+            raise ValueError(f"{key} is not an integer or a string")
+    data = {str(key):str(value) for key, value in kwargs.items()}
+    url_code = ''
+    for key,value in data.items():
+        url_code += key+"="+value+"&"
+    url_code = url_code[:-1]
+    return url_code
+
+def parse_url_code(url_code: str) -> dict:
+    pass
 
     

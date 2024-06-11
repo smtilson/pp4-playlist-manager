@@ -11,4 +11,11 @@ profile_class_code_raw = """email = models.EmailField(max_length=200, unique=DEB
 """
 
 from profiles.models import Profile
-from queues.models import Queue
+from queues.models import Queue, Entry
+from yt_query.yt_api_utils import YT
+
+me = Profile.objects.all().first()
+yt = YT(me)
+wonderwall = yt.search_videos("wonderwall")
+one = wonderwall[0]
+
