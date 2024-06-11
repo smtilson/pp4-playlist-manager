@@ -5,5 +5,10 @@ urlpatterns = [
     # attention made test home for dev reasons.
     path("create_queue", views.create_queue, name="create_queue"),
     path("edit_queue/<int:queue_id>", views.edit_queue, name="edit_queue"),
-    path("add_entry/<int:queue_id>/<str:video_id>", views.add_entry, name="add_entry")
+    path("add_entry/<int:queue_id>/<str:video_id>", views.add_entry, name="add_entry"),
+    path(
+        "delete_entry/<int:queue_id>/<str:entry_id>",
+        views.delete_entry,
+        name="delete_entry",
+    ),
 ]

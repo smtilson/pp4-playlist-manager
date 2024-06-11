@@ -28,6 +28,7 @@ def edit_queue(request, queue_id):
     url_code = produce_url_code(queue_id=queue.id, user_id=user.id)
     recent_search = request.POST.get("searchQuery", "")
     search_results = []
+    is_owner = queue.owner == user
     if recent_search:
         yt = YT(user)
         search_results = yt.search_videos(recent_search)
@@ -48,6 +49,7 @@ def edit_queue(request, queue_id):
         "entries": entries,
         "recent_search": recent_search,
         "search_results": search_results,
+        "is_owner": is_owner,
     }
     return render(request, "queues/edit_queue.html", context)
 
@@ -64,4 +66,12 @@ def add_entry(request, queue_id, video_id):
     queue.save()
     entry.save()
     return HttpResponseRedirect(reverse('edit_queue', args=[queue_id]))
-    pass
+
+def delete_entry(request, queue_id, entry_id):
+    entry = get_object_or_404(Entry, id=entry_id)
+    queue = get_object_or_404(Queue, id=queue_id)
+    user = Profile.get_user_profile(request)
+    # add appropriate feedback messages
+    if user == queue.owner:
+        entry.delete()
+    return HttpResponseRedirect(reverse('edit_queue', args=[queue_id]))

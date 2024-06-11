@@ -29,6 +29,8 @@ class Entry(models.Model):
     video_id=models.CharField(max_length=100)
     duration = models.CharField(max_length=100,default='')
     #this corresponds to the user who added the video to the queue
+    # actually, make this a char field and base it on the name of the user.
+    # then the on delete shit won't matter.
     user = models.ForeignKey(Profile,on_delete=models.SET_NULL,null=True,default=1)
     number=models.IntegerField(default=-1)
     class Meta:

@@ -3,11 +3,6 @@
 {% block content %}
 <h2>Edit Queue</h2>
 
-<form id="editQueueForm" method="POST" style="margin-top: 1.3em;">
-    {{ entry_form }}
-    {% csrf_token %}
-    <button id="addEntryButton" type="submit" class="btn btn-lg">Add Entry to Queue</button>
-</form>
 <form id="searchForm" method="POST">
     {% csrf_token %}
     <span>
@@ -19,20 +14,28 @@
 <div>
     <ol>
         {% for entry in entries %}
-        <li>{{entry.title}}</li>
+        <li>
+            <span>{{entry.title}}: {{entry.duration}} added by yet to be implemented
+                {% if is_owner %}
+                <a href="{% url 'delete_entry' queue_id=queue_id entry_id=entry.id %}"><button
+                        class="btn btn-md">Remove</button></a>
+                {% endif %}
+            </span>
+        </li>
         {% endfor %}
     </ol>
 </div>
 <div>
     <h3>Search results for {{recent_search}}</h3>
     <ul>
-    {% for result in search_results %}
-    <li>
-        {{result.title}}
-        <a href="{% url 'add_entry' queue_id=queue_id video_id=result.id %}"><button class="btn btn-md">Add</button></a>
-    </li>
-    {% endfor %}
-</ul>
+        {% for result in search_results %}
+        <li>
+            {{result.title}}
+            <a href="{% url 'add_entry' queue_id=queue_id video_id=result.id %}"><button
+                    class="btn btn-md">Add</button></a>
+        </li>
+        {% endfor %}
+    </ul>
 </div>
 <a href="{% url 'profile'%}">Back to profile page.</a>
 {% endblock content %}
