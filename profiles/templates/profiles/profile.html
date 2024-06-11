@@ -16,13 +16,10 @@
 </ul>
 {% if not has_tokens %}
 <a href="{{authorization_url}}">Give Youtube DJ permissions.</a>
-<hr>
 {% else %}
-<a href="{% url 'remove_authorization' %}">Remove Credentials</a>
-<p>Note: Doing this will remove your credentials from our service. To remove the permissions on Google's end, please visit:</p>
-<a href="https://myaccount.google.com/connections" target="_blank">Third party apps and services</a>
-<hr>
+<a href="{% url 'remove_authorization' %}">Revoke Credentials</a>
 {% endif %}
+<hr>
 <a href="{% url 'create_queue' %}">Create New Queue</a>
 <h2>My Queues</h2>
 {% for queue in queues %}
@@ -35,6 +32,9 @@
         1 video
         {% endif %}
     </h5>
+    <p>change these to buttons</p>
+    <a href="#">Share Queue Link</a>
+    <a href="{% url 'publish_queue' queue.id %}">Publish Queue to Youtube</a>
 </div>
 {% endfor %}
 <div>

@@ -36,17 +36,35 @@ class YT:
             id=video_id,
         )
         response = request.execute()
-        #return response
+        # return response
         return process_response(response)
 
+    def create_playlist(self, title) -> str:
+        request = self.service.playlists().insert(
+            part="snippet,id", body={"snippet": {"title": title}}
+        )
+        response = request.execute()
+        playlist_id = process_response(response)
+        return playlist_id
+    
+    def add_entry_to_playlist(self,video_id,playlist_id):
+        body = {"snippet":{"playlistId":playlist_id, "resourceId":{"kind":"youtube#video","videoId":video_id}}}
+        request = self.service.playlistItems().insert(part="snippet,id",body=body)
+        response = request.execute()
+        return response
+
 def process_response(response: dict):
+    # how can I refactor this?
+    # there is the dictionary storing callables that I did...
     if response["kind"] == "youtube#searchListResponse":
         return [parse_search_result(result) for result in response["items"]]
     elif response["kind"] == "youtube#videoListResponse":
-        if len(response['items']) == 1:
-            return parse_video_result(response['items'][0])
+        if len(response["items"]) == 1:
+            return parse_video_result(response["items"][0])
         else:
             raise ValueError("There are two many items for this request.")
+    elif response["kind"] == "youtube#playlist":
+        return response["id"]
     else:
         raise TypeError(
             f"process_response is not yet implemented for {response['kind']}."

@@ -3,6 +3,7 @@ from google_auth_oauthlib.flow import Flow
 from utils import get_data_from_path, json_to_dict
 import pickle
 import os
+import requests
 from .models import Credentials
 from profiles.models import Profile
 from google.auth.transport.requests import Request
@@ -39,6 +40,7 @@ def get_tokens(authorization_path):
     flow.fetch_token(authorization_response=authorization_response)
     return flow.credentials
 
+
 # I am guessing that this does not work because of the header
 def revoke_tokens(request):
     user = Profile.get_user_profile(request)
@@ -48,15 +50,14 @@ def revoke_tokens(request):
         # maybe the creation of the object here is not valid.
         credentials = user.google_credentials
 
+
     revoke = requests.post(
         "https://oauth2.googleapis.com/revoke",
         params={"token": credentials.token},
-        #what is this heaeder supposed to be?
+        # what is this header supposed to be?
         # apparently this is a standard form for a header. I don't understand why I am getting the 302 error anymore.
         headers={"content-type": "application/x-www-form-urlencoded"},
     )
-    print(revoke.__dir__())
-    print(revoke)
 
     status_code = getattr(revoke, "status_code")
     if status_code == 200:
@@ -71,17 +72,19 @@ def refresh_tokens(user):
     print(credentials.valid)
     print(credentials.expired)
     old_dict = json_to_dict(credentials.to_json())
-    new_dict ={}
+    new_dict = {}
     credentials.refresh(Request())
     new_dict = json_to_dict(credentials.to_json())
     user.set_credentials(credentials)
     print(old_dict == new_dict)
+
 
 def save_creds(credentials):
     # "wb" is write bytes
     with open("token.pickle", "wb") as f:
         print("Saving credentials ...")
         pickle.dump(credentials, f)
+
 
 def retrieve_creds():
     with open("token.pickle", "rb") as token:

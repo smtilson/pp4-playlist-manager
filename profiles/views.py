@@ -6,6 +6,7 @@ from yt_auth.token_auth import (
     get_authorization_url,
     get_tokens,
     save_creds,
+    revoke_tokens,
 )
 from yt_auth.models import Credentials
 
@@ -105,6 +106,8 @@ def profile(request):
 
 def remove_authorization(request):
     user = get_object_or_404(Profile, id=request.user.id)
+    msg = revoke_tokens(request)
+    print(msg)
     # there should be a modal for this
     user.set_credentials()
     # revoke_tokens(request)

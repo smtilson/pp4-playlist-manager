@@ -98,6 +98,7 @@ class Profile(AbstractBaseUser, PermissionsMixin):
         return self.credentials.has_tokens
 
     @property
+    # this needs to be properly addressed
     def valid_credentials(self):
         if self.credentials.expiry == "":
             return False

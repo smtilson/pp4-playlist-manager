@@ -14,13 +14,25 @@ def create_queue(request):
         queue_form = QueueForm(data=request.POST)
         if queue_form.is_valid():
             queue = queue_form.save(commit=False)
-            queue.owner = Profile.get_user_profile(request)
+            owner =  Profile.get_user_profile(request)
+            queue.owner = owner
+            queue.owner_yt_id = owner.youtube_id
             queue.save()
             # add feedback that a queue was successfully created
     queue_form = QueueForm()
     context = {"queue_form": queue_form}
     return render(request, "queues/create_queue.html", context)
 
+
+def publish_queue(request, queue_id):
+    queue = get_object_or_404(Queue,id=queue_id)
+    user = Profile.get_user_profile(request)
+    yt = YT(user)
+    if not queue.youtube_id:
+        youtube_id = yt.create_playlist(title=queue.name)
+        queue.youtube_id = youtube_id
+        queue.save()
+    return HttpResponseRedirect(reverse("profile"))
 
 def edit_queue(request, queue_id):
     queue = Queue.find_queue(queue_id)
