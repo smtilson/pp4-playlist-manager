@@ -10,3 +10,5 @@ profile_class_code_raw = """email = models.EmailField(max_length=200, unique=DEB
     youtube_url = models.CharField(max_length=100,null=True,blank=True, default='')""""""
 """
 
+from profiles.models import Profile
+from queues.models import Queue

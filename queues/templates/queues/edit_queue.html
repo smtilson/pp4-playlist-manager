@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Edit Queue</h2>
+
+<form id="editQueueForm" method="POST" style="margin-top: 1.3em;">
+    {{ entry_form }}
+    {% csrf_token %}
+    <button id="submitButton" type="submit" class="btn btn-signup btn-lg">Add Entry to Queue</button>
+</form>
+
+<div>
+    <ol>
+        {% for entry in entries %}
+        <li>{{entry.title}}</li>
+        {% endfor %}
+    </ol>
+</div>
+
+<a href="{% url 'profile'%}">Back to profile page.</a>
+{% endblock content %}

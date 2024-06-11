@@ -27,11 +27,19 @@
 <h2>My Queues</h2>
 {% for queue in queues %}
 <div>
-    <h4>{{queue.name}}</h4>
-    <h5>{{queue.date_created}}</h5>
+    <h4><a href="{% url 'edit_queue' queue.id %}">{{queue.name}}</a></h4>
+    <h5>Created on {{queue.date_created}}</h5>
+    <h5> {% if queue.length != 1 %}
+        {{queue.length}} videos
+        {% else %}
+        1 video
+        {% endif %}
+    </h5>
 </div>
 {% endfor %}
-<div>Form for setting name.</div>
+<div>
+    Form for setting name. Please add a name so that your friends know who added the video. (Maybe they will even move it up in the queue!)
+</div>
 <a href="{% url 'test' %}">Test page</a>
 <hr>
 <a href="{% url 'profile' %}">Current Profile page</a>

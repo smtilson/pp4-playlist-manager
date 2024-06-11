@@ -14,16 +14,27 @@ class Queue(models.Model):
     #make these date names consistent throughout the app.
     date_created = models.DateTimeField(auto_now_add=True)
     last_edited = models.DateTimeField(auto_now=True)
+    length = models.PositiveIntegerField(default=0)
 
     @classmethod
     def find_queue(cls, queue_id):
         return get_object_or_404(Queue, id=queue_id)
 
-    def add_video(self,video):
-        pass
-
     def remove_entry(self, number: int):
         pass
 
 class Entry(models.Model):
-    pass
+    title=models.CharField(max_length=100)
+    queue=models.ForeignKey(Queue, on_delete=models.CASCADE)
+    video_id=models.CharField(max_length=100)
+    number=models.IntegerField(default=-1)
+    class Meta:
+        ordering=["number"]
+
+    def get_order(self):
+        if self.number == -1:
+            self.queue.length += 1
+            self.number = self.queue.length
+        self.queue.save()
+        self.save()
+        
