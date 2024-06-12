@@ -2,6 +2,7 @@ from django.db import models
 from profiles.models import Profile, GuestProfile
 from django.shortcuts import get_object_or_404
 from yt_query.yt_api_utils import YT
+from utils import get_secret
 
 # Create your models here.
 
@@ -20,6 +21,7 @@ class Queue(models.Model):
     last_edited = models.DateTimeField(auto_now=True)
     length = models.PositiveIntegerField(default=0)
     synced = models.BooleanField(default=False)
+    secret = models.CharField(max_length=20,unique=True, default=get_secret)
 
     @classmethod
     def find_queue(cls, queue_id):

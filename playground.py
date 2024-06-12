@@ -11,17 +11,21 @@ profile_class_code_raw = """email = models.EmailField(max_length=200, unique=DEB
 """
 
 from profiles.models import Profile
+from yt_auth.models import Credentials
 from queues.models import Queue, Entry
 from yt_query.yt_api_utils import YT
+from utils import get_secret
 
 me = Profile.objects.all().first()
-yt = YT(me)
-wonderwall = yt.search_videos("wonderwall")
-one = wonderwall[0]
+secrets = set()
+for profile in Profile.objects.all():
+    while profile.secret in secrets:
+        profile.secret = get_secret()
+    secrets.add(profile.secret)
+    profile.save()
 
-sample_playlist_id= "PLaPvip_wdwX3VWuno8FBVIceMWcVjToC8"
-queues = me.queues.all()
-queue1 = queues[0]
-for queue in queues:
-    queue.youtube_id = ''
+for queue in Queue.objects.all():
+    while queue.secret in secrets:
+        queue.secret = get_secret()
+    secrets.add(queue.secret)
     queue.save()

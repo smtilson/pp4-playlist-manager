@@ -96,3 +96,11 @@ def delete_queue(request, queue_id):
         queue.delete()
     return HttpResponseRedirect(reverse("profile"))
 
+def share_queue(request, queue_secret, owner_secret):
+    queue = get_object_or_404(Queue,secret=queue_secret)
+    if owner_secret == queue.owner.secret:
+        pass
+        return HttpResponseRedirect(reverse("edit_queue",args=[queue.id]))
+    else:
+        return HttpResponseRedirect(reverse('index'))
+

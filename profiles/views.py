@@ -9,6 +9,7 @@ from yt_auth.token_auth import (
     revoke_tokens,
 )
 from yt_auth.models import Credentials
+from django.utils.crypto import get_random_string
 
 # Create your views here.
 
@@ -54,8 +55,6 @@ def test_function(request):
         empty_creds.save()
         user.credentials = empty_creds
         user.save()
-    if not user.has_tokens:
-        url = get_authorization_url()
     else:
         url = "#"
     context = {
@@ -81,18 +80,12 @@ def profile(request):
     """
     user = get_object_or_404(Profile, id=request.user.id)
     print(user.to_dict())
-    # this should not in general be necessary
-    if not user.credentials:
-        credentials = Credentials()
-        user.credentials = credentials
-        credentials.save()
-        user.save()
-
+    #if not user.secret:
+    #    user.initialize()
+    url = get_authorization_url()
     if not user.has_tokens:
-        url = get_authorization_url()
         msg = "Profile has no associated youtube account."
     else:
-        url = "#"
         msg = "Youtube DJ has access to your youtube account."
     context = {
         "user": user,

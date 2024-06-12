@@ -1,10 +1,13 @@
 import json
 import ast
+from django.utils.crypto import get_random_string
 
 
 def json_to_dict(json) -> dict:
     return ast.literal_eval(json)
 
+def get_secret():
+    return get_random_string(20)
 
 def empty_dict(dictionary:dict) -> bool:
     return [val for val in dictionary.values() if val]==[]

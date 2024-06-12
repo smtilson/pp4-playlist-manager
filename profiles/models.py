@@ -6,6 +6,7 @@ from django.contrib.auth.models import (
 )
 from django.db import models
 from django.utils import timezone
+from utils import get_secret
 from yt_auth.models import Credentials
 from yt_query.yt_api_utils import YT
 from django.shortcuts import get_object_or_404
@@ -65,7 +66,6 @@ PROFILE_FIELDS = {
 class Profile(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(max_length=200, unique=True)
     name = models.CharField(max_length=200, null=True, blank=True)
-
     is_superuser = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
@@ -73,10 +73,10 @@ class Profile(AbstractBaseUser, PermissionsMixin):
     last_login = models.DateTimeField(null=True, blank=True)
     date_joined = models.DateTimeField(auto_now_add=True)
     credentials = models.OneToOneField(
-        Credentials, on_delete=models.SET_NULL, null=True, blank=True)
-
+        Credentials, on_delete=models.SET_NULL, null=True, blank=True, related_name="user")
     youtube_id = models.CharField(max_length=100, null=True, blank=True, default="")
     youtube_url = models.CharField(max_length=100, null=True, blank=True, default="")
+    secret = models.CharField(max_length=20,unique=True, default=get_secret)
 
     USERNAME_FIELD = "email"
     EMAIL_FIELD = "email"
@@ -94,6 +94,11 @@ class Profile(AbstractBaseUser, PermissionsMixin):
     def has_tokens(self):
         return self.credentials.has_tokens
 
+    def initialize(self):
+        self.credentials = Credentials()
+        self.credentials.save()
+        self.secret = crypto.get_random_string(50)
+        self.save()
 
     @property
     # this needs to be properly addressed
