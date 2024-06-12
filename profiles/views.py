@@ -79,7 +79,13 @@ def profile(request):
     This can be cleaned up still.
     """
     user = get_object_or_404(Profile, id=request.user.id)
+    print(user.to_dict())
     # this should not in general be necessary
+    if not user.credentials:
+        credentials = Credentials()
+        user.credentials = credentials
+        credentials.save()
+        user.save()
     if not user.has_tokens:
         url = get_authorization_url()
         msg = "Profile has no associated youtube account."
