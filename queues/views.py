@@ -72,7 +72,6 @@ def add_entry(request, queue_id, video_id):
     entry.queue=queue
     queue.length += 1
     entry.number = queue.length
-
     entry.user=user
     queue.save()
     entry.save()
@@ -96,10 +95,13 @@ def delete_queue(request, queue_id):
         queue.delete()
     return HttpResponseRedirect(reverse("profile"))
 
-def share_queue(request, queue_secret, owner_secret):
+def gain_access(request, queue_secret, owner_secret):
     queue = get_object_or_404(Queue,secret=queue_secret)
+    user = Profile.get_user_profile(request)
     if owner_secret == queue.owner.secret:
-        pass
+        user.other_queues.add(queue)
+        queue.save()
+        user.save()
         return HttpResponseRedirect(reverse("edit_queue",args=[queue.id]))
     else:
         return HttpResponseRedirect(reverse('index'))

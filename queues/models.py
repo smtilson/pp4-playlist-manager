@@ -9,11 +9,11 @@ from utils import get_secret
 
 class Queue(models.Model):
     owner = models.ForeignKey(
-        Profile, on_delete=models.CASCADE, related_name="queues", default=1
+        Profile, on_delete=models.CASCADE, related_name="my_queues", default=1
     )
     owner_yt_id = models.CharField(max_length=100, default="")
     youtube_id = models.CharField(max_length=100, default="")
-    collaborators = models.ManyToManyField(Profile)
+    collaborators = models.ManyToManyField(Profile, related_name="other_queues")
     name = models.CharField(max_length=100, default="none given")
     description = models.TextField(max_length=400, null=True, blank=True, default="")
     # make these date names consistent throughout the app.

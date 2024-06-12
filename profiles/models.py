@@ -94,10 +94,12 @@ class Profile(AbstractBaseUser, PermissionsMixin):
     def has_tokens(self):
         return self.credentials.has_tokens
 
+    def all_queues(self):
+        pass
+
     def initialize(self):
         self.credentials = Credentials()
         self.credentials.save()
-        self.secret = crypto.get_random_string(50)
         self.save()
 
     @property

@@ -83,6 +83,8 @@ def profile(request):
     #if not user.secret:
     #    user.initialize()
     url = get_authorization_url()
+    if not user.credentials:
+        user.initialize()
     if not user.has_tokens:
         msg = "Profile has no associated youtube account."
     else:
@@ -97,7 +99,8 @@ def profile(request):
     test_dict["msg"] = msg
     test_dict["valid"] = user.valid_credentials
     context["test_dict"] = test_dict
-    context["queues"] = Queue.objects.all().filter(owner=user.id)
+    context["my_queues"] = user.my_queues.all()
+    context["other_queues"] = user.other_queues.all()
 
     return render(request, "profiles/profile.html", context)
 

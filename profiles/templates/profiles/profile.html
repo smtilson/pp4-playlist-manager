@@ -18,7 +18,7 @@
 <hr>
 <a href="{% url 'create_queue' %}">Create New Queue</a>
 <h2>My Queues</h2>
-{% for queue in queues %}
+{% for queue in my_queues %}
 <div>
     <h4><a href="{% url 'edit_queue' queue.id %}">{{queue.name}}</a></h4>
     <h5>Created on {{queue.date_created}}</h5>
@@ -40,6 +40,23 @@
 <hr>
 <hr>
 {% endfor %}
+<h2>My Collaborative Queues</h2>
+{% for queue in other_queues %}
+<div>
+    <h4><a href="{% url 'edit_queue' queue.id %}">{{queue.name}}</a></h4>
+    <h5>Created on {{queue.date_created}}</h5>
+    <h5> {% if queue.length != 1 %}
+        {{queue.length}} videos
+        {% else %}
+        1 video
+        {% endif %}
+    </h5>
+</div>
+<hr>
+<hr>
+{% endfor %}
+
+
 <div>
     Form for setting name. Please add a name so that your friends know who added the video. (Maybe they will even move it up in the queue!)
 </div>
