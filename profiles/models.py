@@ -24,6 +24,37 @@ SCOPES = ["https://www.googleapis.com/auth/youtube"]
 UNIVERSE_DOMAIN = "googleapis.com"
 TOKEN_URI = "https://oauth2.googleapis.com/token"
 
+
+class ProfileManager(BaseUserManager):
+    # there is an is_staff field that I am leaving out, mayeb this is required somewhere later
+    def _create_profile(self, email, password, is_staff, is_superuser, **kwargs):
+        # will this not be caught by form submission?
+        if not email:
+            raise ValueError("An email is necessary to create a profile.")
+        # is this necessary
+        now = timezone.now()
+        # what does this do?
+        email = self.normalize_email(email)
+        profile = self.model(
+            email=email,
+            is_staff=is_staff,
+            is_superuser=is_superuser,
+            is_active=True,
+            last_login=now,
+            date_joined=now,
+            **kwargs,
+        )
+        profile.set_password(password)
+        profile.save(using=self._db)
+        return profile
+
+    def create_profile(self, email, password, **kwargs):
+        return self._create_profile(email, password, False, False, **kwargs)
+
+    def create_superuser(self, email, password, **kwargs):
+        return self._create_profile(email, password, True, True, **kwargs)
+
+
 PROFILE_FIELDS = {
     "email",
     "name",
@@ -55,6 +86,8 @@ class Profile(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD = "email"
     EMAIL_FIELD = "email"
     REQUIRED_FIELDS = []
+
+    objects = ProfileManager()
 
     def to_dict(self):
         fields = {name for name in PROFILE_FIELDS if name != "credentials"}
