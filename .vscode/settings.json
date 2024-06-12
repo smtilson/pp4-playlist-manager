@@ -4,6 +4,7 @@
    "python.linting.pycodestyleEnabled": true,
    "python.linting.flake8Enabled": false,
    "python.terminal.activateEnvironment": true,
+   "python.defaultInterpreterPath": "~/venv/scripts/python",
    "python.formatting.autopep8Path": "/home/gitpod/.pyenv/shims/autopep8",
    "python.linting.flake8Path": "/home/gitpod/.pyenv/shims/flake8",
    "cornflakes.linter.executablePath": "/home/gitpod/.pyenv/shims/flake8",
@@ -29,5 +30,8 @@
    },
    "[python]": {
       "editor.defaultFormatter": "ms-python.black-formatter"
+   },
+   "[html]": {
+      "editor.defaultFormatter": "vscode.html-language-features"
    }
 }
