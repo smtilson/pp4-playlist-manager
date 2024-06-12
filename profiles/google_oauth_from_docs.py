@@ -1,6 +1,6 @@
 import google.oauth2.credentials
 import google_auth_oauthlib.flow
-from .utils import get_data_from_path, get_user_profile
+from utils import get_data_from_path, get_user_profile
 from django.shortcuts import reverse
 import os 
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'

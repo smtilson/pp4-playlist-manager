@@ -1,8 +1,12 @@
-import google.oauth2.credentials
+import google.oauth2.credentials as g_oa2_creds
 from google_auth_oauthlib.flow import Flow
-from .utils import get_data_from_path, get_user_profile
-from django.shortcuts import reverse
+from utils import get_data_from_path, json_to_dict
+import pickle
 import os
+import requests
+from .models import Credentials
+from profiles.models import Profile
+from google.auth.transport.requests import Request
 
 os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
 
@@ -36,24 +40,24 @@ def get_tokens(authorization_path):
     flow.fetch_token(authorization_response=authorization_response)
     return flow.credentials
 
+
 # I am guessing that this does not work because of the header
 def revoke_tokens(request):
-    user = get_user_profile(request)
+    user = Profile.get_user_profile(request)
     if not user.has_tokens:
         return f"This app does not currently have authorization."
     else:
-        credentials = google.oauth2.credentials.Credentials(
-            **user.credentials.to_dict()
-        )
+        # maybe the creation of the object here is not valid.
+        credentials = user.google_credentials
+
 
     revoke = requests.post(
         "https://oauth2.googleapis.com/revoke",
         params={"token": credentials.token},
-        #what is this heaeder supposed to be?
+        # what is this header supposed to be?
+        # apparently this is a standard form for a header. I don't understand why I am getting the 302 error anymore.
         headers={"content-type": "application/x-www-form-urlencoded"},
     )
-    print(revoke.__dir__())
-    print(revoke)
 
     status_code = getattr(revoke, "status_code")
     if status_code == 200:
@@ -62,5 +66,27 @@ def revoke_tokens(request):
         return "An error occurred."
 
 
-def refresh_tokens(request):
-    pass
+def refresh_tokens(user):
+    # maybe this should be called when we already know the tokens are expired so we can get authorization again.
+    credentials = user.google_credentials
+    print(credentials.valid)
+    print(credentials.expired)
+    old_dict = json_to_dict(credentials.to_json())
+    new_dict = {}
+    credentials.refresh(Request())
+    new_dict = json_to_dict(credentials.to_json())
+    user.set_credentials(credentials)
+    print(old_dict == new_dict)
+
+
+def save_creds(credentials):
+    # "wb" is write bytes
+    with open("token.pickle", "wb") as f:
+        print("Saving credentials ...")
+        pickle.dump(credentials, f)
+
+
+def retrieve_creds():
+    with open("token.pickle", "rb") as token:
+        credentials = pickle.load(token)
+    return credentials

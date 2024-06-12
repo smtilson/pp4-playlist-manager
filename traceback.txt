@@ -1,0 +1,202 @@
+Here is the traceback from the bug that seemed to go away
+
+In [9]: response = equest.execute()
+---------------------------------------------------
+NameError         Traceback (most recent call last)
+Cell In[9], line 1
+----> 1 response = equest.execute()
+
+NameError: name 'equest' is not defined
+
+In [10]: response = request.execute()
+---------------------------------------------------
+TypeError         Traceback (most recent call last)
+Cell In[10], line 1
+----> 1 response = request.execute()
+
+File ~\OneDrive\Desktop\repos\pp4-playlist-manager\venv\Lib\site-packages\googleapiclient\_helpers.py:130, in positional.<locals>.positional_decorator.<locals>.positional_wrapper(*args, **kwargs)
+    128     elif positional_parameters_enforcement == POSITIONAL_WARNING:
+    129         logger.warning(message)
+--> 130 return wrapped(*args, **kwargs)
+
+File ~\OneDrive\Desktop\repos\pp4-playlist-manager\venv\Lib\site-packages\googleapiclient\http.py:923, in HttpRequest.execute(self, http, num_retries)   
+    920     self.headers["content-length"] = str(len(self.body))
+    922 # Handle retries for server-side errors.   
+--> 923 resp, content = _retry_request(
+    924     http,
+    925     num_retries,
+    926     "request",
+    927     self._sleep,
+    928     self._rand,
+    929     str(self.uri),
+    930     method=str(self.method),
+    931     body=self.body,
+    932     headers=self.headers,
+    933 )
+    935 for callback in self.response_callbacks:   
+    936     callback(resp)
+
+File ~\OneDrive\Desktop\repos\pp4-playlist-manager\venv\Lib\site-packages\googleapiclient\http.py:191, in _retry_request(http, num_retries, req_type, sleep, rand, uri, method, *args, **kwargs)
+    189 try:
+    190     exception = None
+--> 191     resp, content = http.request(uri, method, *args, **kwargs)
+    192 # Retry on SSL errors and socket timeout errors.
+    193 except _ssl_SSLError as ssl_error:
+
+File ~\OneDrive\Desktop\repos\pp4-playlist-manager\venv\Lib\site-packages\google_auth_httplib2.py:245, in AuthorizedHttp.request(self, uri, method, body, headers, redirections, connection_type, **kwargs) 
+    233 if (
+    234     response.status in self._refresh_status_codes
+    235     and _credential_refresh_attempt < self._max_refresh_attempts
+    236 ):
+    238     _LOGGER.info(
+    239         "Refreshing credentials due to a %s response. Attempt %s/%s.",
+    240         response.status,
+    241         _credential_refresh_attempt + 1,   
+    242         self._max_refresh_attempts,        
+    243     )
+--> 245     self.credentials.refresh(self._request)
+    247     # Restore the body's stream position if needed.
+    248     if body_stream_position is not None:   
+
+File ~\OneDrive\Desktop\repos\pp4-playlist-manager\venv\Lib\site-packages\google\oauth2\credentials.py:431, in Credentials.refresh(self, request)        
+    413 if (
+    414     self._refresh_token is None
+    415     or self._token_uri is None
+    416     or self._client_id is None
+    417     or self._client_secret is None
+    418 ):
+    419     raise exceptions.RefreshError(
+    420         "The credentials do not contain the necessary fields need to "
+    421         "refresh the access token. You must specify refresh_token, "
+    422         "token_uri, client_id, and client_secret."
+    423     )
+    425 (
+    426     access_token,
+    427     refresh_token,
+    428     expiry,
+    429     grant_response,
+    430     rapt_token,
+--> 431 ) = reauth.refresh_grant(
+    432     request,
+    433     self._token_uri,
+    434     self._refresh_token,
+    435     self._client_id,
+    436     self._client_secret,
+    437     scopes=scopes,
+    438     rapt_token=self._rapt_token,
+    439     enable_reauth_refresh=self._enable_reauth_refresh,                                        
+    440 )
+    442 self.token = access_token
+    443 self.expiry = expiry
+
+File ~\OneDrive\Desktop\repos\pp4-playlist-manager\venv\Lib\site-packages\google\oauth2\reauth.py:327, in refresh_grant(request, token_uri, refresh_token, client_id, client_secret, scopes, rapt_token, enable_reauth_refresh)
+    320 body = {
+    321     "grant_type": _client._REFRESH_GRANT_TYPE,
+    322     "client_id": client_id,
+    323     "client_secret": client_secret,        
+    324     "refresh_token": refresh_token,        
+    325 }
+    326 if scopes:
+--> 327     body["scope"] = " ".join(scopes)       
+    328 if rapt_token:
+    329     body["rapt"] = rapt_token
+
+TypeError: sequence item 0: expected str instance, list found
+
+In [11]: request = youtube.channels().list(part="s 
+    ...: nippet,contentDetails",mine=True)
+
+In [12]: response = request.execute()
+---------------------------------------------------
+TypeError         Traceback (most recent call last)
+Cell In[12], line 1
+----> 1 response = request.execute()
+
+File ~\OneDrive\Desktop\repos\pp4-playlist-manager\venv\Lib\site-packages\googleapiclient\_helpers.py:130, in positional.<locals>.positional_decorator.<locals>.positional_wrapper(*args, **kwargs)
+    128     elif positional_parameters_enforcement == POSITIONAL_WARNING:
+    129         logger.warning(message)
+--> 130 return wrapped(*args, **kwargs)
+
+File ~\OneDrive\Desktop\repos\pp4-playlist-manager\venv\Lib\site-packages\googleapiclient\http.py:923, in HttpRequest.execute(self, http, num_retries)   
+    920     self.headers["content-length"] = str(len(self.body))
+    922 # Handle retries for server-side errors.   
+--> 923 resp, content = _retry_request(
+    924     http,
+    925     num_retries,
+    926     "request",
+    927     self._sleep,
+    928     self._rand,
+    929     str(self.uri),
+    930     method=str(self.method),
+    931     body=self.body,
+    932     headers=self.headers,
+    933 )
+    935 for callback in self.response_callbacks:   
+    936     callback(resp)
+
+File ~\OneDrive\Desktop\repos\pp4-playlist-manager\venv\Lib\site-packages\googleapiclient\http.py:191, in _retry_request(http, num_retries, req_type, sleep, rand, uri, method, *args, **kwargs)
+    189 try:
+    190     exception = None
+--> 191     resp, content = http.request(uri, method, *args, **kwargs)
+    192 # Retry on SSL errors and socket timeout errors.
+    193 except _ssl_SSLError as ssl_error:
+
+File ~\OneDrive\Desktop\repos\pp4-playlist-manager\venv\Lib\site-packages\google_auth_httplib2.py:245, in AuthorizedHttp.request(self, uri, method, body, headers, redirections, connection_type, **kwargs) 
+    233 if (
+    234     response.status in self._refresh_status_codes
+    235     and _credential_refresh_attempt < self._max_refresh_attempts
+    236 ):
+    238     _LOGGER.info(
+    239         "Refreshing credentials due to a %s response. Attempt %s/%s.",
+    240         response.status,
+    241         _credential_refresh_attempt + 1,   
+    242         self._max_refresh_attempts,        
+    243     )
+--> 245     self.credentials.refresh(self._request)
+    247     # Restore the body's stream position if needed.
+    248     if body_stream_position is not None:   
+
+File ~\OneDrive\Desktop\repos\pp4-playlist-manager\venv\Lib\site-packages\google\oauth2\credentials.py:431, in Credentials.refresh(self, request)        
+    413 if (
+    414     self._refresh_token is None
+    415     or self._token_uri is None
+    416     or self._client_id is None
+    417     or self._client_secret is None
+    418 ):
+    419     raise exceptions.RefreshError(
+    420         "The credentials do not contain the necessary fields need to "
+    421         "refresh the access token. You must specify refresh_token, "
+    422         "token_uri, client_id, and client_secret."
+    423     )
+    425 (
+    426     access_token,
+    427     refresh_token,
+    428     expiry,
+    429     grant_response,
+    430     rapt_token,
+--> 431 ) = reauth.refresh_grant(
+    432     request,
+    433     self._token_uri,
+    434     self._refresh_token,
+    435     self._client_id,
+    436     self._client_secret,
+    437     scopes=scopes,
+    438     rapt_token=self._rapt_token,
+    439     enable_reauth_refresh=self._enable_reauth_refresh,                                        
+    440 )
+    442 self.token = access_token
+    443 self.expiry = expiry
+
+File ~\OneDrive\Desktop\repos\pp4-playlist-manager\venv\Lib\site-packages\google\oauth2\reauth.py:327, in refresh_grant(request, token_uri, refresh_token, client_id, client_secret, scopes, rapt_token, enable_reauth_refresh)
+    320 body = {
+    321     "grant_type": _client._REFRESH_GRANT_TYPE,
+    322     "client_id": client_id,
+    323     "client_secret": client_secret,        
+    324     "refresh_token": refresh_token,        
+    325 }
+    326 if scopes:
+--> 327     body["scope"] = " ".join(scopes)       
+    328 if rapt_token:
+    329     body["rapt"] = rapt_token
+
+TypeError: sequence item 0: expected str instance, list found

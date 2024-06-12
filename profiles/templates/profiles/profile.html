@@ -2,14 +2,47 @@
 
 {% block content %}
 
-<h2>Profile page for {{user_name}}</h2>
+<h2>Test Profile page for {{user_name}}</h2>
 <h3>Profile Data</h3>
 <ul>
-    <li>User name: {{user_name}}</li>
-    <li>Superuser? {{is_superuser}}</li>
-    <li>Email: {{email}}</li>
-    <li>Linked Youtube Account: {{youtube_account}}</li>
+    {% for key, value in test_dict.items %}
+    <li>{{key}}:{{value}}</li>
+    {% endfor %}
+    <li>Message: {{ msg }}</li>
 </ul>
-
-<a href="{% url 'authorization' %}" target="_blank">Link youtube account</a>
+{% if not user.has_tokens %}
+<a href="{{authorization_url}}">Give Youtube DJ permissions.</a>
+{% else %}
+<a href="{% url 'revoke_authorization' %}">Revoke Credentials</a>
+{% endif %}
+<hr>
+<a href="{% url 'create_queue' %}">Create New Queue</a>
+<h2>My Queues</h2>
+{% for queue in queues %}
+<div>
+    <h4><a href="{% url 'edit_queue' queue.id %}">{{queue.name}}</a></h4>
+    <h5>Created on {{queue.date_created}}</h5>
+    <h5> {% if queue.length != 1 %}
+        {{queue.length}} videos
+        {% else %}
+        1 video
+        {% endif %}
+    </h5>
+    <p>change these to buttons</p>
+    {% if user == queue.owner %}
+    <a href="#">Share Queue Link</a>
+    <a href="{% url 'publish' queue.id %}">Publish Queue to Youtube</a>
+    {% endif %}
+</div>
+<hr>
+<hr>
+{% endfor %}
+<div>
+    Form for setting name. Please add a name so that your friends know who added the video. (Maybe they will even move it up in the queue!)
+</div>
+<a href="{% url 'test' %}">Test page</a>
+<hr>
+<a href="{% url 'test_function' %}">test function</a>
+<hr>
+<a href="{{test_data}}">URL testing for authorization</a>
 {% endblock content %}
