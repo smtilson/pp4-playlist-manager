@@ -48,11 +48,11 @@ def test_function(request):
     """
     user = get_object_or_404(Profile, id=request.user.id)
     # this should not in general be necessary
-    """if user.credentials is None:
+    if user.credentials is None:
         empty_creds = Credentials()
         empty_creds.save()
         user.credentials = empty_creds
-        user.save()"""
+        user.save()
     if not user.has_tokens:
         url = get_authorization_url()
     else:
@@ -111,7 +111,11 @@ def revoke_authorization(request):
     user = get_object_or_404(Profile, id=request.user.id)
     msg = revoke_tokens(request)
     print(msg)
+    msg = revoke_tokens(request)
+    print(msg)
     # there should be a modal for this
+    user.revoke_youtube_data()
+    # revoke_tokens(request)
     user.revoke_youtube_data()
     # revoke_tokens(request)
     return HttpResponseRedirect(reverse("profile"))
@@ -121,9 +125,13 @@ def revoke_authorization(request):
 def return_from_authorization(request):
     # do I need to check here that they don't have credentials since it is checked on the front end
     user = Profile.get_user_profile(request)
+    user = Profile.get_user_profile(request)
     path = request.get_full_path()
     tokens = get_tokens(path)
     save_creds(tokens)
+    tokens = get_tokens(path)
+    save_creds(tokens)
     print(tokens)
+    user.set_credentials(tokens)
     user.set_credentials(tokens)
     return HttpResponseRedirect(reverse("profile"))
