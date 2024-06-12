@@ -73,8 +73,7 @@ class Profile(AbstractBaseUser, PermissionsMixin):
     last_login = models.DateTimeField(null=True, blank=True)
     date_joined = models.DateTimeField(auto_now_add=True)
     credentials = models.OneToOneField(
-
-        Credentials, on_delete=models.SET_NULL, null=True, blank=True
+        Credentials, on_delete=models.SET_NULL, null=True, blank=True)
 
     youtube_id = models.CharField(max_length=100, null=True, blank=True, default="")
     youtube_url = models.CharField(max_length=100, null=True, blank=True, default="")

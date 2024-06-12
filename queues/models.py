@@ -64,7 +64,7 @@ class Entry(models.Model):
     published = models.BooleanField(default=False)
 
     class Meta:
-        ordering = ["-number"]
+        ordering = ["number"]
 
     def publish(self, yt: "YT", youtube_playlist_id: str) -> None:
         response = yt.add_entry_to_playlist(self.video_id, youtube_playlist_id)
