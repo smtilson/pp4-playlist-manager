@@ -32,6 +32,7 @@
     {% if user == queue.owner %}
     <a href="#">Share Queue Link</a>
     <a href="{% url 'publish' queue.id %}">Publish Queue to Youtube</a>
+    <a href="{% url 'delete_queue' queue.id %}">Delete Queue</a>
     {% endif %}
 </div>
 <hr>

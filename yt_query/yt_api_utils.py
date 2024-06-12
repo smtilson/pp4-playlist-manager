@@ -2,19 +2,25 @@
 # from profiles.models import Profile
 from googleapiclient.discovery import build
 from utils import produce_url_code
+from env import YOUTUBE_API_KEY
 
 
 class YT:
     def __init__(self, user: "Profile") -> None:
         self.user = user
-        self.service = self.connect()
+        self.api_key = YOUTUBE_API_KEY
+        self.user_service = self.connect_oauth()
+        self.guest_service = self.connect_simple()
 
-    def connect(self) -> "Service":
+    def connect_oauth(self) -> "Service":
         credentials = self.user.google_credentials
         return build("youtube", "v3", credentials=credentials)
+    
+    def connect_simple(self) -> "Service":
+        return build("youtube", "v3", developerKey=YOUTUBE_API_KEY)
 
     def find_user_youtube_data(self):
-        request = self.service.channels().list(part="snippet,contentDetails", mine=True)
+        request = self.user_service.channels().list(part="snippet,contentDetails", mine=True)
         response = request.execute()
         items = response["items"][0]
         id = items["id"]
@@ -22,7 +28,7 @@ class YT:
         return id, custom_url
 
     def search_videos(self, query) -> list[str]:
-        request = self.service.search().list(
+        request = self.guest_service.search().list(
             part="snippet", type="video", q=query, maxResults=25
         )
         response = request.execute()
@@ -31,7 +37,7 @@ class YT:
     def find_video_by_id(self, video_id):
         # check privacy status
         # check blocked status, eventually
-        request = self.service.videos().list(
+        request = self.guest_service.videos().list(
             part="snippet,contentDetails,player,status",
             id=video_id,
         )
@@ -40,7 +46,7 @@ class YT:
         return process_response(response)
 
     def create_playlist(self, title, description) -> str:
-        request = self.service.playlists().insert(
+        request = self.user_service.playlists().insert(
             part="snippet,id", body={"snippet": {"title": title, "description":description}}
         )
         response = request.execute()
@@ -49,7 +55,7 @@ class YT:
     
     def add_entry_to_playlist(self,video_id,playlist_id):
         body = {"snippet":{"playlistId":playlist_id, "resourceId":{"kind":"youtube#video","videoId":video_id}}}
-        request = self.service.playlistItems().insert(part="snippet,id",body=body)
+        request = self.user_service.playlistItems().insert(part="snippet,id",body=body)
         response = request.execute()
         return response
 

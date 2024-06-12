@@ -46,12 +46,7 @@ def edit_queue(request, queue_id):
     if request.method == "POST":
         entry_form = EntryForm(data=request.POST)
         if entry_form.is_valid():
-            entry = entry_form.save(commit=False)
-            entry.queue = queue
-            queue.length += 1
-            entry.number = queue.length
-            queue.save()
-            entry.save()
+            pass
     entry_form = EntryForm()
     entries = Entry.objects.all().filter(queue=queue.id)
     context = {
@@ -74,6 +69,8 @@ def add_entry(request, queue_id, video_id):
     del video_data['status']
     entry = Entry(**video_data)
     entry.queue=queue
+    queue.length += 1
+    entry.number = queue.length
     entry.user=user
     queue.save()
     entry.save()
@@ -87,3 +84,12 @@ def delete_entry(request, queue_id, entry_id):
     if user == queue.owner:
         entry.delete()
     return HttpResponseRedirect(reverse('edit_queue', args=[queue_id]))
+
+def delete_queue(request, queue_id):
+    queue = get_object_or_404(Queue, id=queue_id)
+    user = Profile.get_user_profile(request)
+    #there should be a modal to double check on the front end
+    # there should also be a message for feedback
+    if queue.owner == user:
+        queue.delete()
+    return HttpResponseRedirect(reverse("profile"))

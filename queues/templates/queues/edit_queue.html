@@ -34,7 +34,7 @@
         {% for result in search_results %}
         <li>
             {{result.title}}
-            <a href="{% url 'add_entry' queue_id=queue_id video_id=result.id %}"><button
+            <a href="{% url 'add_entry' queue_id=queue.id video_id=result.id %}"><button
                     class="btn btn-md">Add</button></a>
         </li>
         {% endfor %}
