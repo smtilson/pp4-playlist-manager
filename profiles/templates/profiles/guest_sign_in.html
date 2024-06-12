@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<form method="POST" action="guest_sign_in">
+    {% csrf_token %}
+    <label for="guest_name">Nickname:</label>
+    <input id="guest_name" type="text" name="guest_name" required>
+    <label for="guest_email">Email:</label>
+    <input id="guest_email" type="text" name="guest_email" placeholder="(Optional)">
+    <button type="submit">Proceed to {{queue.name}}</button>
+</form>
+{% endblock content %}

@@ -2,12 +2,12 @@ from django.db import models
 from profiles.models import Profile, GuestProfile
 from django.shortcuts import get_object_or_404
 from yt_query.yt_api_utils import YT
-from utils import get_secret
+from utils import get_secret, DjangoFieldsMixin,ToDictMixin
 
 # Create your models here.
 
 
-class Queue(models.Model):
+class Queue(models.Model, DjangoFieldsMixin, ToDictMixin):
     owner = models.ForeignKey(
         Profile, on_delete=models.CASCADE, related_name="my_queues", default=1
     )
@@ -26,6 +26,13 @@ class Queue(models.Model):
     @classmethod
     def find_queue(cls, queue_id):
         return get_object_or_404(Queue, id=queue_id)
+    
+    def serialize(self):
+        q_dict = self.to_dict_mixin(self.field_names(),{'owner',"date_created","last_edited"})
+        q_dict['owner'] = self.owner.id
+        q_dict['date_created']=str(self.date_created)
+        q_dict['last_edited']=str(self.last_edited)
+        return q_dict
 
     @property
     def published(self):

@@ -1,6 +1,6 @@
 from django.shortcuts import render, reverse, get_object_or_404
 from django.http import HttpResponseRedirect
-from .models import Profile
+from .models import Profile, GuestProfile
 from queues.models import Queue
 from yt_auth.token_auth import (
     get_authorization_url,
@@ -27,11 +27,8 @@ def test(request):
     """
     Test view, to load templates properly.
     """
-    user = get_object_or_404(Profile, id=request.user.id)
-    test_dict = {}
-    test_dict["user_credentials"] = user.credentials
-    test_dict["build_abs_uri"] = request.build_absolute_uri()
-    test_dict["current_full_path"] = request.get_full_path()
+    user = request.user
+    test_dict = {"request_user_dir": request.user.__dir__()}
     context = {
         "user_id": user.id,
         "view_name": "test",
@@ -40,6 +37,7 @@ def test(request):
         "test_data": "",
         "youtube_account": "none as of yet",
     }
+    request.data_tag1234 = "testing"
     return render(request, "profiles/test.html", context)
 
 
@@ -47,7 +45,7 @@ def test_function(request):
     """
     View to run test functions.
     """
-    user = get_object_or_404(Profile, id=request.user.id)
+    user = request.user
     # this should not in general be necessary
 
     if user.credentials is None:
@@ -78,9 +76,9 @@ def profile(request):
     Test version of profile view, to load templates properly.
     This can be cleaned up still.
     """
-    user = get_object_or_404(Profile, id=request.user.id)
+    user = request.user
     print(user.to_dict())
-    #if not user.secret:
+    # if not user.secret:
     #    user.initialize()
     url = get_authorization_url()
     if not user.credentials:
@@ -93,7 +91,7 @@ def profile(request):
         "user": user,
         "view_name": "profile",
         "authorization_url": url,
-        }
+    }
     # test_dict = user.credentials.to_dict()
     test_dict = user.to_dict()
     test_dict["msg"] = msg
@@ -106,7 +104,7 @@ def profile(request):
 
 
 def revoke_authorization(request):
-    user = get_object_or_404(Profile, id=request.user.id)
+    user = request.user
     msg = revoke_tokens(request)
     print(msg)
     # there should be a modal for this
@@ -118,10 +116,29 @@ def revoke_authorization(request):
 
 def return_from_authorization(request):
     # do I need to check here that they don't have credentials since it is checked on the front end
-    user = Profile.get_user_profile(request)
+    user = request.user
     path = request.get_full_path()
     tokens = get_tokens(path)
     save_creds(tokens)
     print(tokens)
     user.set_credentials(tokens)
     return HttpResponseRedirect(reverse("profile"))
+
+
+def guest_sign_in(request):
+    if request.method == "GET":
+        return render(request, "profiles/guest_sign_in.html")
+    elif request.method == "POST":
+        name = request.POST["guest_name"]
+        email = request.POST.get("guest_email", "")
+        user = GuestProfile(
+            name=name,
+            email=email,
+            queue_id=request.session["queue_id"],
+            queue_secret=request.session["queue_secret"],
+            owner_secret=request.session["owner_secret"],
+        )
+        request.session["guest_user"]=user.serialize()
+        return HttpResponseRedirect(
+            reverse("edit_queue", args=[request.session["queue_id"]])
+        )

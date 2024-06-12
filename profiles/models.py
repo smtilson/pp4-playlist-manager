@@ -10,6 +10,7 @@ from utils import get_secret
 from yt_auth.models import Credentials
 from yt_query.yt_api_utils import YT
 from django.shortcuts import get_object_or_404
+from utils import ToDictMixin, DjangoFieldsMixin
 
 
 # Create your models here.
@@ -49,21 +50,7 @@ class ProfileManager(BaseUserManager):
         return self._create_profile(email, password, True, True, **kwargs)
 
 
-PROFILE_FIELDS = {
-    "email",
-    "name",
-    "is_superuser",
-    "is_staff",
-    "is_active",
-    "last_login",
-    "date_joined",
-    "credentials",
-    "youtube_id",
-    "youtube_url",
-}
-
-
-class Profile(AbstractBaseUser, PermissionsMixin):
+class Profile(AbstractBaseUser, PermissionsMixin, DjangoFieldsMixin, ToDictMixin):
     email = models.EmailField(max_length=200, unique=True)
     name = models.CharField(max_length=200, null=True, blank=True)
     is_superuser = models.BooleanField(default=False)
@@ -85,10 +72,10 @@ class Profile(AbstractBaseUser, PermissionsMixin):
     objects = ProfileManager()
 
     def to_dict(self):
-        fields = {name for name in PROFILE_FIELDS if name !="credentials"}
-        return {
-            field_name: getattr(self, field_name) for field_name in fields
-        }
+        credentials = self.credentials.to_dict()
+        p_dict = self.to_dict_mixin(self.field_names(),{"credentials"})
+        p_dict["credentials"] = credentials
+        return p_dict
 
     @property
     def has_tokens(self):
@@ -103,12 +90,12 @@ class Profile(AbstractBaseUser, PermissionsMixin):
         self.save()
 
     @property
+    # is this used?
     # this needs to be properly addressed
     def valid_credentials(self):
         if self.credentials.expiry == "":
             return False
         return self.google_credentials.valid
-
 
     def set_credentials(self, new_credentials=None):
         """
@@ -117,7 +104,6 @@ class Profile(AbstractBaseUser, PermissionsMixin):
         the credentials to the default blank credentials
         """
         self.credentials.set_credentials(new_credentials)
-        self.credentials.save()
         if self.has_tokens:
             self.find_youtube_data()
 
@@ -125,7 +111,6 @@ class Profile(AbstractBaseUser, PermissionsMixin):
         yt = YT(self)
         self.youtube_id, self.youtube_url = yt.find_user_youtube_data()
         self.save()
-
 
     def revoke_youtube_data(self):
         """
@@ -140,17 +125,29 @@ class Profile(AbstractBaseUser, PermissionsMixin):
     def google_credentials(self):
         return self.credentials.to_google_credentials()
 
-    @classmethod
-    def get_user_profile(cls, request):
-        # this needs some error handling in case there is no user.
-        user = get_object_or_404(cls, id=request.user.id)
-        return user
+
+class GuestProfile(ToDictMixin):
+    def __init__(self, name:str, queue_id, queue_secret, owner_secret, email="") -> None:
+        self.name = name
+        self.queue_id = queue_id
+        self.queue_secret = queue_secret
+        self.owner_secret = owner_secret
+        self.email = email
+        self.is_superuser = False
+        self.is_staff = False
+        self.is_active = True
+        self.is_guest = True
+        self.last_login = ""
+        self.date_joined = "not applicable"
+        self.credentials = ""
+        self.youtube_id = ""
+        self.youtube_url = ""
+        self.secret = ""
+        self.has_tokens = False
+        self.valid_credentials = False
+    
+    def serialize(self):
+        return self.to_dict_mixin(Profile.field_names())
 
 
-class GuestProfile(models.Model):
-    # Do I even want this in the database?, I guess I do since I am going from page to page
-    name = models.CharField(max_length=50)
-    is_guest = models.BooleanField(default=True)
-    # I think this will create a circular import error
-    #current_permission = models.OneToOneField(Queue)
-
+    
