@@ -46,6 +46,7 @@ def edit_queue(request, queue_id):
     if request.method == "POST":
         entry_form = EntryForm(data=request.POST)
         if entry_form.is_valid():
+
             pass
     entry_form = EntryForm()
     entries = Entry.objects.all().filter(queue=queue.id)
@@ -71,6 +72,7 @@ def add_entry(request, queue_id, video_id):
     entry.queue=queue
     queue.length += 1
     entry.number = queue.length
+
     entry.user=user
     queue.save()
     entry.save()
@@ -93,3 +95,4 @@ def delete_queue(request, queue_id):
     if queue.owner == user:
         queue.delete()
     return HttpResponseRedirect(reverse("profile"))
+

@@ -55,6 +55,7 @@ class YT:
     
     def add_entry_to_playlist(self,video_id,playlist_id):
         body = {"snippet":{"playlistId":playlist_id, "resourceId":{"kind":"youtube#video","videoId":video_id}}}
+
         request = self.user_service.playlistItems().insert(part="snippet,id",body=body)
         response = request.execute()
         return response
