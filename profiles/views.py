@@ -87,13 +87,10 @@ def profile(request):
         url = "#"
         msg = "Youtube DJ has access to your youtube account."
     context = {
-        "user_id": user.id,
-        "email": user.email,
+        "user": user,
         "view_name": "profile",
-        "has_tokens": user.has_tokens,
         "authorization_url": url,
-        "youtube_account": "none as of yet",
-    }
+        }
     # test_dict = user.credentials.to_dict()
     test_dict = user.to_dict()
     test_dict["msg"] = msg
@@ -104,12 +101,12 @@ def profile(request):
     return render(request, "profiles/profile.html", context)
 
 
-def remove_authorization(request):
+def revoke_authorization(request):
     user = get_object_or_404(Profile, id=request.user.id)
     msg = revoke_tokens(request)
     print(msg)
     # there should be a modal for this
-    user.set_credentials()
+    user.revoke_youtube_data()
     # revoke_tokens(request)
     return HttpResponseRedirect(reverse("profile"))
     # return HttpResponseRedirect(reverse('test'))

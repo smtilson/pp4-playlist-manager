@@ -1,8 +1,11 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h2>Edit Queue</h2>
-
+<h2>Edit Queue {{queue.name}}</h2>
+<div>
+    <h4>Description:</h4>
+    <p>{{queue.description}}</p>
+</div>
 <form id="searchForm" method="POST">
     {% csrf_token %}
     <span>
@@ -17,7 +20,7 @@
         <li>
             <span>{{entry.title}}: {{entry.duration}} added by yet to be implemented
                 {% if is_owner %}
-                <a href="{% url 'delete_entry' queue_id=queue_id entry_id=entry.id %}"><button
+                <a href="{% url 'delete_entry' queue_id=queue.id entry_id=entry.id %}"><button
                         class="btn btn-md">Remove</button></a>
                 {% endif %}
             </span>

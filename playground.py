@@ -20,3 +20,8 @@ wonderwall = yt.search_videos("wonderwall")
 one = wonderwall[0]
 
 sample_playlist_id= "PLaPvip_wdwX3VWuno8FBVIceMWcVjToC8"
+queues = me.queues.all()
+queue1 = queues[0]
+for queue in queues:
+    queue.youtube_id = ''
+    queue.save()

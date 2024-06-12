@@ -39,9 +39,9 @@ class YT:
         # return response
         return process_response(response)
 
-    def create_playlist(self, title) -> str:
+    def create_playlist(self, title, description) -> str:
         request = self.service.playlists().insert(
-            part="snippet,id", body={"snippet": {"title": title}}
+            part="snippet,id", body={"snippet": {"title": title, "description":description}}
         )
         response = request.execute()
         playlist_id = process_response(response)

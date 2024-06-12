@@ -124,7 +124,7 @@ class Profile(AbstractBaseUser, PermissionsMixin):
         self.youtube_id, self.youtube_url = yt.find_user_youtube_data()
         self.save()
 
-    def remove_youtube_data(self):
+    def revoke_youtube_data(self):
         """
         Removes youtube identification and credentials from system.
         """

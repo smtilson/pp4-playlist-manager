@@ -8,4 +8,6 @@
     {% csrf_token %}
     <button id="submitButton" type="submit" class="btn btn-signup btn-lg">Create Queue</button>
 </form>
+
+<a href="{% url 'profile' %}">Back to profile page</a>
 {% endblock content %}

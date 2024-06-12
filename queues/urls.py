@@ -11,5 +11,5 @@ urlpatterns = [
         views.delete_entry,
         name="delete_entry",
     ),
-    path("publish_queue/<int:queue_id>", views.publish_queue, name="publish_queue"),
+    path("publish/<int:queue_id>", views.publish, name="publish"),
 ]
