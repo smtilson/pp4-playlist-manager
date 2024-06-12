@@ -6,17 +6,13 @@ from django.contrib.auth.models import (
 )
 from django.db import models
 from django.utils import timezone
-from pp4_youtube_dj.settings import DEBUG
 from yt_auth.models import Credentials
 from yt_query.yt_api_utils import YT
 from django.shortcuts import get_object_or_404
-# I think this will create a circular import
-#from queues.models import Queue
 
 
 # Create your models here.
 
-UNIQUE = not DEBUG
 SCOPES = ["https://www.googleapis.com/auth/youtube"]
 UNIVERSE_DOMAIN = "googleapis.com"
 TOKEN_URI = "https://oauth2.googleapis.com/token"
@@ -67,17 +63,19 @@ PROFILE_FIELDS = {
 
 
 class Profile(AbstractBaseUser, PermissionsMixin):
-    email = models.EmailField(max_length=200, unique=DEBUG)
+    email = models.EmailField(max_length=200, unique=True)
     name = models.CharField(max_length=200, null=True, blank=True)
-    is_superuser = models.BooleanField(default=DEBUG)
-    is_staff = models.BooleanField(default=DEBUG)
-    is_active = models.BooleanField(default=DEBUG)
+
+    is_superuser = models.BooleanField(default=False)
+    is_staff = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
     is_guest = models.BooleanField(default=False)
     last_login = models.DateTimeField(null=True, blank=True)
     date_joined = models.DateTimeField(auto_now_add=True)
     credentials = models.OneToOneField(
-        Credentials, on_delete=models.SET_DEFAULT, null=True, default=Credentials
-    )
+
+        Credentials, on_delete=models.SET_NULL, null=True, blank=True
+
     youtube_id = models.CharField(max_length=100, null=True, blank=True, default="")
     youtube_url = models.CharField(max_length=100, null=True, blank=True, default="")
 
@@ -97,6 +95,7 @@ class Profile(AbstractBaseUser, PermissionsMixin):
     def has_tokens(self):
         return self.credentials.has_tokens
 
+
     @property
     # this needs to be properly addressed
     def valid_credentials(self):
@@ -104,8 +103,6 @@ class Profile(AbstractBaseUser, PermissionsMixin):
             return False
         return self.google_credentials.valid
 
-    def get_absolute_url(self):
-        return f"/profiles/{self.pk}/"
 
     def set_credentials(self, new_credentials=None):
         """
@@ -117,12 +114,12 @@ class Profile(AbstractBaseUser, PermissionsMixin):
         self.credentials.save()
         if self.has_tokens:
             self.find_youtube_data()
-        self.save()
 
     def find_youtube_data(self):
         yt = YT(self)
         self.youtube_id, self.youtube_url = yt.find_user_youtube_data()
         self.save()
+
 
     def revoke_youtube_data(self):
         """
@@ -150,3 +147,4 @@ class GuestProfile(models.Model):
     is_guest = models.BooleanField(default=True)
     # I think this will create a circular import error
     #current_permission = models.OneToOneField(Queue)
+
