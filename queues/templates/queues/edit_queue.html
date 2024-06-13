@@ -21,7 +21,7 @@
     {% csrf_token %}
     <span>
         <label for="searchQuery">Search:</label>
-        <input type="text" id="searchQuery" name="searchQuery" placeholder="Wonderwall">
+        <input type="text" id="searchQuery" name="searchQuery" value="{{recent_search}}">
     </span>
     <button id="searchButton" type="submit" class="btn btn-lg">Search</button>
 </form>
