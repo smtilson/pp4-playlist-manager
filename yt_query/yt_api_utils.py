@@ -13,6 +13,8 @@ class YT:
         self.guest_service = self.connect_simple()
 
     def connect_oauth(self) -> "Service":
+        if self.user.is_guest:
+            return ""
         credentials = self.user.google_credentials
         return build("youtube", "v3", credentials=credentials)
     

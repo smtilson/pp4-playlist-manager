@@ -49,6 +49,7 @@ class Queue(models.Model, DjangoFieldsMixin, ToDictMixin):
         self.save()
 
     def publish(self) -> str:
+        # should this be refactored to require a key of some sort?
         if self.published:
             return f"Queue {self.name} already uploadeded to youtube."
         yt = YT(self.owner)
@@ -60,6 +61,12 @@ class Queue(models.Model, DjangoFieldsMixin, ToDictMixin):
         self.synced = True
         self.save()
         return f"Queue {self.name} successfully added to youtube."
+
+    @property
+    def url(self):
+        if self.published:
+            return "https://www.youtube.com/playlist?list="+self.youtube_id
+        return "#"
 
     def sync(self):
         self.synced = True
@@ -75,7 +82,7 @@ class Entry(models.Model):
     # this corresponds to the user who added the video to the queue
     # actually, make this a char field and base it on the name of the user.
     # then the on delete shit won't matter.
-    user = models.ForeignKey(Profile, on_delete=models.SET_NULL, null=True, default=1)
+    user = models.CharField(max_length=50, default="I am embarassed to have added this.")
     number = models.IntegerField(default=-1)
     published = models.BooleanField(default=False)
 
@@ -89,33 +96,18 @@ class Entry(models.Model):
         self.save()
 
     def swap(self,other) -> None:
-        print(self.id, self.number)
-        print(other.id, other.number)
         self.number, other.number = other.number, self.number
-        print(self.id, self.number)
-        print(other.id, other.number)
         self.save()
         other.save()
 
     def earlier(self) -> None:
-        entries = self.queue.entries.all().order_by('-number')
-        for entry in entries:
-            print(entry.title,entry.number)
-            if entry.number>=self.number:
-                continue
-            else:
-                break
-        self.swap(entry)
+        if self.number == 1:
+            return
+        other_entry =self.queue.entries.all().filter(number=self.number-1).first()
+        self.swap(other_entry)
 
     def later(self) -> "Entry":
-        entries = self.queue.entries.all()
-        for entry in entries:
-            if entry.number<=self.number:
-                continue
-            else:
-                break
-        self.swap(entry)
-
-    def move_up(self) -> None:
-        
-        pass
+        if self.number == self.queue.length:
+            return
+        other_entry =self.queue.entries.all().filter(number=self.number+1).first()
+        self.swap(other_entry)

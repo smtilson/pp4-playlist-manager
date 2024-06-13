@@ -29,23 +29,13 @@ from queues.models import Queue, Entry
 from yt_query.yt_api_utils import YT
 from utils import get_secret
 
-def move_down(entry):
-        entries = entry.queue.entries.all()
-        print(entry.title, entry.number)
-        for index, other_entry in enumerate(entries):
-            print(index,other_entry)
-            print(other_entry.title, other_entry.number)
-            
-            if other_entry.number<=entry.number:
-                print("too small")
-                input()
-                continue
-            else:
-                print("just right")
-                input()
-                break
-        entry.swap(other_entry)
-
 me = Profile.objects.all().first()
 queue = me.my_queues.all().first()
-entry1, entry2, entry3, entry4 = queue.entries.all()
+entries = queue.entries.all()
+def earlier(entry) -> None:
+    if entry.number == 1:
+        return
+    other_entry = entry.queue.entries.all().filter(number=entry.number-1).first()
+    entry.swap(other_entry)
+
+playlist_url = "https://www.youtube.com/playlist?list=PLaPvip_wdwX0etylKbQJBY2PmpLkjIBHT"

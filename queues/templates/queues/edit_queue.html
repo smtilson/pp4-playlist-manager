@@ -18,6 +18,11 @@
     <a href="{% url 'delete_queue' queue.id %}"><button>Delete</button></a>
 </div>
 {% endif %}
+{% if queue.published %}
+<div>
+    <a href="{{queue.url}}"><button>Play on YouTube</button></a>
+</div>
+{% endif %}
 <form id="searchForm" method="POST">
     {% csrf_token %}
     <span>

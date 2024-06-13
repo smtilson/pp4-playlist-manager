@@ -51,8 +51,8 @@ class ProfileManager(BaseUserManager):
 
 
 class Profile(AbstractBaseUser, PermissionsMixin, DjangoFieldsMixin, ToDictMixin):
-    email = models.EmailField(max_length=200, unique=True)
-    name = models.CharField(max_length=200, null=True, blank=True)
+    email = models.EmailField(max_length=100, unique=True)
+    name = models.CharField(max_length=50, null=True, blank=True)
     # can these three be replaced by properties?
     is_superuser = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
@@ -153,13 +153,14 @@ class GuestProfile(ToDictMixin):
         self.valid_credentials = False
     
     def serialize(self):
-        return self.to_dict_mixin(Profile.field_names())
-    
+        return self.to_dict_mixin({"name","queue_id","queue_secret","email","owner_secret"})
+
     def convert_to_profile(self):
         pass
 
 
-def make_user(user:Union['Profile',dict]) ->Union['Profile','GuestProfile']:
-    if isinstance(user,dict):
-        user = GuestProfile(**user)
-    return user  
+def make_user(request) ->Union['Profile','GuestProfile']:
+    guest = request.session.get("guest_user","")
+    if guest:
+        return GuestProfile(**guest)
+    return request.user  
