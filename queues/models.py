@@ -39,8 +39,14 @@ class Queue(models.Model, DjangoFieldsMixin, ToDictMixin):
     def published(self):
         return self.youtube_id != ''
 
-    def remove_entry(self, number: int):
-        pass
+    def remove_entry(self, entry: "Entry") -> None:
+        for other_entry in self.entries.all():
+            if other_entry.number> entry.number:
+                other_entry.number -=1
+                other_entry.save()
+        self.length -=1
+        entry.delete()
+        self.save()
 
     def publish(self) -> str:
         if self.published:
@@ -81,3 +87,35 @@ class Entry(models.Model):
         # add an error check here
         self.published = True
         self.save()
+
+    def swap(self,other) -> None:
+        print(self.id, self.number)
+        print(other.id, other.number)
+        self.number, other.number = other.number, self.number
+        print(self.id, self.number)
+        print(other.id, other.number)
+        self.save()
+        other.save()
+
+    def earlier(self) -> None:
+        entries = self.queue.entries.all().order_by('-number')
+        for entry in entries:
+            print(entry.title,entry.number)
+            if entry.number>=self.number:
+                continue
+            else:
+                break
+        self.swap(entry)
+
+    def later(self) -> "Entry":
+        entries = self.queue.entries.all()
+        for entry in entries:
+            if entry.number<=self.number:
+                continue
+            else:
+                break
+        self.swap(entry)
+
+    def move_up(self) -> None:
+        
+        pass

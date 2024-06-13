@@ -10,6 +10,11 @@ def get_secret():
     return get_random_string(20)
 
 
+def trigger(object):
+    # this function is for debugging purposes.
+    print(f"trigger function hit for {object.id} {object.getattr("name","")}{object.getattr("title","")}.")
+
+
 def empty_dict(dictionary: dict) -> bool:
     return [val for val in dictionary.values() if val] == []
 
