@@ -1,6 +1,7 @@
 import json
 import ast
 from django.utils.crypto import get_random_string
+from profiles.models import GuestProfile
 
 
 def json_to_dict(json) -> dict:
@@ -86,10 +87,18 @@ def get_user(request):
         return guest_user
     return request.user
 
+def make_user(user:Optional['Profile',dict]) ->Optional['Profile','GuestProfile']:
+    if isinstance(user,dict):
+        user = GuestProfile(**user)
+    return user
+
 def has_authorization(user, queue):
-    if isinstance(user, dict):
-        pass
-    pass
-    
+    user = make_user(user)
+    if user in queue.collaborators.all():
+        return True
+    # another condition could go here, like checking against the queue.secret
+    elif user.owner_secret == queue.owner.secret:
+        return True
+    return False
 
     pass
