@@ -39,8 +39,14 @@ class Queue(models.Model, DjangoFieldsMixin, ToDictMixin):
     def published(self):
         return self.youtube_id != ''
 
-    def remove_entry(self, number: int):
-        pass
+    def remove_entry(self, entry: "Entry") -> None:
+        for other_entry in self.entries.all():
+            if other_entry.number> entry.number:
+                other_entry.number -=1
+                other_entry.save()
+        self.length -=1
+        entry.delete()
+        self.save()
 
     def publish(self) -> str:
         if self.published:
@@ -83,22 +89,16 @@ class Entry(models.Model):
         self.save()
 
     def swap(self,other) -> None:
-        print(self.title,self.number)
-        print(other.title,other.number)
+        print(self.id, self.number)
+        print(other.id, other.number)
         self.number, other.number = other.number, self.number
-        print(self.title,self.number)
-        print(other.title,other.number)
+        print(self.id, self.number)
+        print(other.id, other.number)
         self.save()
         other.save()
 
-    def trigger(self):
-        print(f"trigger method hit for {self.id, self.title}")
-
     def earlier(self) -> None:
-        print("move up method hit")
-        print(self.title,self.number)
         entries = self.queue.entries.all().order_by('-number')
-        print("entries",entries)
         for entry in entries:
             print(entry.title,entry.number)
             if entry.number>=self.number:
