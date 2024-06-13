@@ -35,7 +35,7 @@
     <ol>
         {% for entry in entries %}
         <li>
-            <span>{{entry.title}}: {{entry.duration}} added by yet to be implemented
+            <span>{{entry.title}}: {{entry.duration}} added by {{entry.user}}
                 {% if is_owner %}
                 <a href="{% url 'delete_entry' queue_id=queue.id entry_id=entry.id %}"><button
                         class="btn btn-md">Remove</button></a>

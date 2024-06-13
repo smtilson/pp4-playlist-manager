@@ -135,7 +135,9 @@ def gain_access(request, queue_secret, owner_secret):
     request.session["queue_secret"] = queue_secret
     request.session["owner_secret"] = owner_secret
     if owner_secret == queue.owner.secret:
-        if user.is_authenticated:
+        if user.is_guest:
+            return HttpResponseRedirect(reverse("edit_queue", args=[queue.id]))
+        elif user.is_authenticated:
             user.other_queues.add(queue)
             queue.save()
             user.save()
