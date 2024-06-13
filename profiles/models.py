@@ -6,13 +6,15 @@ from django.contrib.auth.models import (
 )
 from django.db import models
 from django.utils import timezone
+from utils import get_secret
 from yt_auth.models import Credentials
 from yt_query.yt_api_utils import YT
-from django.shortcuts import get_object_or_404
+from mixins import ToDictMixin, DjangoFieldsMixin
+from typing import Union
 
 
 # Create your models here.
-
+# I don't think these are used.
 SCOPES = ["https://www.googleapis.com/auth/youtube"]
 UNIVERSE_DOMAIN = "googleapis.com"
 TOKEN_URI = "https://oauth2.googleapis.com/token"
@@ -48,35 +50,20 @@ class ProfileManager(BaseUserManager):
         return self._create_profile(email, password, True, True, **kwargs)
 
 
-PROFILE_FIELDS = {
-    "email",
-    "name",
-    "is_superuser",
-    "is_staff",
-    "is_active",
-    "last_login",
-    "date_joined",
-    "credentials",
-    "youtube_id",
-    "youtube_url",
-}
-
-
-class Profile(AbstractBaseUser, PermissionsMixin):
+class Profile(AbstractBaseUser, PermissionsMixin, DjangoFieldsMixin, ToDictMixin):
     email = models.EmailField(max_length=200, unique=True)
     name = models.CharField(max_length=200, null=True, blank=True)
-
+    # can these three be replaced by properties?
     is_superuser = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
-    is_guest = models.BooleanField(default=False)
     last_login = models.DateTimeField(null=True, blank=True)
     date_joined = models.DateTimeField(auto_now_add=True)
     credentials = models.OneToOneField(
-        Credentials, on_delete=models.SET_NULL, null=True, blank=True)
-
+        Credentials, on_delete=models.SET_NULL, null=True, blank=True, related_name="user")
     youtube_id = models.CharField(max_length=100, null=True, blank=True, default="")
     youtube_url = models.CharField(max_length=100, null=True, blank=True, default="")
+    secret = models.CharField(max_length=20,unique=True, default=get_secret)
 
     USERNAME_FIELD = "email"
     EMAIL_FIELD = "email"
@@ -84,33 +71,43 @@ class Profile(AbstractBaseUser, PermissionsMixin):
 
     objects = ProfileManager()
 
+    @property
+    def is_guest(self):
+        return False
+
     def to_dict(self):
-        fields = {name for name in PROFILE_FIELDS if name !="credentials"}
-        return {
-            field_name: getattr(self, field_name) for field_name in fields
-        }
+        credentials = self.credentials.to_dict()
+        p_dict = self.to_dict_mixin(self.field_names(),{"credentials"})
+        p_dict["credentials"] = credentials
+        return p_dict
 
     @property
     def has_tokens(self):
         return self.credentials.has_tokens
 
+    def all_queues(self):
+        pass
+
+    def initialize(self):
+        self.credentials = Credentials()
+        self.credentials.save()
+        self.save()
 
     @property
+    # is this used?
     # this needs to be properly addressed
     def valid_credentials(self):
         if self.credentials.expiry == "":
             return False
         return self.google_credentials.valid
 
-
     def set_credentials(self, new_credentials=None):
         """
         new_credentials is a google Credentials object. Updates credentials to
         with the data from new_credentials. When no object is passed, it resets
-        the credentials to the default blank credentials
+        the credentials to the default blank credentials.
         """
         self.credentials.set_credentials(new_credentials)
-        self.credentials.save()
         if self.has_tokens:
             self.find_youtube_data()
 
@@ -119,7 +116,6 @@ class Profile(AbstractBaseUser, PermissionsMixin):
         self.youtube_id, self.youtube_url = yt.find_user_youtube_data()
         self.save()
 
-
     def revoke_youtube_data(self):
         """
         Removes youtube identification and credentials from system.
@@ -127,23 +123,43 @@ class Profile(AbstractBaseUser, PermissionsMixin):
         self.youtube_id = ""
         self.youtube_url = ""
         self.set_credentials()
+        #i think this is unnecessary
         self.save()
 
     @property
     def google_credentials(self):
         return self.credentials.to_google_credentials()
 
-    @classmethod
-    def get_user_profile(cls, request):
-        # this needs some error handling in case there is no user.
-        user = get_object_or_404(cls, id=request.user.id)
-        return user
+
+class GuestProfile(ToDictMixin):
+    def __init__(self, name:str, queue_id:int, queue_secret:str, owner_secret:str, email:str="") -> None:
+        self.name = name
+        self.queue_id = queue_id
+        self.queue_secret = queue_secret
+        self.owner_secret = owner_secret
+        self.email = email
+        self.is_superuser = False
+        self.is_staff = False
+        self.is_active = True
+        self.is_guest = True
+        #maybe replace these two with some datetime stuff
+        self.last_login = ""
+        self.date_joined = "not applicable"
+        self.credentials = ""
+        self.youtube_id = ""
+        self.youtube_url = ""
+        self.secret = ""
+        self.has_tokens = False
+        self.valid_credentials = False
+    
+    def serialize(self):
+        return self.to_dict_mixin(Profile.field_names())
+    
+    def convert_to_profile(self):
+        pass
 
 
-class GuestProfile(models.Model):
-    # Do I even want this in the database?, I guess I do since I am going from page to page
-    name = models.CharField(max_length=50)
-    is_guest = models.BooleanField(default=True)
-    # I think this will create a circular import error
-    #current_permission = models.OneToOneField(Queue)
-
+def make_user(user:Union['Profile',dict]) ->Union['Profile','GuestProfile']:
+    if isinstance(user,dict):
+        user = GuestProfile(**user)
+    return user  

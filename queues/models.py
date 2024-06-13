@@ -2,17 +2,19 @@ from django.db import models
 from profiles.models import Profile, GuestProfile
 from django.shortcuts import get_object_or_404
 from yt_query.yt_api_utils import YT
+from utils import get_secret
+from mixins import DjangoFieldsMixin,ToDictMixin
 
 # Create your models here.
 
 
-class Queue(models.Model):
+class Queue(models.Model, DjangoFieldsMixin, ToDictMixin):
     owner = models.ForeignKey(
-        Profile, on_delete=models.CASCADE, related_name="queues", default=1
+        Profile, on_delete=models.CASCADE, related_name="my_queues", default=1
     )
     owner_yt_id = models.CharField(max_length=100, default="")
     youtube_id = models.CharField(max_length=100, default="")
-    collaborators = models.ManyToManyField(Profile)
+    collaborators = models.ManyToManyField(Profile, related_name="other_queues")
     name = models.CharField(max_length=100, default="none given")
     description = models.TextField(max_length=400, null=True, blank=True, default="")
     # make these date names consistent throughout the app.
@@ -20,10 +22,18 @@ class Queue(models.Model):
     last_edited = models.DateTimeField(auto_now=True)
     length = models.PositiveIntegerField(default=0)
     synced = models.BooleanField(default=False)
+    secret = models.CharField(max_length=20,unique=True, default=get_secret)
 
     @classmethod
     def find_queue(cls, queue_id):
         return get_object_or_404(Queue, id=queue_id)
+    
+    def serialize(self):
+        q_dict = self.to_dict_mixin(self.field_names(),{'owner',"date_created","last_edited"})
+        q_dict['owner'] = self.owner.id
+        q_dict['date_created']=str(self.date_created)
+        q_dict['last_edited']=str(self.last_edited)
+        return q_dict
 
     @property
     def published(self):

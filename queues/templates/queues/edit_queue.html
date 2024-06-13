@@ -6,6 +6,11 @@
     <h4>Description:</h4>
     <p>{{queue.description}}</p>
 </div>
+{% if is_owner %}
+<div>
+    <h3><a href="{% url 'gain_access' queue.secret queue.owner.secret %}">Share with friends</a></h3>
+</div>
+{% endif %}
 <form id="searchForm" method="POST">
     {% csrf_token %}
     <span>
@@ -42,5 +47,9 @@
         {% endfor %}
     </ul>
 </div>
-<a href="{% url 'profile'%}">Back to profile page.</a>
+{% if not is_guest %}
+<a href="{% url 'profile' %}">Back to Profile</a>
+{%else%}
+Special sign up for Guest user.
+{% endif %}
 {% endblock content %}

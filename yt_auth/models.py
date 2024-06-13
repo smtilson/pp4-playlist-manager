@@ -1,5 +1,6 @@
 from django.db import models
 from utils import json_to_dict
+from mixins import DjangoFieldsMixin, ToDictMixin
 import google.oauth2.credentials as g_oa2_creds
 
 
@@ -18,7 +19,7 @@ CREDENTIALS_FIELDS = {
 }
 
 
-class Credentials(models.Model):
+class Credentials(models.Model, DjangoFieldsMixin, ToDictMixin):
     # I think some of these fields could be removed since they do not actually
     # change, but perhaps it is easiest to leave them in for the time being
     token_uri = models.CharField(max_length=300, default="", null=True, blank=True)
@@ -41,6 +42,9 @@ class Credentials(models.Model):
         del creds_dict['expiry']
         return g_oa2_creds.Credentials(**creds_dict)
 
+    def to_dict(self):
+        return self.to_dict_mixin(self.field_names())
+    
     def to_dict(self):
         return {
             field_name: getattr(self, field_name) for field_name in CREDENTIALS_FIELDS

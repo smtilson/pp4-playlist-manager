@@ -71,11 +71,9 @@ SITE_ID = 1
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
 
-# I am unsure about the placement of the corsheders middleware
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
-    #'corsheaders.middleware.CorsMiddleware',
     "django.middleware.common.CommonMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -89,16 +87,6 @@ CSRF_TRUSTED_ORIGINS = [
     "https://8000-smtilson-pp4playlistman-ym3t1koq57f.ws.codeinstitute-ide.net",
 ]
 
-# CORS_ORIGIN_ALLOW_ALL = True
-# CORS_ALLOW_CREDENTIALS = True
-"""CORS_ALLOW_METHODS = [
-    "GET",
-    "POST",
-    "PUT",
-    "PATCH",
-    "DELETE",
-    "OPTIONS",
-]"""
 
 ROOT_URLCONF = "pp4_youtube_dj.urls"
 
