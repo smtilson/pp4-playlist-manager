@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<h3>Guest sign in.</h3>
 <form method="POST" action="guest_sign_in">
     {% csrf_token %}
     <label for="guest_name">Nickname:</label>
@@ -9,4 +10,7 @@
     <input id="guest_email" type="text" name="guest_email" placeholder="(Optional)">
     <button type="submit">Proceed to {{queue.name}}</button>
 </form>
+
+<h3>Have an account?</h3>
+<a href="{% url 'account_login'%}">Login</a>
 {% endblock content %}

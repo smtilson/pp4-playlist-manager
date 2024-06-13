@@ -75,6 +75,12 @@ class Profile(AbstractBaseUser, PermissionsMixin, DjangoFieldsMixin, ToDictMixin
     def is_guest(self):
         return False
 
+    @property
+    def nickname(self):
+        if self.name:
+            return self.name
+        return self.email
+
     def to_dict(self):
         credentials = self.credentials.to_dict()
         p_dict = self.to_dict_mixin(self.field_names(),{"credentials"})
@@ -151,6 +157,10 @@ class GuestProfile(ToDictMixin):
         self.secret = ""
         self.has_tokens = False
         self.valid_credentials = False
+    
+    @property
+    def nickname(self):
+        return self.name
     
     def serialize(self):
         return self.to_dict_mixin({"name","queue_id","queue_secret","email","owner_secret"})

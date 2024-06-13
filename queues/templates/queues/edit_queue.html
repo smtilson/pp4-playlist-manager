@@ -3,21 +3,23 @@
 {% block content %}
 <h2>Edit Queue {{queue.name}}</h2>
 <div>
+    <h3>Owned by {{queue.owner.nickname}}</h3>
     <h4>Description:</h4>
     <p>{{queue.description}}</p>
 </div>
-{% if is_owner %}
 <div class="owner-buttons">
+{% if is_owner %}
+
     <a href="{% url 'gain_access' queue.secret queue.owner.secret %}"><button>Share</button></a></h3>
     {% if not queue.published %}
     <a href="{% url 'publish' queue.id %}"><button>Publish</button></a>
     <p>Playlists are published by default as unlisted.</p>
     {% elif not queue.synced %}
     <button>Sync (not yet implemented)</button>
-    {% endif %}
     <a href="{% url 'delete_queue' queue.id %}"><button>Delete</button></a>
-</div>
+    {%endif%}
 {% endif %}
+</div>
 {% if queue.published %}
 <div>
     <a href="{{queue.url}}"><button>Play on YouTube</button></a>

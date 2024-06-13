@@ -54,7 +54,7 @@ def edit_queue(request, queue_id):
         recent_search = ""
         search_results = []
     entry_form = EntryForm()
-    entries = Entry.objects.all().filter(queue=queue.id)
+    entries = Entry.objects.all().filter(p_queue=queue.id)
     context = {
         "queue": queue,
         "entry_form": entry_form,
@@ -134,15 +134,20 @@ def gain_access(request, queue_secret, owner_secret):
     request.session["queue_id"] = queue.id
     request.session["queue_secret"] = queue_secret
     request.session["owner_secret"] = owner_secret
+    request.session["redirect_action"]={"action":"edit_queue","args":[queue.id]}
     if owner_secret == queue.owner.secret:
-        if user.is_guest:
+        # the point of this check is that the user is not anonymous if this is truthy
+        if getattr(user,"is_guest",""):
             return HttpResponseRedirect(reverse("edit_queue", args=[queue.id]))
+        # if the user is authenticated then they have an account and the queue can be added in the below block
         elif user.is_authenticated:
+            print("hit user is authenticated")
             user.other_queues.add(queue)
             queue.save()
             user.save()
             return HttpResponseRedirect(reverse("edit_queue", args=[queue.id]))
         else:
+            print("hit else block of gain access")
             return HttpResponseRedirect(reverse("guest_sign_in"))
     # need to add feedback here
     return HttpResponseRedirect(reverse("index"))

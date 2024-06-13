@@ -18,6 +18,11 @@ def index(request):
     if "code" in path:
         # should this be a redirect?
         return return_from_authorization(request)
+    elif "redirect_action" in request.session:
+        view_name = request.session["redirect_action"]["action"]
+        args = request.session["redirect_action"]['args']
+        return HttpResponseRedirect(reverse(view_name,args=args))
+        pass
     else:
         return render(request, "profiles/index.html")
 
