@@ -31,11 +31,8 @@ from utils import get_secret
 
 me = Profile.objects.all().first()
 queue = me.my_queues.all().first()
-entries = queue.entries.all()
-def earlier(entry) -> None:
-    if entry.number == 1:
-        return
-    other_entry = entry.queue.entries.all().filter(number=entry.number-1).first()
-    entry.swap(other_entry)
-
+all_queues = Queue.objects.all()
+queue2 = all_queues[1]
 playlist_url = "https://www.youtube.com/playlist?list=PLaPvip_wdwX0etylKbQJBY2PmpLkjIBHT"
+yt = YT(me)
+

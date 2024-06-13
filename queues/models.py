@@ -3,12 +3,11 @@ from profiles.models import Profile, GuestProfile
 from django.shortcuts import get_object_or_404
 from yt_query.yt_api_utils import YT
 from utils import get_secret
-from mixins import DjangoFieldsMixin,ToDictMixin
+from mixins import DjangoFieldsMixin,ToDictMixin, ResourceID
 
 # Create your models here.
 
-
-class Queue(models.Model, DjangoFieldsMixin, ToDictMixin):
+class Queue(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
     owner = models.ForeignKey(
         Profile, on_delete=models.CASCADE, related_name="my_queues", default=1
     )
@@ -23,6 +22,9 @@ class Queue(models.Model, DjangoFieldsMixin, ToDictMixin):
     length = models.PositiveIntegerField(default=0)
     synced = models.BooleanField(default=False)
     secret = models.CharField(max_length=20,unique=True, default=get_secret)
+    kind = models.CharField(max_length=100,default="",null=True,blank=True)
+    yt_id = models.CharField(max_length=100, default="",null=True,blank=True)
+
 
     @classmethod
     def find_queue(cls, queue_id):
@@ -37,12 +39,19 @@ class Queue(models.Model, DjangoFieldsMixin, ToDictMixin):
 
     @property
     def published(self):
-        return self.youtube_id != ''
+        return self.yt_id != ''
+
+    def __getitem__(self,index:int):
+        if index >= self.length:
+            raise IndexError(f"Index must be valid, for example between 1 and {self.length}.")
+        while index < 0:
+            index += self.length
+        return self.entries.all()[index]
 
     def remove_entry(self, entry: "Entry") -> None:
         for other_entry in self.entries.all():
-            if other_entry.number> entry.number:
-                other_entry.number -=1
+            if other_entry.position> entry.position:
+                other_entry.position -=1
                 other_entry.save()
         self.length -=1
         entry.delete()
@@ -54,10 +63,10 @@ class Queue(models.Model, DjangoFieldsMixin, ToDictMixin):
             return f"Queue {self.name} already uploadeded to youtube."
         yt = YT(self.owner)
         # add some error checking here.
-        youtube_id = yt.create_playlist(title=self.name, description=self.description)
-        self.youtube_id = youtube_id
+        response = yt.create_playlist(title=self.name, description=self.description)
+        self.save_resource_id(response)
         for entry in self.entries.all():
-            entry.publish(yt, youtube_id)
+            entry.publish(yt, self.yt_id)
         self.synced = True
         self.save()
         return f"Queue {self.name} successfully added to youtube."
@@ -65,49 +74,92 @@ class Queue(models.Model, DjangoFieldsMixin, ToDictMixin):
     @property
     def url(self):
         if self.published:
-            return "https://www.youtube.com/playlist?list="+self.youtube_id
+            return "https://www.youtube.com/playlist?list="+self.yt_id
         return "#"
 
+    def unpublish(self) -> None:
+        if not self.published:
+            return
+        yt = YT(self.owner)
+        response = yt.delete_playlist(self.yt_id)
+        self.clear_resource_id()
+        for entry in self.entries.all():
+            entry.clear_resource_id()
+        self.yt_id = ""
+        self.synced = False
+        self.save()
+        print(response)
+    
+    def pop(self, index:int=-1):
+        entry = self[index]
+        e_dict = entry.to_dict()
+        entry.delete()
+        self.length -= 1
+        self.save()
+        return e_dict
+
+
     def sync(self):
+        yt = YT(self.owner)
+        for entry in self.entries.all():
+            entry.sync(yt,self.yt_id)
         self.synced = True
         self.save()
-        pass
 
 
-class Entry(models.Model):
+class Entry(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
     title = models.CharField(max_length=100)
-    queue = models.ForeignKey(Queue, on_delete=models.CASCADE, related_name="entries")
+    p_queue = models.ForeignKey(Queue, on_delete=models.CASCADE, related_name="entries")
     video_id = models.CharField(max_length=100)
     duration = models.CharField(max_length=100, default="")
     # this corresponds to the user who added the video to the queue
     # actually, make this a char field and base it on the name of the user.
     # then the on delete shit won't matter.
     user = models.CharField(max_length=50, default="I am embarassed to have added this.")
-    number = models.IntegerField(default=-1)
+    position = models.IntegerField(default=-1)
+    old_position = models.IntegerField(default=-1)
     published = models.BooleanField(default=False)
+    synced = models.BooleanField(default=False)
+    #youtube_id = models.CharField(max_length=100,default="")
+    kind = models.CharField(max_length=100,default="",null=True,blank=True)
+    yt_id = models.CharField(max_length=100, default="",null=True,blank=True)
 
     class Meta:
-        ordering = ["number"]
+        ordering = ["position"]
 
     def publish(self, yt: "YT", youtube_playlist_id: str) -> None:
         response = yt.add_entry_to_playlist(self.video_id, youtube_playlist_id)
         # add an error check here
+        self.save_resource_id(response)
+        self.old_position = self.position
         self.published = True
         self.save()
 
+    def to_dict(self):
+        return self.to_dict_mixin(self.field_names(),{"queue"})
+
+    def sync(self, yt: "YT", youtube_playlist_id: str) -> None:
+        if self.position != self.old_position:
+            response = yt.move_playlist_item(self.video_id, youtube_playlist_id, self.position)
+        # add an error check here
+            self.old_position = self.position
+            print(response)
+        self.synced = True
+        self.save()
+
     def swap(self,other) -> None:
-        self.number, other.number = other.number, self.number
+        self.position, other.position = other.position, self.position
+        self.synced = False
+        other.synced = False
         self.save()
         other.save()
 
     def earlier(self) -> None:
-        if self.number == 1:
-            return
-        other_entry =self.queue.entries.all().filter(number=self.number-1).first()
-        self.swap(other_entry)
+        if self.position != 1:
+            other_entry =self.p_queue.entries.all().filter(position=self.position-1).first()
+            self.swap(other_entry)
 
     def later(self) -> "Entry":
-        if self.number == self.queue.length:
-            return
-        other_entry =self.queue.entries.all().filter(number=self.number+1).first()
-        self.swap(other_entry)
+        if self.position != self.p_queue.length:
+            other_entry =self.p_queue.entries.all().filter(position=self.position+1).first()
+            self.swap(other_entry)

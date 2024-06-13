@@ -13,10 +13,10 @@ class YT:
         self.guest_service = self.connect_simple()
 
     def connect_oauth(self) -> "Service":
-        if self.user.is_guest:
-            return ""
-        credentials = self.user.google_credentials
-        return build("youtube", "v3", credentials=credentials)
+        if self.user.has_tokens:
+            credentials = self.user.google_credentials
+            return build("youtube", "v3", credentials=credentials)
+        return ""
     
     def connect_simple(self) -> "Service":
         return build("youtube", "v3", developerKey=YOUTUBE_API_KEY)
@@ -52,9 +52,20 @@ class YT:
             part="snippet,status,id", body={"snippet": {"title": title, "description":description},"status":{"privacyStatus":"unlisted"}}
         )
         response = request.execute()
-        playlist_id = process_response(response)
-        return playlist_id
+        return response
+        #playlist_id = process_response(response)
+        #return playlist_id
     
+    def delete_playlist(self,playlist_id):
+        request = self.user_service.playlists().delete(id=playlist_id)
+        response = request.execute()
+        return response
+
+    def move_playlist_item(self,video_id,playlist_id, new_position):
+        body = {"snippet":{"playlistId":playlist_id, "position":new_position,"resourceId":{"kind":"youtube#video","videoId":video_id}}}
+        request = self.user_service.playlistItems().update(part="snippet,id",body=body)
+        response = request.execute()
+
     def add_entry_to_playlist(self,video_id,playlist_id):
         body = {"snippet":{"playlistId":playlist_id, "resourceId":{"kind":"youtube#video","videoId":video_id}}}
 
@@ -72,13 +83,8 @@ def process_response(response: dict):
             return parse_video_result(response["items"][0])
         else:
             raise ValueError("There are two many items for this request.")
-    elif response["kind"] == "youtube#playlist":
-        return response["id"]
     else:
-        raise TypeError(
-            f"process_response is not yet implemented for {response['kind']}."
-        )
-
+        return response
 
 def parse_search_result(result: dict) -> dict:
     # eventually this should return less data than the whole snippet and Id
@@ -90,6 +96,8 @@ def parse_search_result(result: dict) -> dict:
 
 def parse_video_result(response_item: dict) -> dict:
     video_result = {
+        "kind":response_item["kind"],
+        "yt_id":response_item["id"],
         "video_id": response_item["id"],
         "title": response_item["snippet"]["title"],
         # thumbnail data is in response_item['snippet']['thumbnails'] then with different sizes

@@ -77,9 +77,9 @@ def earlier(request, queue_id, entry_id):
 def swap(request, queue_id, entry_id):
     entry = get_object_or_404(Entry, id=entry_id)
     queue = get_object_or_404(Queue,id=queue_id)
-    query = "other_number-entry_" + str(entry.id)
-    other_entry_number = request.POST[query]
-    other_entry = queue.entries.filter(number=other_entry_number).first()
+    query = "other_position-entry_" + str(entry.id)
+    other_entry_position = request.POST[query]
+    other_entry = queue.entries.filter(position=other_entry_position).first()
     entry.swap(other_entry)
     return HttpResponseRedirect(reverse("edit_queue", args=[queue_id]))
 
@@ -98,9 +98,9 @@ def add_entry(request, queue_id, video_id):
     # saying it isn't available.
     del video_data["status"]
     entry = Entry(**video_data)
-    entry.queue = queue
+    entry.p_queue = queue
     queue.length += 1
-    entry.number = queue.length
+    entry.position = queue.length
     entry.user = user.name if user.name else user.email
     queue.save()
     entry.save()

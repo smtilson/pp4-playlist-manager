@@ -200,3 +200,134 @@ File ~\OneDrive\Desktop\repos\pp4-playlist-manager\venv\Lib\site-packages\google
     329     body["rapt"] = rapt_token
 
 TypeError: sequence item 0: expected str instance, list found
+
+
+PS C:\Users\seant\OneDrive\Desktop\repos\pp4-playlist-manager> py manage.py shell
+Could not find platform independent libraries <prefix>      
+Python 3.12.2 (tags/v3.12.2:6abddd9, Feb  6 2024, 21:26:36) [MSC v.1937 64 bit (AMD64)]
+Type 'copyright', 'credits' or 'license' for more information
+IPython 8.25.0 -- An enhanced Interactive Python. Type '?' for help.
+
+In [1]: queue.publish()
+------------------------------------------------------------
+NameError                  Traceback (most recent call last)
+Cell In[1], line 1
+----> 1 queue.publish()
+
+NameError: name 'queue' is not defined
+
+In [2]: %run playground.py
+
+In [3]: queue.publish()
+Out[3]: 'Queue test swap already uploadeded to youtube.'    
+
+In [4]: queue.youtube_id = ""
+
+In [5]: queue.save()
+
+In [6]: queue.publish()
+------------------------------------------------------------
+OperationalError           Traceback (most recent call last)
+File ~\OneDrive\Desktop\repos\pp4-playlist-manager\venv\Lib\site-packages\django\db\backends\utils.py:89, in CursorWrapper._execute(self, sql, params, *ignored_wrapper_args)       
+     88 else:
+---> 89     return self.cursor.execute(sql, params)
+
+File ~\OneDrive\Desktop\repos\pp4-playlist-manager\venv\Lib\site-packages\django\db\backends\sqlite3\base.py:328, in SQLiteCursorWrapper.execute(self, query, params)
+    327 query = self.convert_query(query, param_names=param_names)
+--> 328 return super().execute(query, params)
+
+OperationalError: no such column: queues_entry.youtube_id   
+
+The above exception was the direct cause of the following exception:
+
+OperationalError           Traceback (most recent call last)
+Cell In[6], line 1
+----> 1 queue.publish()
+
+File ~\OneDrive\Desktop\repos\pp4-playlist-manager\queues\models.py:59, in Queue.publish(self)
+     57 youtube_id = yt.create_playlist(title=self.name, description=self.description)
+     58 self.youtube_id = youtube_id
+---> 59 for entry in self.entries.all():
+     60     entry.publish(yt, youtube_id)
+     61 self.synced = True
+
+File ~\OneDrive\Desktop\repos\pp4-playlist-manager\venv\Lib\site-packages\django\db\models\query.py:398, in QuerySet.__iter__(self)
+    383 def __iter__(self):
+    384     """
+    385     The queryset iterator protocol uses three nested iterators in the
+    386     default case:
+   (...)
+    396            - Responsible for turning the rows into model objects.
+    397     """
+--> 398     self._fetch_all()
+    399     return iter(self._result_cache)
+
+File ~\OneDrive\Desktop\repos\pp4-playlist-manager\venv\Lib\site-packages\django\db\models\query.py:1881, in QuerySet._fetch_all(self)
+   1879 def _fetch_all(self):
+   1880     if self._result_cache is None:
+-> 1881         self._result_cache = list(self._iterable_class(self))
+   1882     if self._prefetch_related_lookups and not self._prefetch_done:
+   1883         self._prefetch_related_objects()
+
+File ~\OneDrive\Desktop\repos\pp4-playlist-manager\venv\Lib\site-packages\django\db\models\query.py:91, in ModelIterable.__iter__(self)
+     88 compiler = queryset.query.get_compiler(using=db)    
+     89 # Execute the query. This will also fill compiler.select, klass_info,
+     90 # and annotations.
+---> 91 results = compiler.execute_sql(
+     92     chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size
+     93 )
+     94 select, klass_info, annotation_col_map = (
+     95     compiler.select,
+     96     compiler.klass_info,
+     97     compiler.annotation_col_map,
+     98 )
+     99 model_cls = klass_info["model"]
+
+File ~\OneDrive\Desktop\repos\pp4-playlist-manager\venv\Lib\site-packages\django\db\models\sql\compiler.py:1562, in SQLCompiler.execute_sql(self, result_type, chunked_fetch, chunk_size)
+   1560     cursor = self.connection.cursor()
+   1561 try:
+-> 1562     cursor.execute(sql, params)
+   1563 except Exception:
+   1564     # Might fail for server-side cursors (e.g. connection closed)
+   1565     cursor.close()
+
+File ~\OneDrive\Desktop\repos\pp4-playlist-manager\venv\Lib\site-packages\django\db\backends\utils.py:102, in CursorDebugWrapper.execute(self, sql, params)
+    100 def execute(self, sql, params=None):
+    101     with self.debug_sql(sql, params, use_last_executed_query=True):
+--> 102         return super().execute(sql, params)
+
+File ~\OneDrive\Desktop\repos\pp4-playlist-manager\venv\Lib\site-packages\django\db\backends\utils.py:67, in CursorWrapper.execute(self, sql, params)
+     66 def execute(self, sql, params=None):
+---> 67     return self._execute_with_wrappers(
+     68         sql, params, many=False, executor=self._execute                                                         
+     69     )
+
+File ~\OneDrive\Desktop\repos\pp4-playlist-manager\venv\Lib\site-packages\django\db\backends\utils.py:80, in CursorWrapper._execute_with_wrappers(self, sql, params, many, executor)
+     78 for wrapper in reversed(self.db.execute_wrappers):  
+     79     executor = functools.partial(wrapper, executor) 
+---> 80 return executor(sql, params, many, context)
+
+File ~\OneDrive\Desktop\repos\pp4-playlist-manager\venv\Lib\site-packages\django\db\backends\utils.py:84, in CursorWrapper._execute(self, sql, params, *ignored_wrapper_args)       
+     82 def _execute(self, sql, params, *ignored_wrapper_args):
+     83     self.db.validate_no_broken_transaction()        
+---> 84     with self.db.wrap_database_errors:
+     85         if params is None:
+     86             # params default might be backend specific.
+     87             return self.cursor.execute(sql)
+
+File ~\OneDrive\Desktop\repos\pp4-playlist-manager\venv\Lib\site-packages\django\db\utils.py:91, in DatabaseErrorWrapper.__exit__(self, exc_type, exc_value, traceback)
+     89 if dj_exc_type not in (DataError, IntegrityError):  
+     90     self.wrapper.errors_occurred = True
+---> 91 raise dj_exc_value.with_traceback(traceback) from exc_value
+
+File ~\OneDrive\Desktop\repos\pp4-playlist-manager\venv\Lib\site-packages\django\db\backends\utils.py:89, in CursorWrapper._execute(self, sql, params, *ignored_wrapper_args)       
+     87     return self.cursor.execute(sql)
+     88 else:
+---> 89     return self.cursor.execute(sql, params)
+
+File ~\OneDrive\Desktop\repos\pp4-playlist-manager\venv\Lib\site-packages\django\db\backends\sqlite3\base.py:328, in SQLiteCursorWrapper.execute(self, query, params)
+    326 param_names = list(params) if isinstance(params, Mapping) else None
+    327 query = self.convert_query(query, param_names=param_names)
+--> 328 return super().execute(query, params)
+
+OperationalError: no such column: queues_entry.youtube_i
