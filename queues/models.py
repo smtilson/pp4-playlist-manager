@@ -2,7 +2,8 @@ from django.db import models
 from profiles.models import Profile, GuestProfile
 from django.shortcuts import get_object_or_404
 from yt_query.yt_api_utils import YT
-from utils import get_secret, DjangoFieldsMixin,ToDictMixin
+from utils import get_secret
+from mixins import DjangoFieldsMixin,ToDictMixin
 
 # Create your models here.
 

@@ -9,7 +9,6 @@ from yt_auth.token_auth import (
     revoke_tokens,
 )
 from yt_auth.models import Credentials
-from django.utils.crypto import get_random_string
 
 # Create your views here.
 

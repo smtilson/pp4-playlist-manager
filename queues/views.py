@@ -2,9 +2,7 @@ from django.shortcuts import render, reverse, get_object_or_404
 from django.http import HttpResponseRedirect
 from .forms import QueueForm, EntryForm
 from .models import Queue, Entry
-from profiles.models import Profile, GuestProfile
 from yt_query.yt_api_utils import YT
-from utils import produce_url_code
 
 # Create your views here.
 
@@ -55,6 +53,7 @@ def edit_queue(request, queue_id):
         "search_results": search_results,
         "user":user,
         "is_owner": is_owner,
+        "is_guest": user.is_guest
     }
     return render(request, "queues/edit_queue.html", context)
 

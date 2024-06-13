@@ -9,12 +9,12 @@ from django.utils import timezone
 from utils import get_secret
 from yt_auth.models import Credentials
 from yt_query.yt_api_utils import YT
-from django.shortcuts import get_object_or_404
-from utils import ToDictMixin, DjangoFieldsMixin
+from mixins import ToDictMixin, DjangoFieldsMixin
+from typing import Union
 
 
 # Create your models here.
-
+# I don't think these are used.
 SCOPES = ["https://www.googleapis.com/auth/youtube"]
 UNIVERSE_DOMAIN = "googleapis.com"
 TOKEN_URI = "https://oauth2.googleapis.com/token"
@@ -53,10 +53,10 @@ class ProfileManager(BaseUserManager):
 class Profile(AbstractBaseUser, PermissionsMixin, DjangoFieldsMixin, ToDictMixin):
     email = models.EmailField(max_length=200, unique=True)
     name = models.CharField(max_length=200, null=True, blank=True)
+    # can these three be replaced by properties?
     is_superuser = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
-    is_guest = models.BooleanField(default=False)
     last_login = models.DateTimeField(null=True, blank=True)
     date_joined = models.DateTimeField(auto_now_add=True)
     credentials = models.OneToOneField(
@@ -70,6 +70,10 @@ class Profile(AbstractBaseUser, PermissionsMixin, DjangoFieldsMixin, ToDictMixin
     REQUIRED_FIELDS = []
 
     objects = ProfileManager()
+
+    @property
+    def is_guest(self):
+        return False
 
     def to_dict(self):
         credentials = self.credentials.to_dict()
@@ -101,7 +105,7 @@ class Profile(AbstractBaseUser, PermissionsMixin, DjangoFieldsMixin, ToDictMixin
         """
         new_credentials is a google Credentials object. Updates credentials to
         with the data from new_credentials. When no object is passed, it resets
-        the credentials to the default blank credentials
+        the credentials to the default blank credentials.
         """
         self.credentials.set_credentials(new_credentials)
         if self.has_tokens:
@@ -119,6 +123,7 @@ class Profile(AbstractBaseUser, PermissionsMixin, DjangoFieldsMixin, ToDictMixin
         self.youtube_id = ""
         self.youtube_url = ""
         self.set_credentials()
+        #i think this is unnecessary
         self.save()
 
     @property
@@ -127,7 +132,7 @@ class Profile(AbstractBaseUser, PermissionsMixin, DjangoFieldsMixin, ToDictMixin
 
 
 class GuestProfile(ToDictMixin):
-    def __init__(self, name:str, queue_id, queue_secret, owner_secret, email="") -> None:
+    def __init__(self, name:str, queue_id:int, queue_secret:str, owner_secret:str, email:str="") -> None:
         self.name = name
         self.queue_id = queue_id
         self.queue_secret = queue_secret
@@ -137,6 +142,7 @@ class GuestProfile(ToDictMixin):
         self.is_staff = False
         self.is_active = True
         self.is_guest = True
+        #maybe replace these two with some datetime stuff
         self.last_login = ""
         self.date_joined = "not applicable"
         self.credentials = ""
@@ -148,6 +154,12 @@ class GuestProfile(ToDictMixin):
     
     def serialize(self):
         return self.to_dict_mixin(Profile.field_names())
-
-
     
+    def convert_to_profile(self):
+        pass
+
+
+def make_user(user:Union['Profile',dict]) ->Union['Profile','GuestProfile']:
+    if isinstance(user,dict):
+        user = GuestProfile(**user)
+    return user  

@@ -1,7 +1,5 @@
-import json
 import ast
 from django.utils.crypto import get_random_string
-from profiles.models import GuestProfile
 
 
 def json_to_dict(json) -> dict:
@@ -14,30 +12,6 @@ def get_secret():
 
 def empty_dict(dictionary: dict) -> bool:
     return [val for val in dictionary.values() if val] == []
-
-
-class DjangoFieldsMixin:
-    @classmethod
-    def all_fields(cls):
-        return cls._meta.get_fields()
-
-    @classmethod
-    def all_field_names(cls):
-        return [field.name for field in cls._meta.get_fields()]
-
-    @classmethod
-    def field_names(cls):
-        return [field.name for field in cls._meta.fields]
-
-
-class ToDictMixin:
-    def to_dict_mixin(self,keys,exclude=set()):
-        attrs = {key: getattr(self, key, "") for key in keys}
-        return {
-            key: value
-            for key, value in attrs.items()
-            if key not in exclude and value
-        }
 
 
 def get_data_from_path(path: str) -> tuple[str]:
@@ -86,11 +60,6 @@ def get_user(request):
     if guest_user:
         return guest_user
     return request.user
-
-def make_user(user:Optional['Profile',dict]) ->Optional['Profile','GuestProfile']:
-    if isinstance(user,dict):
-        user = GuestProfile(**user)
-    return user
 
 def has_authorization(user, queue):
     user = make_user(user)
