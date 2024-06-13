@@ -47,7 +47,7 @@ class YT:
 
     def create_playlist(self, title, description) -> str:
         request = self.user_service.playlists().insert(
-            part="snippet,id", body={"snippet": {"title": title, "description":description}}
+            part="snippet,status,id", body={"snippet": {"title": title, "description":description},"status":{"privacyStatus":"unlisted"}}
         )
         response = request.execute()
         playlist_id = process_response(response)
