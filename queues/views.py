@@ -38,12 +38,20 @@ def edit_queue(request, queue_id):
     queue = Queue.find_queue(queue_id)
     request.session["queue"] = queue.serialize()
     user = request.user
-    recent_search = request.POST.get("searchQuery", "")
-    search_results = []
     is_owner = queue.owner == user
-    if recent_search:
+    last_search = request.session.get("last_search_request","")
+    if request.method == "POST":
+        recent_search = request.POST.get("searchQuery", "")
         yt = YT(user)
         search_results = yt.search_videos(recent_search)
+        request.session["last_search_request"] = recent_search
+    elif last_search:
+        recent_search = last_search
+        yt = YT(user)
+        search_results = yt.search_videos(last_search)
+    else:
+        recent_search = ""
+        search_results = []
     entry_form = EntryForm()
     entries = Entry.objects.all().filter(queue=queue.id)
     context = {
