@@ -57,6 +57,17 @@ def edit_queue(request, queue_id):
     }
     return render(request, "queues/edit_queue.html", context)
 
+def earlier(request,queue_id,entry_id):
+    entry = get_object_or_404(Entry, id=entry_id)
+    entry.earlier()
+    return HttpResponseRedirect(reverse("edit_queue",args=[queue_id]))
+
+def later(request,queue_id,entry_id):
+    entry = get_object_or_404(Entry, id=entry_id)
+    entry.later()
+    return HttpResponseRedirect(reverse("edit_queue",args=[queue_id]))
+
+
 def add_entry(request, queue_id, video_id):
     queue = get_object_or_404(Queue,id=queue_id)
     user = request.user

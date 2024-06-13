@@ -27,6 +27,10 @@
                 {% if is_owner %}
                 <a href="{% url 'delete_entry' queue_id=queue.id entry_id=entry.id %}"><button
                         class="btn btn-md">Remove</button></a>
+                <div class="position-div">
+                    <a href="{%url 'earlier' queue_id=queue.id entry_id=entry.id %}"><button>+</button></a>
+                    <a href="{%url 'later' queue.id entry.id %}"><button>-</button></a>
+                </div>
                 {% endif %}
             </span>
         </li>

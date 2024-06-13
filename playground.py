@@ -29,5 +29,23 @@ from queues.models import Queue, Entry
 from yt_query.yt_api_utils import YT
 from utils import get_secret
 
+def move_down(entry):
+        entries = entry.queue.entries.all()
+        print(entry.title, entry.number)
+        for index, other_entry in enumerate(entries):
+            print(index,other_entry)
+            print(other_entry.title, other_entry.number)
+            
+            if other_entry.number<=entry.number:
+                print("too small")
+                input()
+                continue
+            else:
+                print("just right")
+                input()
+                break
+        entry.swap(other_entry)
+
 me = Profile.objects.all().first()
-creds = Credentials.objects.all().first()
+queue = me.my_queues.all().first()
+entry1, entry2, entry3, entry4 = queue.entries.all()

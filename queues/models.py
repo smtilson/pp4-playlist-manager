@@ -81,3 +81,41 @@ class Entry(models.Model):
         # add an error check here
         self.published = True
         self.save()
+
+    def swap(self,other) -> None:
+        print(self.title,self.number)
+        print(other.title,other.number)
+        self.number, other.number = other.number, self.number
+        print(self.title,self.number)
+        print(other.title,other.number)
+        self.save()
+        other.save()
+
+    def trigger(self):
+        print(f"trigger method hit for {self.id, self.title}")
+
+    def earlier(self) -> None:
+        print("move up method hit")
+        print(self.title,self.number)
+        entries = self.queue.entries.all().order_by('-number')
+        print("entries",entries)
+        for entry in entries:
+            print(entry.title,entry.number)
+            if entry.number>=self.number:
+                continue
+            else:
+                break
+        self.swap(entry)
+
+    def later(self) -> "Entry":
+        entries = self.queue.entries.all()
+        for entry in entries:
+            if entry.number<=self.number:
+                continue
+            else:
+                break
+        self.swap(entry)
+
+    def move_up(self) -> None:
+        
+        pass

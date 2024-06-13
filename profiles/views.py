@@ -76,7 +76,7 @@ def profile(request):
     This can be cleaned up still.
     """
     user = request.user
-    print(user.to_dict())
+    
     # if not user.secret:
     #    user.initialize()
     url = get_authorization_url()
