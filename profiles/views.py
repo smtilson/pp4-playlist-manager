@@ -1,6 +1,6 @@
 from django.shortcuts import render, reverse, get_object_or_404
 from django.http import HttpResponseRedirect
-from .models import Profile, GuestProfile
+from .models import Profile, GuestProfile, make_user
 from queues.models import Queue
 from yt_auth.token_auth import (
     get_authorization_url,
@@ -20,58 +20,10 @@ def index(request):
         return return_from_authorization(request)
     elif "redirect_action" in request.session:
         view_name = request.session["redirect_action"]["action"]
-        args = request.session["redirect_action"]['args']
-        return HttpResponseRedirect(reverse(view_name,args=args))
+        args = request.session["redirect_action"]["args"]
+        return HttpResponseRedirect(reverse(view_name, args=args))
     else:
         return render(request, "profiles/index.html")
-
-
-def test(request):
-    """
-    Test view, to load templates properly.
-    """
-    user = request.user
-    test_dict = {"request_user_dir": request.user.__dir__()}
-    context = {
-        "user_id": user.id,
-        "view_name": "test",
-        "email": user.email,
-        "test_dict": test_dict,
-        "test_data": "",
-        "youtube_account": "none as of yet",
-    }
-    request.data_tag1234 = "testing"
-    return render(request, "profiles/test.html", context)
-
-
-def test_function(request):
-    """
-    View to run test functions.
-    """
-    user = request.user
-    # this should not in general be necessary
-
-    if user.credentials is None:
-        empty_creds = Credentials()
-        empty_creds.save()
-        user.credentials = empty_creds
-        user.save()
-    else:
-        url = "#"
-    context = {
-        "user_id": user.id,
-        "email": user.email,
-        "view_name": "profile",
-        "has_tokens": user.has_tokens,
-        "test_data": "",
-        "authorization_url": url,
-        "youtube_account": "none as of yet",
-    }
-    test_dict = user.credentials.to_dict()
-    test_dict["msg"] = msg
-    context["test_dict"] = test_dict
-
-    return render(request, "profiles/test.html", context)
 
 
 def profile(request):
@@ -80,27 +32,31 @@ def profile(request):
     This can be cleaned up still.
     """
     user = request.user
-    url = get_authorization_url()
     if not user.credentials:
         user.initialize()
     if not user.has_tokens:
         msg = "Profile has no associated youtube account."
     else:
         msg = "Youtube DJ has access to your youtube account."
+    info_dict = user.info_dict
+    info_dict["Message"] = msg
+    info_dict["Are Credentials Valid?"] = user.valid_credentials
     context = {
         "user": user,
         "view_name": "profile",
-        "authorization_url": url,
+        "authorization_url": get_authorization_url(),
+        "info_dict": info_dict,
+        "my_queues": user.my_queues.all(),
+        "other_queues": user.other_queues.all(),
     }
-    # test_dict = user.credentials.to_dict()
-    test_dict = user.to_dict()
-    test_dict["msg"] = msg
-    test_dict["valid"] = user.valid_credentials
-    context["test_dict"] = test_dict
-    context["my_queues"] = user.my_queues.all()
-    context["other_queues"] = user.other_queues.all()
-
     return render(request, "profiles/profile.html", context)
+
+
+def set_name(request):
+    user = make_user(request)
+    user.name = request.POST["name"]
+    user.save()
+    return HttpResponseRedirect(reverse("profile"))
 
 
 def revoke_authorization(request):
@@ -138,7 +94,7 @@ def guest_sign_in(request):
             queue_secret=request.session["queue_secret"],
             owner_secret=request.session["owner_secret"],
         )
-        request.session["guest_user"]=user.serialize()
+        request.session["guest_user"] = user.serialize()
         return HttpResponseRedirect(
             reverse("edit_queue", args=[request.session["queue_id"]])
         )

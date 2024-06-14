@@ -15,7 +15,7 @@ class Queue(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
     owner_yt_id = models.CharField(max_length=100, default="")
     youtube_id = models.CharField(max_length=100, default="")
     collaborators = models.ManyToManyField(Profile, related_name="other_queues")
-    name = models.CharField(max_length=100, default="none given")
+    title = models.CharField(max_length=100, default="")
     description = models.TextField(max_length=400, null=True, blank=True, default="")
     # make these date names consistent throughout the app.
     date_created = models.DateTimeField(auto_now_add=True)
@@ -26,7 +26,7 @@ class Queue(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
     yt_id = models.CharField(max_length=100, default="", null=True, blank=True)
 
     def __str__(self):
-        string = f"Queue: {self.name} by {self.owner}" + "\n"
+        string = f"Queue: {self.title} by {self.owner}" + "\n"
         string += "\n".join([str(entry) for entry in self.all_entries])
         return string
 
@@ -95,15 +95,15 @@ class Queue(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
     def publish(self) -> str:
         # should this be refactored to require a key of some sort?
         if self.published:
-            return f"Queue {self.name} already uploadeded to youtube."
+            return f"Queue {self.title} already uploadeded to youtube."
         yt = YT(self.owner)
         # add some error checking here.
-        response = yt.create_playlist(title=self.name, description=self.description)
+        response = yt.create_playlist(title=self.title, description=self.description)
         self.save_resource_id(response)
         self.save()
         for entry in self.all_entries:
             entry.publish(yt)
-        return f"Queue {self.name} successfully added to youtube."
+        return f"Queue {self.title} successfully added to youtube."
 
     @property
     def url(self):
