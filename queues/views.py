@@ -47,6 +47,7 @@ def edit_queue(request, queue_id):
             request = yt.save_search(request,queue_id,recent_search,search_results)
     elif request.method == "GET":
         recent_search, search_results = yt.get_last_search(request,queue_id)
+
     context = {
         "queue": queue,
         "recent_search": recent_search,
@@ -133,6 +134,7 @@ def gain_access(request, queue_secret, owner_secret):
     request.session["owner_secret"] = owner_secret
     request.session["redirect_action"]={"action":"edit_queue","args":[queue.id]}
     if owner_secret == queue.owner.secret:
+
         print("secrets match")
         if user.is_authenticated:
             print("user is authenticated")
