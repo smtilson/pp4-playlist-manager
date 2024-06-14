@@ -38,24 +38,17 @@ def edit_queue(request, queue_id):
     # write authorization fucntion taking a queue and a user and returning a boolean
     request, queue = Queue.find_queue(request,queue_id)
     user = make_user(request)
-    is_owner = queue["owner_yt_id"] == user.youtube_id
-    #last_search = request.session.get("last_search_request")
-    recent_search = getattr(request,"POST",{}).get("search_result")    
-    if recent_search:
-        yt = YT(user)
-        search_results = yt.search_videos(recent_search)
-        #request.session["last_search_request"] = recent_search
-    #elif last_search:
-        #recent_search = last_search
-     #   yt = YT(user)
-      #  search_results = yt.search_videos(last_search)
-    else:
-        search_results = []
-    entry_form = EntryForm()
+    is_owner = queue.owner_yt_id == user.youtube_id
+    yt = YT(user)
+    if request.method =="POST":
+        recent_search = request.POST.get("searchQuery")
+        if recent_search:
+            search_results = yt.search_videos(recent_search)
+            request = yt.save_search(request,queue_id,recent_search,search_results)
+    elif request.method == "GET":
+        recent_search, search_results = yt.get_last_search(request,queue_id)
     context = {
         "queue": queue,
-        "entry_form": entry_form,
-        "entries": queue["entries"],
         "recent_search": recent_search,
         "search_results": search_results,
         "user": user,
@@ -78,8 +71,8 @@ def swap(request, queue_id, entry_id):
     request, queue = Queue.find_queue(request,queue_id)
     query = "other_position-entry_" + str(entry.id)
     other_entry_position = request.POST[query]
-    other_entry = queue["entries"][other_entry_position-1]
-    entry.swap(other_entry)
+    other_entry = queue.all_entries[other_entry_position-1]
+    Entry.swap_entries(entry_id,other_entry.id)
     return HttpResponseRedirect(reverse("edit_queue", args=[queue_id]))
 
 
@@ -100,9 +93,10 @@ def add_entry(request, queue_id, video_id):
     entry.p_queue = queue
     queue.length += 1
     entry.position = queue.length
-    entry.user = user.get("name",user.get("email","secret individual")) 
+    entry.user = user.name if user.name else user.email 
     queue.save()
     entry.save()
+    request.session["queue"] = queue.serialize()
     return HttpResponseRedirect(reverse("edit_queue", args=[queue_id]))
 
 

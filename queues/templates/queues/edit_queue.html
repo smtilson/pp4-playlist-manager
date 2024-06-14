@@ -33,7 +33,7 @@
 </form>
 <div>
     <ol>
-        {% for entry in entries %}
+        {% for entry in queue.all_entries %}
         <li>
             <span>{{entry.title}}: {{entry.duration}} added by {{entry.user}}
                 {% if is_owner %}

@@ -26,8 +26,13 @@ class Queue(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
     yt_id = models.CharField(max_length=100, default="",null=True,blank=True)
 
 
+    @property
+    def all_entries(self):
+        return self.entries.all()
+
     @classmethod
     def find_queue(cls, request, queue_id):
+        return request, get_object_or_404(Queue, id=queue_id)
         queue = request.session.get("queue")
         if not queue:
             queue = get_object_or_404(Queue, id=queue_id)
@@ -166,14 +171,6 @@ class Entry(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
             print(response)
         self.synced = True
         self.save()
-    # refactor this to be a class method that only takes ids
-    def swap(self,other) -> None:
-        other = get_object_or_404(Entry,id=other['id'])
-        self.position, other.position = other.position, self.position
-        self.synced = False
-        other.synced = False
-        self.save()
-        other.save()
 
     @classmethod
     def swap_entries(cls, id_1, id_2):
@@ -189,15 +186,13 @@ class Entry(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
 
     def earlier(self) -> None:
         if self.position != 1:
-            other_entry =self.p_queue.entries.all().filter(position=self.position-1).first()
-            self.swap(other_entry)
+            other_entry =self.p_queue.all_entries[self.position-2]
+            self.swap_entries(self.id,other_entry.id)
 
     def later(self) -> None:
         if self.position != self.p_queue.length:
-            other_entry =self.p_queue.entries.all().filter(position=self.position+1).first()
-            self.swap(other_entry)
-        else:
-            return
+            other_entry =self.p_queue.all_entries[self.position]
+            self.swap_entries(self.id,other_entry.id)
         
 body_shape={
   "id": "YOUR_PLAYLIST_ITEM_ID",

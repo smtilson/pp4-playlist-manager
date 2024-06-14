@@ -75,6 +75,19 @@ class YT:
         response = request.execute()
         return response
 
+    @classmethod
+    def get_last_search(cls,request,queue_id):
+        last_queue_query = request.session.get(f"queue_{queue_id}",{})
+        last_query = last_queue_query.get("last_query")
+        last_search = last_queue_query.get("last_search")
+        return last_query, last_search
+    
+    @classmethod
+    def save_search(cls,request,queue_id,recent_search,search_results):
+        last_queue_query = {"last_query":recent_search,"last_search":search_results}
+        request.session[f"queue_{queue_id}"] = last_queue_query
+        return request
+
 def process_response(response: dict):
     # how can I refactor this?
     # there is the dictionary storing callables that I did...
