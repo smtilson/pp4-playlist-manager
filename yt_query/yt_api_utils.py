@@ -3,6 +3,7 @@
 from googleapiclient.discovery import build
 from utils import produce_url_code
 from env import YOUTUBE_API_KEY
+from django.shortcuts import get_object_or_404
 
 
 class YT:
@@ -13,8 +14,10 @@ class YT:
         self.guest_service = self.connect_simple()
 
     def connect_oauth(self) -> "Service":
-        credentials = self.user.google_credentials
-        return build("youtube", "v3", credentials=credentials)
+        if self.user.has_tokens:
+            credentials = self.user.google_credentials
+            return build("youtube", "v3", credentials=credentials)
+        return ""
     
     def connect_simple(self) -> "Service":
         return build("youtube", "v3", developerKey=YOUTUBE_API_KEY)
@@ -29,7 +32,8 @@ class YT:
 
     def search_videos(self, query) -> list[str]:
         request = self.guest_service.search().list(
-            part="snippet", type="video", q=query, maxResults=25
+            # maxResults=5 in order to limit API usage
+            part="snippet", type="video", q=query, maxResults=5
         )
         response = request.execute()
         return process_response(response)
@@ -47,18 +51,44 @@ class YT:
 
     def create_playlist(self, title, description) -> str:
         request = self.user_service.playlists().insert(
-            part="snippet,id", body={"snippet": {"title": title, "description":description}}
+            part="snippet,status,id", body={"snippet": {"title": title, "description":description},"status":{"privacyStatus":"unlisted"}}
         )
         response = request.execute()
-        playlist_id = process_response(response)
-        return playlist_id
+        
+        #playlist_id = process_response(response)
+        #return playlist_id
     
-    def add_entry_to_playlist(self,video_id,playlist_id):
-        body = {"snippet":{"playlistId":playlist_id, "resourceId":{"kind":"youtube#video","videoId":video_id}}}
-
-        request = self.user_service.playlistItems().insert(part="snippet,id",body=body)
+    def delete_playlist(self,playlist_id):
+        request = self.user_service.playlists().delete(id=playlist_id)
         response = request.execute()
         return response
+
+    def move_playlist_item(self,video_id,new_position,playlist_item_id,playlist_id):
+        body = {"kind":"youtube#playlistItem","id":playlist_item_id,"snippet":{"playlistId":playlist_id, "position":new_position,"resourceId":{"kind":"youtube#video","videoId":video_id}}}
+        request = self.user_service.playlistItems().update(part="snippet,id",body=body)
+        response = request.execute()
+
+    def add_entry_to_playlist(self,video_id,position,playlist_id):
+        print("attempting to add")
+        print("body",body)
+        body = {"snippet":{"playlistId":playlist_id,"position":position, "resourceId":{"kind":"youtube#video","videoId":video_id}}}
+        request = self.user_service.playlistItems().insert(part="snippet,id",body=body)
+        print(request.uri)
+        response = request.execute()
+        return response
+
+    @classmethod
+    def get_last_search(cls,request,queue_id):
+        last_queue_query = request.session.get(f"queue_{queue_id}",{})
+        last_query = last_queue_query.get("last_query")
+        last_search = last_queue_query.get("last_search")
+        return last_query, last_search
+    
+    @classmethod
+    def save_search(cls,request,queue_id,recent_search,search_results):
+        last_queue_query = {"last_query":recent_search,"last_search":search_results}
+        request.session[f"queue_{queue_id}"] = last_queue_query
+        return request
 
 def process_response(response: dict):
     # how can I refactor this?
@@ -73,10 +103,7 @@ def process_response(response: dict):
     elif response["kind"] == "youtube#playlist":
         return response["id"]
     else:
-        raise TypeError(
-            f"process_response is not yet implemented for {response['kind']}."
-        )
-
+        return response
 
 def parse_search_result(result: dict) -> dict:
     # eventually this should return less data than the whole snippet and Id
@@ -88,6 +115,8 @@ def parse_search_result(result: dict) -> dict:
 
 def parse_video_result(response_item: dict) -> dict:
     video_result = {
+        "kind":response_item["kind"],
+        "yt_id":response_item["id"],
         "video_id": response_item["id"],
         "title": response_item["snippet"]["title"],
         # thumbnail data is in response_item['snippet']['thumbnails'] then with different sizes
