@@ -31,7 +31,7 @@ def publish(request, queue_id):
         msg = queue.publish()
     # add message to the request or whatever.
     # does that work with a redirect response.
-    return HttpResponseRedirect(reverse("profile"))
+    return HttpResponseRedirect(reverse("edit_queue", args=[queue_id]))
 
 
 def edit_queue(request, queue_id):
@@ -81,6 +81,10 @@ def later(request, queue_id, entry_id):
     entry.later()
     return HttpResponseRedirect(reverse("edit_queue", args=[queue_id]))
 
+def sync(request, queue_id):
+    queue = get_object_or_404(Queue, id=queue_id)
+    queue.sync()
+    return HttpResponseRedirect(reverse("edit_queue", args=[queue_id]))
 
 def add_entry(request, queue_id, video_id):
     queue = get_object_or_404(Queue, id=queue_id)
@@ -88,7 +92,7 @@ def add_entry(request, queue_id, video_id):
     video_data = YT(user).find_video_by_id(video_id)
     # check against video_data['status'] == private, then redirect with message
     # saying it isn't available.
-    del video_data["status"]
+    # del video_data["status"]
     entry = Entry(**video_data)
     entry.p_queue = queue
     queue.length += 1
