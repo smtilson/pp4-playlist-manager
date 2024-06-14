@@ -15,7 +15,8 @@
     <a href="{% url 'publish' queue.id %}"><button>Publish</button></a>
     <p>Playlists are published by default as unlisted.</p>
     {% elif not queue.synced %}
-    <button>Sync (not yet implemented)</button>
+    <a href="{% url 'sync' queue.id %}"><button>Sync</button></a>
+    {% endif %}
     <a href="{% url 'delete_queue' queue.id %}"><button>Delete</button></a>
     {%endif%}
 {% endif %}
@@ -35,7 +36,7 @@
 </form>
 <div>
     <ol>
-        {% for entry in entries %}
+        {% for entry in queue.all_entries %}
         <li>
             <span>{{entry.title}}: {{entry.duration}} added by {{entry.user}}
                 {% if is_owner %}

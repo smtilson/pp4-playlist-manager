@@ -22,7 +22,6 @@ def index(request):
         view_name = request.session["redirect_action"]["action"]
         args = request.session["redirect_action"]['args']
         return HttpResponseRedirect(reverse(view_name,args=args))
-        pass
     else:
         return render(request, "profiles/index.html")
 
@@ -131,7 +130,7 @@ def guest_sign_in(request):
         return render(request, "profiles/guest_sign_in.html")
     elif request.method == "POST":
         name = request.POST["guest_name"]
-        email = request.POST.get("guest_email", "")
+        email = request.POST.get("guest_email")
         user = GuestProfile(
             name=name,
             email=email,
