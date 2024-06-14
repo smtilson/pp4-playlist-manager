@@ -8,6 +8,8 @@ profile_class_code_raw = """email = models.EmailField(max_length=200, unique=DEB
     credentials = models.OneToOneField(Credentials,on_delete=models.SET_DEFAULT,null=True,default=Credentials)
     youtube_id = models.CharField(max_length=100,null=True,blank=True, default='')
     youtube_url = models.CharField(max_length=100,null=True,blank=True, default='')""""""
+
+
 """
 
 queue_class_fields="""owner = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="my_queues", default=1)
@@ -36,3 +38,4 @@ queue2 = all_queues[1]
 playlist_url = "https://www.youtube.com/playlist?list=PLaPvip_wdwX0etylKbQJBY2PmpLkjIBHT"
 yt = YT(me)
 
+entry = queue[0]

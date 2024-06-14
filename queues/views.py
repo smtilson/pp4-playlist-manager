@@ -36,29 +36,26 @@ def publish(request, queue_id):
 
 def edit_queue(request, queue_id):
     # write authorization fucntion taking a queue and a user and returning a boolean
-    queue = Queue.find_queue(queue_id)
-    request.session["queue"] = queue.serialize()
+    request, queue = Queue.find_queue(request,queue_id)
     user = make_user(request)
-    is_owner = queue.owner == user
-    last_search = request.session.get("last_search_request","")
-    if request.method == "POST":
-        recent_search = request.POST.get("searchQuery", "")
+    is_owner = queue["owner_yt_id"] == user.youtube_id
+    #last_search = request.session.get("last_search_request")
+    recent_search = getattr(request,"POST",{}).get("search_result")    
+    if recent_search:
         yt = YT(user)
         search_results = yt.search_videos(recent_search)
-        request.session["last_search_request"] = recent_search
-    elif last_search:
-        recent_search = last_search
-        yt = YT(user)
-        search_results = yt.search_videos(last_search)
+        #request.session["last_search_request"] = recent_search
+    #elif last_search:
+        #recent_search = last_search
+     #   yt = YT(user)
+      #  search_results = yt.search_videos(last_search)
     else:
-        recent_search = ""
         search_results = []
     entry_form = EntryForm()
-    entries = Entry.objects.all().filter(queue=queue.id)
     context = {
         "queue": queue,
         "entry_form": entry_form,
-        "entries": entries,
+        "entries": queue["entries"],
         "recent_search": recent_search,
         "search_results": search_results,
         "user": user,
@@ -75,11 +72,13 @@ def earlier(request, queue_id, entry_id):
 
 
 def swap(request, queue_id, entry_id):
+    # refactor to use a class method
     entry = get_object_or_404(Entry, id=entry_id)
-    queue = get_object_or_404(Queue,id=queue_id)
+    # I don't think this is necessary here.
+    request, queue = Queue.find_queue(request,queue_id)
     query = "other_position-entry_" + str(entry.id)
     other_entry_position = request.POST[query]
-    other_entry = queue.entries.filter(position=other_entry_position).first()
+    other_entry = queue["entries"][other_entry_position-1]
     entry.swap(other_entry)
     return HttpResponseRedirect(reverse("edit_queue", args=[queue_id]))
 
@@ -101,7 +100,7 @@ def add_entry(request, queue_id, video_id):
     entry.p_queue = queue
     queue.length += 1
     entry.position = queue.length
-    entry.user = user.name if user.name else user.email
+    entry.user = user.get("name",user.get("email","secret individual")) 
     queue.save()
     entry.save()
     return HttpResponseRedirect(reverse("edit_queue", args=[queue_id]))
@@ -134,15 +133,21 @@ def gain_access(request, queue_secret, owner_secret):
     request.session["queue_id"] = queue.id
     request.session["queue_secret"] = queue_secret
     request.session["owner_secret"] = owner_secret
+    request.session["redirect_action"]={"action":"edit_queue","args":[queue.id]}
     if owner_secret == queue.owner.secret:
-        if user.is_guest:
-            return HttpResponseRedirect(reverse("edit_queue", args=[queue.id]))
-        elif user.is_authenticated:
+        print("secrets match")
+        if user.is_authenticated:
+            print("user is authenticated")
             user.other_queues.add(queue)
             queue.save()
             user.save()
             return HttpResponseRedirect(reverse("edit_queue", args=[queue.id]))
-        else:
+        # This means that there is already a guest stored in the session
+        elif user.is_guest:
+            print("user is a guest")
             return HttpResponseRedirect(reverse("guest_sign_in"))
     # need to add feedback here
-    return HttpResponseRedirect(reverse("index"))
+    # this is hit if the user is still anonymous and not a guest
+        else:
+            print("user is an unathenticated non guest")
+            return HttpResponseRedirect(reverse("guest_sign_in"))

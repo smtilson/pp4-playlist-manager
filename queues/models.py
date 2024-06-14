@@ -27,16 +27,31 @@ class Queue(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
 
 
     @classmethod
-    def find_queue(cls, queue_id):
-        return get_object_or_404(Queue, id=queue_id)
+    def find_queue(cls, request, queue_id):
+        queue = request.session.get("queue")
+        if not queue:
+            queue = get_object_or_404(Queue, id=queue_id)
+            queue = queue.serialize()
+            request.session["queue"] = queue
+        elif queue['id'] != queue_id:
+            queue = get_object_or_404(Queue,id=queue_id)
+            queue = queue.serialize()
+            request.session["queue"] = queue
+        return request, queue
     
     def serialize(self):
-        q_dict = self.to_dict_mixin(self.field_names(),{'owner',"date_created","last_edited"})
-        q_dict['owner'] = self.owner.id
+        q_dict = self.to_dict_mixin(self.field_names(),{"entries",'owner',"date_created","last_edited"})
+        q_dict['owner'] = self.owner.serialize()
         q_dict['date_created']=str(self.date_created)
         q_dict['last_edited']=str(self.last_edited)
+        q_dict["entries"] = self.serialize_entries()
         return q_dict
 
+    def serialize_entries(self):
+        entries = self.entries.all()
+        entries = [entry.to_dict() for entry in entries]
+        return entries
+    
     @property
     def published(self):
         return self.yt_id != ''
@@ -77,7 +92,12 @@ class Queue(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
             return "https://www.youtube.com/playlist?list="+self.yt_id
         return "#"
 
+    # do not use this, it wastes resources
     def unpublish(self) -> None:
+        decision = input("Are you sure you want to do this? \n It wastes resources.")
+        if decision !="yes":
+            print("Thank you, exiting unpublish method.")
+            return
         if not self.published:
             return
         yt = YT(self.owner)
@@ -135,8 +155,8 @@ class Entry(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
         self.published = True
         self.save()
 
-    def to_dict(self):
-        return self.to_dict_mixin(self.field_names(),{"queue"})
+    def to_dict(self) -> dict:
+        return self.to_dict_mixin(self.field_names(),{"p_queue"})
 
     def sync(self, yt: "YT", youtube_playlist_id: str) -> None:
         if self.position != self.old_position:
@@ -146,20 +166,47 @@ class Entry(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
             print(response)
         self.synced = True
         self.save()
-
+    # refactor this to be a class method that only takes ids
     def swap(self,other) -> None:
+        other = get_object_or_404(Entry,id=other['id'])
         self.position, other.position = other.position, self.position
         self.synced = False
         other.synced = False
         self.save()
         other.save()
 
+    @classmethod
+    def swap_entries(cls, id_1, id_2):
+        e1 = get_object_or_404(Entry, id = id_1)
+        e2 = get_object_or_404(Entry, id = id_2)
+        e1.position, e2.position = e2.position, e1.position
+        e1.synced = False
+        e2.synced = False
+        e1.save()
+        e2.save()
+        
+
+
     def earlier(self) -> None:
         if self.position != 1:
             other_entry =self.p_queue.entries.all().filter(position=self.position-1).first()
             self.swap(other_entry)
 
-    def later(self) -> "Entry":
+    def later(self) -> None:
         if self.position != self.p_queue.length:
             other_entry =self.p_queue.entries.all().filter(position=self.position+1).first()
             self.swap(other_entry)
+        else:
+            return
+        
+body_shape={
+  "id": "YOUR_PLAYLIST_ITEM_ID",
+  "snippet": {
+    "playlistId": "YOUR_PLAYLIST_ID",
+    "position": 1,
+    "resourceId": {
+      "kind": "youtube#video",
+      "videoId": "YOUR_VIDEO_ID"
+    }
+  }
+}

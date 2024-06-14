@@ -3,6 +3,7 @@
 from googleapiclient.discovery import build
 from utils import produce_url_code
 from env import YOUTUBE_API_KEY
+from django.shortcuts import get_object_or_404
 
 
 class YT:
@@ -31,7 +32,8 @@ class YT:
 
     def search_videos(self, query) -> list[str]:
         request = self.guest_service.search().list(
-            part="snippet", type="video", q=query, maxResults=25
+            # maxResults=5 in order to limit API usage
+            part="snippet", type="video", q=query, maxResults=5
         )
         response = request.execute()
         return process_response(response)
