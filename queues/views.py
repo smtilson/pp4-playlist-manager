@@ -4,7 +4,7 @@ from .forms import QueueForm, EntryForm
 from .models import Queue, Entry
 from profiles.models import make_user
 from yt_query.yt_api_utils import YT
-from urllib import HttpError
+from urllib.error import HTTPError
 
 # Create your views here.
 
@@ -31,7 +31,9 @@ def publish(request, queue_id):
     if user == queue.owner:
         try:
             msg = queue.publish()
-        except HttpError as e:
+        except HTTPError as e:
+            print(e)
+            print("HTTPError hit on publish")
             msg = e
         print(msg)
     # add message to the request or whatever.
@@ -93,7 +95,7 @@ def sync(request, queue_id):
     if user == queue.owner:
         try:
             msg = queue.sync()
-        except HttpError as e:
+        except HTTPError as e:
             msg = e
         print(msg)
     return HttpResponseRedirect(reverse("edit_queue", args=[queue_id]))
@@ -134,7 +136,7 @@ def delete_queue(request, queue_id):
     if queue.owner == user:
         try:
             msg = queue.delete()
-        except HttpError as e:
+        except HTTPError as e:
             msg = e
         print(msg)
     return HttpResponseRedirect(reverse("profile"))
