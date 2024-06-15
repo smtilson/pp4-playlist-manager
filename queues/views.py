@@ -78,7 +78,7 @@ def swap(request, queue_id, entry_id):
     # I don't think this is necessary here.
     request, queue = Queue.find_queue(request,queue_id)
     query = "other_position-entry_" + str(entry.id)
-    other_entry_position = request.POST[query]
+    other_entry_position = int(request.POST[query])
     other_entry = queue.all_entries[other_entry_position-1]
     Entry.swap_entries(entry_id,other_entry.id)
     return HttpResponseRedirect(reverse("edit_queue", args=[queue_id]))

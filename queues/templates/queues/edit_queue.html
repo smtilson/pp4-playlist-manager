@@ -16,8 +16,8 @@
     <p>Playlists are published by default as unlisted.</p>
     {% elif not queue.synced %}
     <a href="{% url 'sync' queue.id %}"><button>Sync</button></a>
-    <a href="{% url 'delete_queue' queue.id %}"><button>Delete</button></a>
     {%endif%}
+    <a href="{% url 'delete_queue' queue.id %}"><button>Delete</button></a>
 {% endif %}
 </div>
 {% if queue.published %}
