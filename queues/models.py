@@ -38,6 +38,10 @@ class Queue(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
         return True
 
     @property
+    def length(self):
+        return len(self.all_entries)
+    
+    @property
     def all_entries(self):
         return self.entries.all()
 
@@ -81,12 +85,12 @@ class Queue(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
             )
         while index < 0:
             index += self.length
-        return self.entries.all()[index]
+        return self.all_entries[index]
 
     def remove_entry(self, entry: "Entry") -> None:
         for other_entry in self.entries.all():
-            if other_entry.position > entry.position:
-                other_entry.position -= 1
+            if other_entry._position > entry._position:
+                other_entry._position -= 1
                 other_entry.save()
         self.length -= 1
         entry.delete()
@@ -157,7 +161,7 @@ class Entry(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
     user = models.CharField(
         max_length=50, default="I am embarassed to have added this."
     )
-    position = models.IntegerField(default=-1)
+    _position = models.IntegerField(default=-1)
     published = models.BooleanField(default=False)
     synced = models.BooleanField(default=False)
     # youtube_id = models.CharField(max_length=100,default="")
@@ -165,7 +169,7 @@ class Entry(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
     yt_id = models.CharField(max_length=100, default="", null=True, blank=True)
 
     class Meta:
-        ordering = ["position"]
+        ordering = ["_position"]
 
     def __str__(self):
         return f"{self.position}. {self.title}"
@@ -174,6 +178,9 @@ class Entry(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
     def playlist_id(self):
         return self.p_queue.yt_id
 
+    @property
+    def position(self):
+        return self._position+1
     @property
     def body(self):
         body =  {
@@ -184,7 +191,7 @@ class Entry(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
             }
         if self.published:
             body["kind"] = self.kind
-            body["snippet"]["position"]=self.position
+            body["snippet"]["position"]=self._position
             body["id"] = self.yt_id
         return body
 
@@ -210,20 +217,20 @@ class Entry(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
     def swap_entries(cls, id_1, id_2):
         e1 = get_object_or_404(Entry, id=id_1)
         e2 = get_object_or_404(Entry, id=id_2)
-        e1.position, e2.position = e2.position, e1.position
+        e1._position, e2._position = e2._position, e1._position
         e1.synced = False
         e2.synced = False
         e1.save()
         e2.save()
 
     def earlier(self) -> None:
-        if self.position != 1:
-            other_entry = self.p_queue.all_entries[self.position - 2]
+        if self._position != 0:
+            other_entry = self.p_queue.all_entries[self._position - 1]
             self.swap_entries(self.id, other_entry.id)
 
     def later(self) -> None:
-        if self.position != self.p_queue.length:
-            other_entry = self.p_queue.all_entries[self.position]
+        if self._position != self.p_queue.length-1:
+            other_entry = self.p_queue.all_entries[self._position+1]
             self.swap_entries(self.id, other_entry.id)
 
 
