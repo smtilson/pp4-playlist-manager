@@ -5,7 +5,7 @@ import pickle
 import os
 import requests
 from .models import Credentials
-from profiles.models import Profile
+from profiles.models import Profile, make_user
 from google.auth.transport.requests import Request
 
 os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
@@ -43,7 +43,7 @@ def get_tokens(authorization_path):
 
 # I am guessing that this does not work because of the header
 def revoke_tokens(request):
-    user = Profile.get_user_profile(request)
+    user = make_user(request)
     if not user.has_tokens:
         return f"This app does not currently have authorization."
     else:

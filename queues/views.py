@@ -110,7 +110,7 @@ def add_entry(request, queue_id, video_id):
     entry = Entry(**video_data)
     entry.p_queue = queue
     # adds entry to end of list
-    entry._position = queue.length-1
+    entry._position = queue.length
     entry.user = user.name if user.name else user.email 
     queue.save()
     entry.save()

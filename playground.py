@@ -43,12 +43,19 @@ playlist_url = "https://www.youtube.com/playlist?list=PLaPvip_wdwX0etylKbQJBY2Pm
 playlist_id = "PLaPvip_wdwX0Z2KhcrSAZokbY8V_8eIRc"
 yt = YT(me)
 
-entry = queue[0]
-entry2 = queue[2]
-e_dict = entry.to_dict()
-e_dict2 = entry2.to_dict()
-sample_video_id1 = entry.video_id
-sample_playlist_id = queue.yt_id
+#sample_video_id1 = entry.video_id
+#sample_playlist_id = queue.yt_id
+
+def fix_positions(queue):
+    print(queue)
+    for entry in queue.all_entries:
+        print(entry)
+        print("official position: ",entry._position)
+        new_position = input("What should the new position be?")
+        entry._position = new_position
+        entry.save()
+    print(queue)
+    queue.save()
 
 def add_entry_to_playlist(service, entry):
     request = service.user_service.playlistItems().insert(part="snippet,id", body=entry.body)

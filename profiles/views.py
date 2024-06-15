@@ -60,7 +60,7 @@ def set_name(request):
 
 
 def revoke_authorization(request):
-    user = request.user
+    user = make_user(request)
     msg = revoke_tokens(request)
     print(msg)
     # there should be a modal for this
