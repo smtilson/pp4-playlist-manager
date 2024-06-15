@@ -4,6 +4,7 @@ from .forms import QueueForm, EntryForm
 from .models import Queue, Entry
 from profiles.models import make_user
 from yt_query.yt_api_utils import YT
+from urllib import HttpError
 
 # Create your views here.
 
@@ -28,7 +29,11 @@ def publish(request, queue_id):
     queue = get_object_or_404(Queue, id=queue_id)
     user = make_user(request)
     if user == queue.owner:
-        msg = queue.publish()
+        try:
+            msg = queue.publish()
+        except HttpError as e:
+            msg = e
+        print(msg)
     # add message to the request or whatever.
     # does that work with a redirect response.
     return HttpResponseRedirect(reverse("edit_queue", args=[queue_id]))
@@ -84,7 +89,13 @@ def later(request, queue_id, entry_id):
 
 def sync(request, queue_id):
     queue = get_object_or_404(Queue, id=queue_id)
-    queue.sync()
+    user = make_user(request)
+    if user == queue.owner:
+        try:
+            msg = queue.sync()
+        except HttpError as e:
+            msg = e
+        print(msg)
     return HttpResponseRedirect(reverse("edit_queue", args=[queue_id]))
 
 def add_entry(request, queue_id, video_id):
@@ -121,7 +132,11 @@ def delete_queue(request, queue_id):
     # there should be a modal to double check on the front end
     # there should also be a message for feedback
     if queue.owner == user:
-        queue.delete()
+        try:
+            msg = queue.delete()
+        except HttpError as e:
+            msg = e
+        print(msg)
     return HttpResponseRedirect(reverse("profile"))
 
 
@@ -134,7 +149,6 @@ def gain_access(request, queue_secret, owner_secret):
     request.session["owner_secret"] = owner_secret
     request.session["redirect_action"]={"action":"edit_queue","args":[queue.id]}
     if owner_secret == queue.owner.secret:
-
         print("secrets match")
         if user.is_authenticated:
             print("user is authenticated")
