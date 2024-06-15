@@ -18,22 +18,23 @@ class YT:
             credentials = self.user.google_credentials
             return build("youtube", "v3", credentials=credentials)
         return ""
-    
+
     def connect_simple(self) -> "Service":
         return build("youtube", "v3", developerKey=YOUTUBE_API_KEY)
 
     def find_user_youtube_data(self):
-        request = self.user_service.channels().list(part="snippet,contentDetails", mine=True)
+        request = self.user_service.channels().list(part="snippet", mine=True)
         response = request.execute()
-        items = response["items"][0]
-        id = items["id"]
-        custom_url = items["snippet"]["customUrl"]
+        
         return id, custom_url
 
     def search_videos(self, query) -> list[str]:
         request = self.guest_service.search().list(
             # maxResults=5 in order to limit API usage
-            part="snippet", type="video", q=query, maxResults=5
+            part="snippet",
+            type="video",
+            q=query,
+            maxResults=5,
         )
         response = request.execute()
         return process_response(response)
@@ -42,7 +43,7 @@ class YT:
         # check privacy status
         # check blocked status, eventually
         request = self.guest_service.videos().list(
-            part="snippet,contentDetails,player,status",
+            part="snippet,contentDetails",
             id=video_id,
         )
         response = request.execute()
@@ -50,60 +51,74 @@ class YT:
         return process_response(response)
 
     def create_playlist(self, title, description) -> str:
+        body = {
+            "snippet": {"title": title, "description": description},
+            "status": {"privacyStatus": "unlisted"},
+        }
         request = self.user_service.playlists().insert(
-            part="snippet,status,id", body={"snippet": {"title": title, "description":description},"status":{"privacyStatus":"unlisted"}}
+            part="snippet,status,id", body=body
         )
         response = request.execute()
-        
-        #playlist_id = process_response(response)
-        #return playlist_id
-    
-    def delete_playlist(self,playlist_id):
+        return response
+        # playlist_id = process_response(response)
+        # return playlist_id
+
+    def delete_playlist(self, playlist_id):
         request = self.user_service.playlists().delete(id=playlist_id)
         response = request.execute()
         return response
 
-    def move_playlist_item(self,video_id,new_position,playlist_item_id,playlist_id):
-        body = {"kind":"youtube#playlistItem","id":playlist_item_id,"snippet":{"playlistId":playlist_id, "position":new_position,"resourceId":{"kind":"youtube#video","videoId":video_id}}}
-        request = self.user_service.playlistItems().update(part="snippet,id",body=body)
+    def move_playlist_item(self,entry:"Entry"):
+        request = self.user_service.playlistItems().update(part="snippet,id", body=entry.body)
         response = request.execute()
+        return process_response(response)
 
-    def add_entry_to_playlist(self,video_id,position,playlist_id):
-        print("attempting to add")
-        print("body",body)
-        body = {"snippet":{"playlistId":playlist_id,"position":position, "resourceId":{"kind":"youtube#video","videoId":video_id}}}
-        request = self.user_service.playlistItems().insert(part="snippet,id",body=body)
-        print(request.uri)
+    def add_entry_to_playlist(self, body):
+        request = self.user_service.playlistItems().insert(part="snippet,id", body=body)
         response = request.execute()
-        return response
+        return process_response(response)
 
     @classmethod
-    def get_last_search(cls,request,queue_id):
-        last_queue_query = request.session.get(f"queue_{queue_id}",{})
+    def get_last_search(cls, request, queue_id):
+        last_queue_query = request.session.get(f"queue_{queue_id}", {})
         last_query = last_queue_query.get("last_query")
         last_search = last_queue_query.get("last_search")
         return last_query, last_search
-    
+
     @classmethod
-    def save_search(cls,request,queue_id,recent_search,search_results):
-        last_queue_query = {"last_query":recent_search,"last_search":search_results}
+    def save_search(cls, request, queue_id, recent_search, search_results):
+        last_queue_query = {"last_query": recent_search, "last_search": search_results}
         request.session[f"queue_{queue_id}"] = last_queue_query
         return request
+
 
 def process_response(response: dict):
     # how can I refactor this?
     # there is the dictionary storing callables that I did...
-    if response["kind"] == "youtube#searchListResponse":
+    kind = response['kind']
+    if kind == "youtube#searchListResponse":
         return [parse_search_result(result) for result in response["items"]]
-    elif response["kind"] == "youtube#videoListResponse":
+    elif kind == "youtube#videoListResponse":
         if len(response["items"]) == 1:
             return parse_video_result(response["items"][0])
         else:
             raise ValueError("There are two many items for this request.")
-    elif response["kind"] == "youtube#playlist":
-        return response["id"]
+    elif kind == "youtube#channelListResponse":
+        return parse_channel_result(response)
     else:
         return response
+
+def parse_playlist_result(response):
+    pass
+
+def parse_playlist_item_result(response):
+    pass
+
+def parse_channel_result(response):
+    items = response["items"][0]
+    id = items["id"]
+    custom_url = items["snippet"]["customUrl"]
+    return id, custom_url
 
 def parse_search_result(result: dict) -> dict:
     # eventually this should return less data than the whole snippet and Id
@@ -112,17 +127,16 @@ def parse_search_result(result: dict) -> dict:
     search_result["id"] = id
     return search_result
 
-
 def parse_video_result(response_item: dict) -> dict:
     video_result = {
-        "kind":response_item["kind"],
-        "yt_id":response_item["id"],
+        "kind": response_item["kind"],
+        "yt_id": response_item["id"],
         "video_id": response_item["id"],
         "title": response_item["snippet"]["title"],
         # thumbnail data is in response_item['snippet']['thumbnails'] then with different sizes
         "duration": response_item["contentDetails"]["duration"],
         # region restrictions is in response_item['contentDetails']['regionRestriction'] etc
         # private, public, and unlisted as possible values
-        "status": response_item["status"]["privacyStatus"],
+        # "status": response_item["status"]["privacyStatus"],
     }
     return video_result

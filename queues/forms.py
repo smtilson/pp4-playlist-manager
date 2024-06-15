@@ -5,7 +5,7 @@ from django import forms
 class QueueForm(forms.ModelForm):
     class Meta:
         model = Queue
-        fields = ('name','description')
+        fields = ('title','description')
 
 class EntryForm(forms.ModelForm):
     class Meta:

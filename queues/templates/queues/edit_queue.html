@@ -1,20 +1,28 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h2>Edit Queue {{queue.name}}</h2>
+<h2>Edit Queue {{queue.title}}</h2>
 <div>
+    <h3>Owned by {{queue.owner.nickname}}</h3>
     <h4>Description:</h4>
     <p>{{queue.description}}</p>
 </div>
-{% if is_owner %}
 <div class="owner-buttons">
+{% if is_owner %}
+
     <a href="{% url 'gain_access' queue.secret queue.owner.secret %}"><button>Share</button></a></h3>
     {% if not queue.published %}
     <a href="{% url 'publish' queue.id %}"><button>Publish</button></a>
+    <p>Playlists are published by default as unlisted.</p>
     {% elif not queue.synced %}
-    <button>Sync (not yet implemented)</button>
-    {% endif %}
+    <a href="{% url 'sync' queue.id %}"><button>Sync</button></a>
+    {%endif%}
     <a href="{% url 'delete_queue' queue.id %}"><button>Delete</button></a>
+{% endif %}
+</div>
+{% if queue.published %}
+<div>
+    <a href="{{queue.url}}"><button>Play on YouTube</button></a>
 </div>
 {% endif %}
 <form id="searchForm" method="POST">
@@ -27,9 +35,9 @@
 </form>
 <div>
     <ol>
-        {% for entry in entries %}
+        {% for entry in queue.all_entries %}
         <li>
-            <span>{{entry.title}}: {{entry.duration}} added by yet to be implemented
+            <span>{{entry.title}}: {{entry.duration}} added by {{entry.user}}
                 {% if is_owner %}
                 <a href="{% url 'delete_entry' queue_id=queue.id entry_id=entry.id %}"><button
                         class="btn btn-md">Remove</button></a>
@@ -38,8 +46,8 @@
                     <a href="{%url 'later' queue.id entry.id %}"><button>-</button></a>
                    <form action="{% url 'swap' queue.id entry.id %}" method="POST">
                         {% csrf_token %}
-                        <input id="other_number-entry_{{entry.id}}" min="1" max="{{queue.length}}" name="other_number-entry_{{entry.id}}">
-                        <label for="other_number-entry_{{entry.id}}">: Other Entry</label>
+                        <input id="other_position-entry_{{entry.id}}" min="1" max="{{queue.length}}" name="other_position-entry_{{entry.id}}">
+                        <label for="other_position-entry_{{entry.id}}">: Other Entry</label>
                         <button type="submit">Move</button>
                     </form>
                 </div>
