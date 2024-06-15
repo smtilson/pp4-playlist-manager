@@ -20,12 +20,6 @@
     <a href="{% url 'delete_queue' queue.id %}"><button>Delete</button></a>
 {% endif %}
 </div>
-<div>
-    <p>
-        published: {{queue.published}}
-        synced: {{queue.synced}}
-    </p>
-</div>
 {% if queue.published %}
 <div>
     <a href="{{queue.url}}"><button>Play on YouTube</button></a>
@@ -46,7 +40,7 @@
         {% endif %}
         {% for entry in queue.all_entries %}
         <li>
-            <span>{{entry.position}}. {{entry.title}}: {{entry.duration}} added by {{entry.user}}
+            <span>{{entry.title}} added by {{entry.user}} ({{entry.duration}})</span>
                 {% if is_owner %}
                 <a href="{% url 'delete_entry' queue_id=queue.id entry_id=entry.id %}"><button
                         class="btn btn-md">Remove</button></a>

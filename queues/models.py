@@ -200,7 +200,7 @@ class Entry(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
         ordering = ["_position"]
 
     def __str__(self):
-        return f"{self.position}. {self.title}"
+        return f"{self.position}. {self.title} added by {self.user}"
 
     @property
     def playlist_id(self):
