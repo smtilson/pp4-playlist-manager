@@ -42,8 +42,7 @@ def get_tokens(authorization_path):
 
 
 # I am guessing that this does not work because of the header
-def revoke_tokens(request):
-    user = make_user(request)
+def revoke_tokens(user):
     if not user.has_tokens:
         return f"This app does not currently have authorization."
     else:

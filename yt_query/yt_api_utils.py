@@ -25,8 +25,7 @@ class YT:
     def find_user_youtube_data(self):
         request = self.user_service.channels().list(part="snippet", mine=True)
         response = request.execute()
-
-        return id, custom_url
+        return parse_channel_result(response)
 
     def search_videos(self, query) -> list[str]:
         request = self.guest_service.search().list(

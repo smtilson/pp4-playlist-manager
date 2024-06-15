@@ -61,7 +61,7 @@ def set_name(request):
 
 def revoke_authorization(request):
     user = make_user(request)
-    msg = revoke_tokens(request)
+    msg = revoke_tokens(user)
     print(msg)
     # there should be a modal for this
     user.revoke_youtube_data()
