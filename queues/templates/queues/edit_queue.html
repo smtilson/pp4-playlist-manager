@@ -35,9 +35,12 @@
 </form>
 <div>
     <ol>
+        {% if queue.full %}
+        <h4>The queue is full. Remove some tracks if you would like to add more. </h4>
+        {% endif %}
         {% for entry in queue.all_entries %}
         <li>
-            <span>{{entry.title}}: {{entry.duration}} added by {{entry.user}}
+            <span>{{entry.position}}. {{entry.title}}: {{entry.duration}} added by {{entry.user}}
                 {% if is_owner %}
                 <a href="{% url 'delete_entry' queue_id=queue.id entry_id=entry.id %}"><button
                         class="btn btn-md">Remove</button></a>
@@ -57,6 +60,7 @@
         {% endfor %}
     </ol>
 </div>
+{% if not queue.full %} 
 <div>
     <h3>Search results for {{recent_search}}</h3>
     <ul>
@@ -71,6 +75,7 @@
         {% endfor %}
     </ul>
 </div>
+{% endif %}
 {% if not is_guest %}
 <a href="{% url 'profile' %}">Back to Profile</a>
 {%else%}

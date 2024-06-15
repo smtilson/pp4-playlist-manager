@@ -102,6 +102,9 @@ def sync(request, queue_id):
 
 def add_entry(request, queue_id, video_id):
     queue = get_object_or_404(Queue, id=queue_id)
+    if queue.full:
+        msg = "This queue is at max capacity. Remove some tracks if you would like to add more."
+        HttpResponseRedirect(reverse("edit_queue", args=[queue_id]))
     user = make_user(request)
     video_data = YT(user).find_video_by_id(video_id)
     # check against video_data['status'] == private, then redirect with message

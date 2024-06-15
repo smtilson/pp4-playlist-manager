@@ -60,11 +60,15 @@ class YT:
         )
         response = request.execute()
         return response
-        # playlist_id = process_response(response)
-        # return playlist_id
+        # return process_response(response)
 
     def delete_playlist(self, playlist_id):
         request = self.user_service.playlists().delete(id=playlist_id)
+        response = request.execute()
+        return response
+    
+    def get_old_playlist(self, playlist_id):
+        request = self.user_service.playlistItems().list(part="snippet,id", playlistId=playlist_id, maxResults=50)
         response = request.execute()
         return response
 
@@ -105,15 +109,25 @@ def process_response(response: dict):
             raise ValueError("There are two many items for this request.")
     elif kind == "youtube#channelListResponse":
         return parse_channel_result(response)
+    elif kind == 'youtube#playlistItemListResponse':
+        return parse_playlist_result(response)
+    elif kind == "youtube#playlistItem":
+        return parse_playlist_item_result(response)
     else:
         return response
 
 def parse_playlist_result(response):
-    pass
+    items = response['items']
+    return [parse_playlist_item_result(item) for item in items]
+
 
 def parse_playlist_item_result(response):
-    pass
-
+    keys = {'kind', 'id'}
+    snippet_keys = {"title", "playlistId", "position", "resourceId"}
+    response_dict = {key:value for key,value in response.items() if key in keys}
+    response_dict["snippet"] = {key:value for key,value in response['snippet'] if key in snippet_keys}
+    return response_dict
+    
 def parse_channel_result(response):
     items = response["items"][0]
     id = items["id"]

@@ -13,6 +13,7 @@ class Queue(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
         Profile, on_delete=models.CASCADE, related_name="my_queues", default=1
     )
     owner_yt_id = models.CharField(max_length=100, default="")
+    # what is the difference between this field and the yt_id below? Just that one interacts with the resource Id mixin?
     youtube_id = models.CharField(max_length=100, default="")
     collaborators = models.ManyToManyField(Profile, related_name="other_queues")
     title = models.CharField(max_length=100, default="")
@@ -31,6 +32,9 @@ class Queue(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
         return string
 
     @property
+    def full(self) -> bool:
+        return self.length >=50
+    @property
     def synced(self):
         for entry in self.all_entries:
             if not entry.synced:
@@ -40,6 +44,9 @@ class Queue(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
     @property
     def length(self):
         return len(self.all_entries)
+    
+    def __len__(self):
+        return self.length
     
     @property
     def all_entries(self):
@@ -139,6 +146,14 @@ class Queue(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
         self.save()
         return e_dict
 
+    def get_published_version(self):
+        if not self.published:
+            print("This queue isn't published yet.")
+            return
+        yt = YT(self.owner)
+        response = yt.get_old_playlist(self.yt_id)
+        return response
+
     def sync(self):
         yt = YT(self.owner)
         for entry in self.all_entries:
@@ -163,7 +178,6 @@ class Entry(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
     _position = models.IntegerField(default=-1)
     published = models.BooleanField(default=False)
     synced = models.BooleanField(default=False)
-    deleted = models.BooleanField(default=False)
     # youtube_id = models.CharField(max_length=100,default="")
     kind = models.CharField(max_length=100, default="", null=True, blank=True)
     yt_id = models.CharField(max_length=100, default="", null=True, blank=True)
@@ -190,14 +204,13 @@ class Entry(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
                 }
             }
         if self.published:
-            body["kind"] = self.kind
+            body.update(self.resourceId)
             body["snippet"]["position"]=self._position
-            body["id"] = self.yt_id
         return body
 
     def publish(self, yt: "YT") -> None:
         response = yt.add_entry_to_playlist(self.body)
-        # add an error check here
+        # add an error check here4
         self.save_resource_id(response)
         self.published = True
         self.synced = True
@@ -232,13 +245,3 @@ class Entry(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
         if self._position != self.p_queue.length-1:
             other_entry = self.p_queue.all_entries[self._position+1]
             self.swap_entries(self.id, other_entry.id)
-
-
-body_shape = {
-    "id": "YOUR_PLAYLIST_ITEM_ID",
-    "snippet": {
-        "playlistId": "YOUR_PLAYLIST_ID",
-        "position": 1,
-        "resourceId": {"kind": "youtube#video", "videoId": "YOUR_VIDEO_ID"},
-    },
-}
