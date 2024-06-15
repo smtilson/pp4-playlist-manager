@@ -41,20 +41,15 @@ def get_tokens(authorization_path):
     return flow.credentials
 
 
-# I am guessing that this does not work because of the header
+# Gotten from the YouTubeAPI documentation
 def revoke_tokens(user):
     if not user.has_tokens:
         return f"This app does not currently have authorization."
     else:
-        # maybe the creation of the object here is not valid.
         credentials = user.google_credentials
-
-
     revoke = requests.post(
         "https://oauth2.googleapis.com/revoke",
         params={"token": credentials.token},
-        # what is this header supposed to be?
-        # apparently this is a standard form for a header. I don't understand why I am getting the 302 error anymore.
         headers={"content-type": "application/x-www-form-urlencoded"},
     )
 

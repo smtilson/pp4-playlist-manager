@@ -39,10 +39,9 @@ class YT:
         return process_response(response)
 
     def find_video_by_id(self, video_id):
-        # check privacy status
         # check blocked status, eventually
         request = self.guest_service.videos().list(
-            part="snippet,contentDetails",
+            part="snippet,contentDetails,status",
             id=video_id,
         )
         response = request.execute()
@@ -166,6 +165,6 @@ def parse_video_result(response_item: dict) -> dict:
         "duration": response_item["contentDetails"]["duration"],
         # region restrictions is in response_item['contentDetails']['regionRestriction'] etc
         # private, public, and unlisted as possible values
-        # "status": response_item["status"]["privacyStatus"],
+        "status": response_item["status"]["privacyStatus"],
     }
     return video_result

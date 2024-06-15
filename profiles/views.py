@@ -2,6 +2,8 @@ from django.shortcuts import render, reverse, get_object_or_404
 from django.http import HttpResponseRedirect
 from .models import Profile, GuestProfile, make_user
 from queues.models import Queue
+from django.contrib import messages
+from error_processing import process_path
 from yt_auth.token_auth import (
     get_authorization_url,
     get_tokens,
@@ -15,9 +17,14 @@ from yt_auth.models import Credentials
 
 def index(request):
     path = request.get_full_path()
+    print(path)
     if "code" in path:
         # should this be a redirect?
         return return_from_authorization(request)
+    elif "error" in path:
+        error_msg = process_error(path)
+        print(error_msg)
+        return render(request, "profiles/index.html", {"error_msg": error_msg})
     elif "redirect_action" in request.session:
         view_name = request.session["redirect_action"]["action"]
         args = request.session["redirect_action"]["args"]
@@ -35,11 +42,11 @@ def profile(request):
     if not user.credentials:
         user.initialize()
     if not user.has_tokens:
-        msg = "Profile has no associated youtube account."
+        youtube_permission_status = "Profile has no associated youtube account."
     else:
-        msg = "Youtube DJ has access to your youtube account."
+        youtube_permission_status = "Youtube DJ has access to your youtube account."
     info_dict = user.info_dict
-    info_dict["Message"] = msg
+    info_dict["Youtube Access"] = youtube_permission_status
     info_dict["Are Credentials Valid?"] = user.valid_credentials
     context = {
         "user": user,
@@ -56,6 +63,8 @@ def set_name(request):
     user = make_user(request)
     user.name = request.POST["name"]
     user.save()
+    msg = f"Name set to {user.name}"
+    messages.add_message(request, messages.SUCCESS, msg)
     return HttpResponseRedirect(reverse("profile"))
 
 
@@ -65,7 +74,7 @@ def revoke_authorization(request):
     print(msg)
     # there should be a modal for this
     user.revoke_youtube_data()
-    # revoke_tokens(request)
+    messages.add_message(request, messages.SUCCESS, msg)
     return HttpResponseRedirect(reverse("profile"))
     # return HttpResponseRedirect(reverse('test'))
 
@@ -77,7 +86,10 @@ def return_from_authorization(request):
     tokens = get_tokens(path)
     save_creds(tokens)
     print(tokens)
+    # set_credentials saves them
     user.set_credentials(tokens)
+    msg = f"Successfully connected to youtube account {user.nickname}"
+    messages.add_message(request, messages.SUCCESS, msg)
     return HttpResponseRedirect(reverse("profile"))
 
 
@@ -95,6 +107,8 @@ def guest_sign_in(request):
             owner_secret=request.session["owner_secret"],
         )
         request.session["guest_user"] = user.serialize()
+        msg = f"Guest account set up for {user.nickname}"
+        messages.add_message(request, messages.SUCCESS, msg)
         return HttpResponseRedirect(
             reverse("edit_queue", args=[request.session["queue_id"]])
         )

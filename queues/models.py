@@ -101,7 +101,7 @@ class Queue(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
     def publish(self) -> str:
         # should this be refactored to require a key of some sort?
         if self.published:
-            return f"Queue {self.title} already uploaded to youtube."
+            return f"Queue {self.title} is already uploaded to youtube."
         yt = YT(self.owner)
         # add some error checking here.
         response = yt.create_playlist(title=self.title, description=self.description)

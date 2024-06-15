@@ -30,6 +30,7 @@ queue_class_fields = """owner = models.ForeignKey(Profile, on_delete=models.CASC
 
 from profiles.models import Profile
 from yt_auth.models import Credentials
+from yt_auth.token_auth import revoke_tokens
 from queues.models import Queue, Entry
 from yt_query.yt_api_utils import YT, process_response
 from utils import get_secret
@@ -60,6 +61,12 @@ results = process_response(response_data)
 with open('results.py', 'w') as f:
     f.write("results = " + str(results))
 
+def revoke_permissions_before_commit():
+    for user in Profile.objects.all():
+        msg = revoke_tokens(user)
+        user.revoke_youtube_data()
+        print(f"tokens revoked for {user.nickname}")
 
+    
 
 
