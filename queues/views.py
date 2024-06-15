@@ -138,7 +138,9 @@ def delete_queue(request, queue_id):
     # there should also be a message for feedback
     if queue.owner == user:
         try:
-            msg = queue.delete()
+            #commented out due to rate limit issues.
+            #msg = queue.unpublish()
+            queue.delete()
         except HTTPError as e:
             msg = e
         print(msg)

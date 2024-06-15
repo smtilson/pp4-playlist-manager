@@ -20,6 +20,12 @@
     <a href="{% url 'delete_queue' queue.id %}"><button>Delete</button></a>
 {% endif %}
 </div>
+<div>
+    <p>
+        published: {{queue.published}}
+        synced: {{queue.synced}}
+    </p>
+</div>
 {% if queue.published %}
 <div>
     <a href="{{queue.url}}"><button>Play on YouTube</button></a>
