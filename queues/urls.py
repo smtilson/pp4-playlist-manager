@@ -11,6 +11,7 @@ urlpatterns = [
         views.delete_entry,
         name="delete_entry",
     ),
+    path("sync/<int:queue_id>", views.sync, name="sync"),
     path("gain_access/<str:queue_secret>/<str:owner_secret>", views.gain_access,name="gain_access"),
     path(
         "delete_queue/<int:queue_id>",

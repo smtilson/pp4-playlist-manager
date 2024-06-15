@@ -6,7 +6,7 @@
 <form id="queueForm" method="POST" style="margin-top: 1.3em;">
     {{ queue_form }}
     {% csrf_token %}
-    <button id="submitButton" type="submit" class="btn btn-signup btn-lg">Create Queue</button>
+    <button id="submitButton" type="submit" class="btn btn-success btn-sm">Create Queue</button>
 </form>
 
 <a href="{% url 'profile' %}">Back to profile page</a>

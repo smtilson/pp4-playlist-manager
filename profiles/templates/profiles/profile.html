@@ -2,14 +2,23 @@
 
 {% block content %}
 
-<h2>Test Profile page for {{user_name}}</h2>
+<h2>Profile page for {{user.nickname}}</h2>
 <h3>Profile Data</h3>
 <ul>
-    {% for key, value in test_dict.items %}
-    <li>{{key}}:{{value}}</li>
+    {% for key, value in info_dict.items %}
+    <li>{{key}}:  {{value}}</li>
     {% endfor %}
-    <li>Message: {{ msg }}</li>
 </ul>
+{% if not user.name %}
+<div>
+    Please add a name so that your friends know who made the queue or added the videos. (Maybe they will even move it up in the queue!)
+<form action="{% url 'set_name' %}" method="POST">
+    {% csrf_token %}
+<span><label for="name">Name:</label><input type="text" name="name" id="name"></span>
+<button type="submit">Submit</button>
+</form>
+</div>
+{% endif %}
 {% if not user.has_tokens %}
 <a href="{{authorization_url}}">Give Youtube DJ permissions.</a>
 {% else %}
@@ -20,7 +29,7 @@
 <h2>My Queues</h2>
 {% for queue in my_queues %}
 <div>
-    <h4><a href="{% url 'edit_queue' queue.id %}">{{queue.name}}</a></h4>
+    <h4><a href="{% url 'edit_queue' queue.id %}">{{queue.title}}</a></h4>
     <h5>Created on {{queue.date_created}}</h5>
     <h5> {% if queue.length != 1 %}
         {{queue.length}} videos
@@ -43,8 +52,8 @@
 <h2>My Collaborative Queues</h2>
 {% for queue in other_queues %}
 <div>
-    <h4><a href="{% url 'edit_queue' queue.id %}">{{queue.name}}</a></h4>
-    <h5>Created on {{queue.date_created}}</h5>
+    <h4><a href="{% url 'edit_queue' queue.id %}">{{queue.title}}</a></h4>
+    <h5>Created on {{queue.date_created}} by {{queue.owner.nickname}}</h5>
     <h5> {% if queue.length != 1 %}
         {{queue.length}} videos
         {% else %}
@@ -55,14 +64,4 @@
 <hr>
 <hr>
 {% endfor %}
-
-
-<div>
-    Form for setting name. Please add a name so that your friends know who added the video. (Maybe they will even move it up in the queue!)
-</div>
-<a href="{% url 'test' %}">Test page</a>
-<hr>
-<a href="{% url 'test_function' %}">test function</a>
-<hr>
-<a href="{{test_data}}">URL testing for authorization</a>
 {% endblock content %}

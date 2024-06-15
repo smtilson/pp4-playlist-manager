@@ -9,11 +9,11 @@ def json_to_dict(json) -> dict:
 def get_secret():
     return get_random_string(20)
 
-
+def format_field_name(field_name: str) -> str:
+    return field_name.replace("_", " ").title()
 def trigger(object):
     # this function is for debugging purposes.
-    print(f"trigger function hit for {object.id} {object.getattr("name","")}{object.getattr("title","")}.")
-
+    print(f"trigger function hit for {object.id} {object.getattr("name","")}{object.getattr("title","")}.")    
 
 def empty_dict(dictionary: dict) -> bool:
     return [val for val in dictionary.values() if val] == []
@@ -61,7 +61,7 @@ def parse_url_code(url_code: str) -> dict:
     pass
 
 def get_user(request):
-    guest_user = request.session.get("guest_user","")
+    guest_user = request.session.get("guest_user")
     if guest_user:
         return guest_user
     return request.user
