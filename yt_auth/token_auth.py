@@ -43,8 +43,9 @@ def get_tokens(authorization_path):
 
 # Gotten from the YouTubeAPI documentation
 def revoke_tokens(user):
+    handle = user.youtube_handle
     if not user.has_tokens:
-        return f"This app does not currently have authorization."
+        return f"This app does not currently have authorization for {user.nickname}"
     else:
         credentials = user.google_credentials
     revoke = requests.post(
@@ -55,7 +56,7 @@ def revoke_tokens(user):
 
     status_code = getattr(revoke, "status_code")
     if status_code == 200:
-        return "Credentials successfully revoked."
+        return "Credentials successfully revoked for " + handle
     else:
         return "An error occurred."
 

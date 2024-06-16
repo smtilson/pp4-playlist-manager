@@ -84,11 +84,10 @@ def return_from_authorization(request):
     user = request.user
     path = request.get_full_path()
     tokens = get_tokens(path)
-    save_creds(tokens)
-    print(tokens)
+    #save_creds(tokens)
+    #print(tokens)
     # set_credentials saves them
-    user.set_credentials(tokens)
-    msg = f"Successfully connected to youtube account {user.nickname}"
+    msg = user.set_credentials(tokens)
     messages.add_message(request, messages.SUCCESS, msg)
     return HttpResponseRedirect(reverse("profile"))
 

@@ -149,9 +149,14 @@ class Profile(AbstractBaseUser, PermissionsMixin, DjangoFieldsMixin, ToDictMixin
         with the data from new_credentials. When no object is passed, it resets
         the credentials to the default blank credentials.
         """
+        # attention: why am I not saving here.
         self.credentials.set_credentials(new_credentials)
-        if self.has_tokens:
+        if self.has_tokens and not (self.youtube_handle or self.youtube_id):
             self.find_youtube_data()
+            msg = f"Successfully connected the youtube account {self.youtube_handle} to your profile."
+        else:
+            msg = f"Successfully updated credentials for {self.nickname}."
+        return msg
 
     def find_youtube_data(self):
         yt = YT(self)
