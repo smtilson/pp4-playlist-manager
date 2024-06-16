@@ -4,11 +4,15 @@
 <h2>Edit Queue {{queue.title}}</h2>
 <div>
     <h3>Owned by {{queue.owner.nickname}}</h3>
+    <p>Created on {{queue.created_at}}</p>
     <h4>Description:</h4>
     <p>{{queue.description}}</p>
+    <p><span id="queueLength">{{queue.length}}</span> entries</p>
+    <p>
+    </p>
 </div>
 <div class="owner-buttons">
-{% if is_owner %}
+    {% if is_owner %}
 
     <a href="{% url 'gain_access' queue.secret queue.owner.secret %}"><button>Share</button></a></h3>
     {% if not queue.published %}
@@ -18,7 +22,7 @@
     <a href="{% url 'sync' queue.id %}"><button>Sync</button></a>
     {%endif%}
     <a href="{% url 'delete_queue' queue.id %}"><button>Delete</button></a>
-{% endif %}
+    {% endif %}
 </div>
 {% if queue.published %}
 <div>
@@ -34,35 +38,37 @@
     <button id="searchButton" type="submit" class="btn btn-lg">Search</button>
 </form>
 <div>
+    {% if queue.full %}
+    <h4>The queue is full. Remove some tracks if you would like to add more. </h4>
+    {% endif %}
+
     <ol>
-        {% if queue.full %}
-        <h4>The queue is full. Remove some tracks if you would like to add more. </h4>
-        {% endif %}
         {% for entry in queue.all_entries %}
         <li>
-            <div#div-position{{entry.position}}>
-            <span>{{entry.title}} added by {{entry.user}} ({{entry.duration}})</span>
+            <div id="div-position{{entry.position}}">
+                <span>{{entry.title}} added by {{entry.user}} ({{entry.duration}})</span>
                 {% if is_owner %}
                 <a href="{% url 'delete_entry' queue_id=queue.id entry_id=entry.id %}"><button
                         class="btn btn-md">Remove</button></a>
                 <div class="position-div">
-                    <a href="{%url 'earlier' queue_id=queue.id entry_id=entry.id %}"><button>+</button></a>
-                    <a href="{%url 'later' queue.id entry.id %}"><button>-</button></a>
-                   <form action="{% url 'swap' queue.id entry.id %}" method="POST">
+                    <a href="{%url 'earlier' queue_id=queue.id entry_id=entry.id %}" class="earlier-btn"><button>+</button></a>
+                    <a href="{%url 'later' queue.id entry.id %}" class="later-btn"><button>-</button></a>
+                    <form action="{% url 'swap' queue.id entry.id %}" class="swapForm" method="POST">
                         {% csrf_token %}
-                        <input id="other_position-entry_{{entry.id}}" min="1" max="{{queue.length}}" name="other_position-entry_{{entry.id}}" class="swap-input">
-                        <label for="other_position-entry_{{entry.id}}">: Other Entry</label>
+                        <label for="other_position-entry_{{entry.id}}">New Position:</label>
+                        <input id="other_position-entry_{{entry.id}}" name="other_position-entry_{{entry.id}}"
+                            class="swap-input">
                         <button type="submit" class="btn btn-md swap-button">Move</button>
                     </form>
                 </div>
                 {% endif %}
-            </span>
-        </div>
+                </span>
+            </div>
         </li>
         {% endfor %}
     </ol>
 </div>
-{% if not queue.full %} 
+{% if not queue.full %}
 <div>
     <h3>Search results for {{recent_search}}</h3>
     <ul>
@@ -71,7 +77,6 @@
             {{result.title}}
 
             <a href="{% url 'add_entry' queue_id=queue.id video_id=result.id %}"><button
-
                     class="btn btn-md">Add</button></a>
         </li>
         {% endfor %}

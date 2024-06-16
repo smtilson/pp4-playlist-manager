@@ -97,7 +97,7 @@ def swap_js(request, queue_id, entry_id, other_entry_position):
     entry.swap_entry_positions(other_entry_position)
     msg = f"Entries in positions {entry.position} and {other_entry_position} have been swapped."
     messages.add_message(request, messages.INFO, msg)
-    return HttpResponseRedirect(reverse("edit_queue", args=[queue_id]))
+    return {"sample": "sample"}
 
 def later(request, queue_id, entry_id):
     entry = get_object_or_404(Entry, id=entry_id)
@@ -175,9 +175,9 @@ def delete_queue(request, queue_id):
             #commented out due to rate limit issues.
             #msg = queue.unpublish()
             queue.delete()
-            msg = f"{queue.title} has been deleted. If the queue was published
-            on YouTube, it will remain there. Deletion of playlists on YouTube
-            is temporarily disabled due to API rate limits."
+            msg = f"{queue.title} has been deleted. If the queue was published"\
+            "on YouTube, it will remain there. Deletion of playlists on YouTube"\
+            "is temporarily disabled due to API rate limits."
             msg_type = messages.SUCCESS
         except HTTPError as e:
             msg = "An error occurred.\n" + e

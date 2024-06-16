@@ -22,12 +22,13 @@ function initSwapInputs() {
 function swapEntries(queueId, entryId, otherPosition) {
     fetch(DOMAIN + `/queues/swap-js/${queueId}/${entryId}/${otherPosition}`, {
         method: 'GET',
-    })
+    })//.then(response => console.log(response.json))
+
 }
 
 testEntryData = {
     entryId: 1,
-    entryTitle: "test",
+    entryTitle: "TEST",
     entryPosition: 1,
     addedBy: "test",
     entryDuration: "test"
