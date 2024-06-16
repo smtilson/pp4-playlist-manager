@@ -49,9 +49,9 @@
                     <a href="{%url 'later' queue.id entry.id %}"><button>-</button></a>
                    <form action="{% url 'swap' queue.id entry.id %}" method="POST">
                         {% csrf_token %}
-                        <input id="other_position-entry_{{entry.id}}" min="1" max="{{queue.length}}" name="other_position-entry_{{entry.id}}">
+                        <input id="other_position-entry_{{entry.id}}" min="1" max="{{queue.length}}" name="other_position-entry_{{entry.id}}" class="swap-input">
                         <label for="other_position-entry_{{entry.id}}">: Other Entry</label>
-                        <button type="submit">Move</button>
+                        <button type="submit" class="btn btn-md swap-button">Move</button>
                     </form>
                 </div>
                 {% endif %}
