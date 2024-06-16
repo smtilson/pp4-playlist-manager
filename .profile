@@ -1,1 +1,1 @@
-echo ${GOOGLE_CREDENTIALS} > /oauth_creds.json
+echo ${GOOGLE_CREDENTIALS} > oauth_creds.json
