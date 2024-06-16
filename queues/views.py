@@ -164,13 +164,14 @@ def delete_queue(request, queue_id):
     queue = get_object_or_404(Queue, id=queue_id)
     user = make_user(request)
     # there should be a modal to double check on the front end
-    # there should also be a message for feedback
     if queue.owner == user:
         try:
             #commented out due to rate limit issues.
             #msg = queue.unpublish()
             queue.delete()
-            msg = f"{queue.title} has been deleted."
+            msg = f"{queue.title} has been deleted. If the queue was published
+            on YouTube, it will remain there. Deletion of playlists on YouTube
+            is temporarily disabled due to API rate limits."
             msg_type = messages.SUCCESS
         except HTTPError as e:
             msg = "An error occurred.\n" + e
