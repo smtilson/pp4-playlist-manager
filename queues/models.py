@@ -260,6 +260,7 @@ class Entry(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
         other_entry.synced = False
         self.save()
         other_entry.save()
+        return self, other_entry
 
     def earlier(self) -> None:
         if self._position != 0:

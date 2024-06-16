@@ -1,5 +1,5 @@
 from django.shortcuts import render, reverse, get_object_or_404
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from .models import Profile, GuestProfile, make_user
 from queues.models import Queue
 from django.contrib import messages
@@ -66,6 +66,8 @@ def profile(request):
     }
     return render(request, "profiles/profile.html", context)
 
+def test(request):
+    return JsonResponse({"test":"test"})
 
 def set_name(request):
     user = make_user(request)

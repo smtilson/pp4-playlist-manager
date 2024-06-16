@@ -45,14 +45,14 @@
     <ol>
         {% for entry in queue.all_entries %}
         <li>
-            <div id="div-position{{entry.position}}">
+            <div id="div-position-{{entry.position}}">
                 <span>{{entry.title}} added by {{entry.user}} ({{entry.duration}})</span>
                 {% if is_owner %}
                 <a href="{% url 'delete_entry' queue_id=queue.id entry_id=entry.id %}"><button
                         class="btn btn-md">Remove</button></a>
                 <div class="position-div">
-                    <a href="{%url 'earlier' queue_id=queue.id entry_id=entry.id %}" class="earlier-btn"><button>+</button></a>
-                    <a href="{%url 'later' queue.id entry.id %}" class="later-btn"><button>-</button></a>
+                    <button data-href="{%url 'earlier' queue_id=queue.id entry_id=entry.id %}" class="earlier-btn position-btn" data-position="{{entry.position|add:'-1'}}">+</button>
+                    <button data-href="{%url 'later' queue.id entry.id %}" class="later-btn position-btn" data-position="{{entry.position|add:'1'}}">-</button>
                     <form action="{% url 'swap' queue.id entry.id %}" class="swapForm" method="POST">
                         {% csrf_token %}
                         <label for="other_position-entry_{{entry.id}}">New Position:</label>
