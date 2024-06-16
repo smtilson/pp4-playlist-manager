@@ -2,10 +2,13 @@
 # from profiles.models import Profile
 from googleapiclient.discovery import build
 from utils import produce_url_code
-from env import YOUTUBE_API_KEY
+#from env import YOUTUBE_API_KEY
+import os
 from django.shortcuts import get_object_or_404
+if os.path.isfile("env.py"):
+    import env
 
-
+YOUTUBE_API_KEY = os.environ.get("YOUTUBE_API_KEY")
 class YT:
     def __init__(self, user: "Profile") -> None:
         self.user = user
