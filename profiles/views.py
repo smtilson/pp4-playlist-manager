@@ -83,12 +83,13 @@ def return_from_authorization(request):
     # do I need to check here that they don't have credentials since it is checked on the front end
     user = request.user
     path = request.get_full_path()
+    if user.has_tokens:
+        msg = f"{user.nickname} is already connected to {user.youtube_handle}. If you would like to change which account is connected, please first revoke the current permissions"
     tokens = get_tokens(path)
-    save_creds(tokens)
-    print(tokens)
+    #save_creds(tokens)
+    #print(tokens)
     # set_credentials saves them
-    user.set_credentials(tokens)
-    msg = f"Successfully connected to youtube account {user.nickname}"
+    msg = user.set_credentials(tokens)
     messages.add_message(request, messages.SUCCESS, msg)
     return HttpResponseRedirect(reverse("profile"))
 

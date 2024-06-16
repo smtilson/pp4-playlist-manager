@@ -12,17 +12,21 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 import os
+import sys
+import dj_database_url
+from django.contrib.messages import constants as messages
+
+if os.path.isfile("env.py"):
+    import env
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-40-gfdc!ncn+g86bap&bsz*hgi!is&4)#c)!tl1-zty-t(x7p^"
-
+SECRET_KEY = os.environ.get("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -43,12 +47,16 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    # "cloudinary_storage",
     "django.contrib.sites",
     "allauth",
     "allauth.account",
-    'allauth.socialaccount',
+    "allauth.socialaccount",
+    # "crispy_forms",
+    # "crispy_bootstrap5",
+    # "cloudinary",
     "profiles",
-    #"errors",
+    # "errors",
     "yt_auth",
     "yt_query",
     "queues",
@@ -72,8 +80,12 @@ SITE_ID = 1
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
 
+# CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+# CRISPY_TEMPLATE_PACK = "bootstrap5"
+
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    # "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -84,8 +96,12 @@ MIDDLEWARE = [
     "allauth.account.middleware.AccountMiddleware",
 ]
 
+
+# this needs to be changed to include the relevant addresses I believe.
 CSRF_TRUSTED_ORIGINS = [
     "https://8000-smtilson-pp4playlistman-ym3t1koq57f.ws.codeinstitute-ide.net",
+    "https://*.herokuapp.com",
+    "http://*.127.0.0.1:8000",
 ]
 
 
@@ -117,13 +133,13 @@ WSGI_APPLICATION = "pp4_youtube_dj.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-DATABASES = {
+"""DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": BASE_DIR / "db.sqlite3",
     }
-}
-
+}"""
+DATABASES = {"default": dj_database_url.parse(os.environ.get("DATABASE_URL"))}
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -160,10 +176,21 @@ USE_I18N = True
 USE_TZ = True
 
 
+MESSAGE_TAGS = {
+    messages.SUCCESS: "alert-success",
+    messages.ERROR: "alert-danger",
+}
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = "static/"
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static"),
+]
+
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
