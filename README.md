@@ -38,6 +38,10 @@ Make sure that when you add the URIs that you have the trailing slash there appr
 
 Request details: redirect_uri=http://localhost:8080/ flowName=GeneralOAuthFlow
 
+add two cofnig vars, then use the heroku cli to login and write one of them to a specific file. 
+heroku run bash -a pp4-playlist-manager
+After logging into the app, enter the command `echo ${GOOGLE_CREDENTIALS} > oauth_creds.json` where the value of google credentials is the contents of your local credentials file.
+
 when adding address for the db remove the quotes.
 
 external user, enter your email address
