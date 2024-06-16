@@ -16,7 +16,7 @@ SCOPES = [
 
 # this should be changed to an environment variable
 # REDIRECT_URI = "http://localhost:8000/"
-REDIRECT_URI = "https://pp4-playlist-manager-67004a99f0e2.herokuapp.com/
+REDIRECT_URI = "https://pp4-playlist-manager-67004a99f0e2.herokuapp.com/"
 
 
 def get_authorization_url():
