@@ -12,10 +12,10 @@ class ResourceID:
             return {"kind":self.kind, "id":self.yt_id}
         print(f"No ResourceId attached to {self.__class__.__name__} {self.title} yet.")
 
-    def save_resource_id(self,response_item):
+    def set_resource_id(self,response_item):
+        # save is done after this is called in order to be explicit
         self.kind = response_item['kind']
         self.yt_id = response_item['id']
-        self.save
 
     def clear_resource_id(self):
         self.kind = ""

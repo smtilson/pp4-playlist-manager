@@ -25,8 +25,7 @@ class YT:
     def find_user_youtube_data(self):
         request = self.user_service.channels().list(part="snippet", mine=True)
         response = request.execute()
-        
-        return id, custom_url
+        return parse_channel_result(response)
 
     def search_videos(self, query) -> list[str]:
         request = self.guest_service.search().list(
@@ -40,10 +39,9 @@ class YT:
         return process_response(response)
 
     def find_video_by_id(self, video_id):
-        # check privacy status
         # check blocked status, eventually
         request = self.guest_service.videos().list(
-            part="snippet,contentDetails",
+            part="snippet,contentDetails,status",
             id=video_id,
         )
         response = request.execute()
@@ -66,14 +64,18 @@ class YT:
         request = self.user_service.playlists().delete(id=playlist_id)
         response = request.execute()
         return response
-    
-    def get_old_playlist(self, playlist_id):
-        request = self.user_service.playlistItems().list(part="snippet,id", playlistId=playlist_id, maxResults=50)
-        response = request.execute()
-        return response
 
-    def move_playlist_item(self,entry:"Entry"):
-        request = self.user_service.playlistItems().update(part="snippet,id", body=entry.body)
+    def get_published_playlist(self, playlist_id):
+        request = self.guest_service.playlistItems().list(
+            part="snippet,id", playlistId=playlist_id, maxResults=50
+        )
+        response = request.execute()
+        return process_response(response)
+
+    def move_playlist_item(self, entry: "Entry"):
+        request = self.user_service.playlistItems().update(
+            part="snippet,id", body=entry.body
+        )
         response = request.execute()
         return process_response(response)
 
@@ -81,6 +83,11 @@ class YT:
         request = self.user_service.playlistItems().insert(part="snippet,id", body=body)
         response = request.execute()
         return process_response(response)
+
+    def remove_playlist_item(self, playlist_item_id):
+        request = self.user_service.playlistItems().delete(id=playlist_item_id)
+        response = request.execute()
+        return response
 
     @classmethod
     def get_last_search(cls, request, queue_id):
@@ -99,7 +106,7 @@ class YT:
 def process_response(response: dict):
     # how can I refactor this?
     # there is the dictionary storing callables that I did...
-    kind = response['kind']
+    kind = response["kind"]
     if kind == "youtube#searchListResponse":
         return [parse_search_result(result) for result in response["items"]]
     elif kind == "youtube#videoListResponse":
@@ -109,30 +116,36 @@ def process_response(response: dict):
             raise ValueError("There are two many items for this request.")
     elif kind == "youtube#channelListResponse":
         return parse_channel_result(response)
-    elif kind == 'youtube#playlistItemListResponse':
+    elif kind == "youtube#playlistItemListResponse":
         return parse_playlist_result(response)
     elif kind == "youtube#playlistItem":
         return parse_playlist_item_result(response)
     else:
         return response
 
+
 def parse_playlist_result(response):
-    items = response['items']
-    return [parse_playlist_item_result(item) for item in items]
+    items = response["items"]
+    if items:
+        return [parse_playlist_item_result(item) for item in items]
+    return []
 
 
-def parse_playlist_item_result(response):
-    keys = {'kind', 'id'}
+def parse_playlist_item_result(item):
     snippet_keys = {"title", "playlistId", "position", "resourceId"}
-    response_dict = {key:value for key,value in response.items() if key in keys}
-    response_dict["snippet"] = {key:value for key,value in response['snippet'] if key in snippet_keys}
-    return response_dict
-    
+    result_dict = {
+        key: value for key, value in item["snippet"].items() if key in snippet_keys
+    }
+    result_dict.update({"kind": item["kind"], "id": item["id"]})
+    return result_dict
+
+
 def parse_channel_result(response):
     items = response["items"][0]
     id = items["id"]
     custom_url = items["snippet"]["customUrl"]
     return id, custom_url
+
 
 def parse_search_result(result: dict) -> dict:
     # eventually this should return less data than the whole snippet and Id
@@ -140,6 +153,7 @@ def parse_search_result(result: dict) -> dict:
     search_result = result["snippet"]
     search_result["id"] = id
     return search_result
+
 
 def parse_video_result(response_item: dict) -> dict:
     video_result = {
@@ -151,6 +165,6 @@ def parse_video_result(response_item: dict) -> dict:
         "duration": response_item["contentDetails"]["duration"],
         # region restrictions is in response_item['contentDetails']['regionRestriction'] etc
         # private, public, and unlisted as possible values
-        # "status": response_item["status"]["privacyStatus"],
+        "status": response_item["status"]["privacyStatus"],
     }
     return video_result

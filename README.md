@@ -43,3 +43,6 @@ Enable IAM api?
 external user, enter your email address
 
 
+# the future
+Things I would add in the future would be:
+addressing the number of results that are returned. Right now I am limited by the apy rate limit.

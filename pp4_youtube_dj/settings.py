@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     "allauth.account",
     'allauth.socialaccount',
     "profiles",
+    #"errors",
     "yt_auth",
     "yt_query",
     "queues",

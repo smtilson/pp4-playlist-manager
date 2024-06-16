@@ -113,7 +113,11 @@ class Profile(AbstractBaseUser, PermissionsMixin, DjangoFieldsMixin, ToDictMixin
             "youtube_id",
         ]
         info_dict["date_joined"] = str(self.date_joined)
-        return {format_field_name(key):value for key,value in info_dict.items() if key not in exclude}
+        return {
+            format_field_name(key): value
+            for key, value in info_dict.items()
+            if key not in exclude
+        }
 
     # I should only have one of these maybe?
     def serialize(self):
