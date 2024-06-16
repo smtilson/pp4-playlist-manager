@@ -251,6 +251,16 @@ class Entry(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
         e1.save()
         e2.save()
 
+    def swap_entry_positions(self, other_position) -> None:
+        if self.position == other_position:
+            return
+        other_entry = self.p_queue.all_entries[other_position - 1]
+        self._position, other_entry._position = other_entry._position, self._position
+        self.synced = False
+        other_entry.synced = False
+        self.save()
+        other_entry.save()
+
     def earlier(self) -> None:
         if self._position != 0:
             other_entry = self.p_queue.all_entries[self._position - 1]

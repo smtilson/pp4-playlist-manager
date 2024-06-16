@@ -83,7 +83,7 @@ def swap(request, queue_id, entry_id):
     # refactor to use a class method
     entry = get_object_or_404(Entry, id=entry_id)
     # I don't think this is necessary here.
-    request, queue = Queue.find_queue(request,queue_id)
+    queue = get_object_or_404(Queue, id=queue_id)
     query = "other_position-entry_" + str(entry.id)
     other_entry_position = int(request.POST[query])
     other_entry = queue.all_entries[other_entry_position-1]
@@ -92,6 +92,12 @@ def swap(request, queue_id, entry_id):
     messages.add_message(request, messages.INFO, msg)
     return HttpResponseRedirect(reverse("edit_queue", args=[queue_id]))
 
+def swap_js(request, queue_id, entry_id, other_entry_position):
+    entry = get_object_or_404(Entry,id=entry_id)
+    entry.swap_entry_positions(other_entry_position)
+    msg = f"Entries in positions {entry.position} and {other_entry_position} have been swapped."
+    messages.add_message(request, messages.INFO, msg)
+    return HttpResponseRedirect(reverse("edit_queue", args=[queue_id]))
 
 def later(request, queue_id, entry_id):
     entry = get_object_or_404(Entry, id=entry_id)
