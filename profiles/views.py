@@ -18,17 +18,23 @@ from yt_auth.models import Credentials
 def index(request):
     path = request.get_full_path()
     print(path)
+    user = make_user(request)
     if "code" in path:
         # should this be a redirect?
         return return_from_authorization(request)
     elif "error" in path:
-        error_msg = process_error(path)
+        error_msg = process_path(path)
         print(error_msg)
+        messages.add_message(request, messages.ERROR, error_msg)
+        if user.is_authenticated:
+            return HttpResponseRedirect(reverse("profile"))
         return render(request, "profiles/index.html", {"error_msg": error_msg})
     elif "redirect_action" in request.session:
         view_name = request.session["redirect_action"]["action"]
         args = request.session["redirect_action"]["args"]
         return HttpResponseRedirect(reverse(view_name, args=args))
+    elif user.is_authenticated:
+        return HttpResponseRedirect(reverse("profile"))
     else:
         return render(request, "profiles/index.html")
 
@@ -38,8 +44,10 @@ def profile(request):
     Test version of profile view, to load templates properly.
     This can be cleaned up still.
     """
-    user = request.user
-    if not user.credentials:
+    user = make_user(request)
+    if user.is_guest or not user.is_authenticated:
+        return HttpResponseRedirect(reverse("account_signup"))
+    if not getattr(user,"credentials"):
         user.initialize()
     if not user.has_tokens:
         youtube_permission_status = "Profile has no associated youtube account."

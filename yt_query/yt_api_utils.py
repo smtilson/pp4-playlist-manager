@@ -39,6 +39,8 @@ class YT:
             maxResults=5,
         )
         response = request.execute()
+        with open("test_error_response.txt", "w", encoding="utf-8") as f:
+            f.write(str(response))
         return process_response(response)
 
     def find_video_by_id(self, video_id):

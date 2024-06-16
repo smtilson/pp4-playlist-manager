@@ -17,8 +17,11 @@ os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
 SCOPES = [
     "https://www.googleapis.com/auth/youtube",
 ]
-
-REDIRECT_URI = os.environ.get("REDIRECT_URI")
+LOCAL = os.environ.get("LOCAL")
+if LOCAL:
+    REDIRECT_URI = "http://localhost:8000/"
+else:
+    REDIRECT_URI = os.environ.get("REDIRECT_URI")
 
 
 def get_authorization_url():

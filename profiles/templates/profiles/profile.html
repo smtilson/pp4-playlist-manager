@@ -20,7 +20,7 @@
 </div>
 {% endif %}
 {% if not user.has_tokens %}
-<a href="{{authorization_url}}">Give Youtube DJ permissions.</a>
+<a href="{{authorization_url}}" target="_blank">Give Youtube DJ permissions.</a>
 {% else %}
 <a href="{% url 'revoke_authorization' %}">Revoke Credentials</a>
 {% endif %}
