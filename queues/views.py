@@ -11,6 +11,11 @@ from urllib.error import HTTPError
 
 
 def create_queue(request):
+    user = make_user(request)
+    if not user.is_authenticated:
+        msg = "You must be logged in to create a queue."
+        messages.add_message(request, messages.INFO, msg)
+        return HttpResponseRedirect(reverse("account_login"))
     if request.method == "POST":
         queue_form = QueueForm(data=request.POST)
         if queue_form.is_valid():
@@ -29,8 +34,12 @@ def create_queue(request):
 
 
 def publish(request, queue_id):
-    queue = get_object_or_404(Queue, id=queue_id)
     user = make_user(request)
+    if not user.is_authenticated:
+        msg = "You must be logged in to publish a queue."
+        messages.add_message(request, messages.INFO, msg)
+        return HttpResponseRedirect(reverse("account_login"))
+    queue = get_object_or_404(Queue, id=queue_id)
     if user == queue.owner:
         try:
             msg = queue.publish()
@@ -48,9 +57,11 @@ def publish(request, queue_id):
 
 
 def edit_queue(request, queue_id):
-    # write authorization fucntion taking a queue and a user and returning a boolean
-    queue = get_object_or_404(Queue, id=queue_id)
     user = make_user(request)
+    queue = get_object_or_404(Queue, id=queue_id)
+    # write authorization fucntion taking a queue and a user and returning a boolean
+    
+    
     yt = YT(user)
     if request.method == "POST":
         recent_search = request.POST.get("searchQuery")
