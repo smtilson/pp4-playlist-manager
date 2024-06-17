@@ -148,7 +148,12 @@ def parse_playlist_item_result(item):
 
 
 def parse_channel_result(response):
-    items = response["items"][0]
+    try:
+        items = response["items"][0]
+    except IndexError as e:
+        print(response)
+    except KeyError as e:
+        print(response)
     id = items["id"]
     custom_url = items["snippet"]["customUrl"]
     return id, custom_url
