@@ -7,9 +7,6 @@ admin.site.register(
     list_display=(
         "title",
         "owner",
-        "youtube_id",
         "description",
-        "created_at",
-        "updated_at",
     ),
 )
