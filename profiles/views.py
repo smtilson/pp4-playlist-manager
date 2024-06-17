@@ -96,20 +96,22 @@ def return_from_authorization(request):
 
 def guest_sign_in(request):
     if request.method == "GET":
-        return render(request, "profiles/guest_sign_in.html")
+        queue = get_object_or_404(Queue, id=request.session["queue_id"])
+        context = {"queue": queue}
+        return render(request, "profiles/guest_sign_in.html", context)
     elif request.method == "POST":
         name = request.POST["guest_name"]
         email = request.POST.get("guest_email")
         user = GuestProfile(
             name=name,
             email=email,
-            queue_id=request.session["queue_id"],
-            queue_secret=request.session["queue_secret"],
-            owner_secret=request.session["owner_secret"],
+            queue_id=queue.id,
+            queue_secret= queue.secret,
+            owner_secret=queue.owner.secret,
         )
         request.session["guest_user"] = user.serialize()
         msg = f"Guest account set up for {user.nickname}"
         messages.add_message(request, messages.SUCCESS, msg)
         return HttpResponseRedirect(
-            reverse("edit_queue", args=[request.session["queue_id"]])
+            reverse("edit_queue", args=[queue.id])
         )

@@ -187,23 +187,33 @@ def gain_access(request, queue_secret, owner_secret):
     # I am not sure if this particular change from request.user to make_user(request)) was relevant/necessary
     user = make_user(request)
     request.session["queue_id"] = queue.id
-    request.session["queue_secret"] = queue_secret
-    request.session["owner_secret"] = owner_secret
     request.session["redirect_action"]={"action":"edit_queue","args":[queue.id]}
     if owner_secret == queue.owner.secret:
         print("secrets match")
+        msg = f"{queue.owner.nickname} has given you access to {queue.title}."
+        msg_type = messages.SUCCESS
+        messages.add_message(request, msg_type, msg)
         if user.is_authenticated:
             print("user is authenticated")
             user.other_queues.add(queue)
             queue.save()
             user.save()
+            msg = f"{queue.owner.nickname} has given you access to {queue.title}."
+            msg_type = messages.SUCCESS
+            messages.add_message(request, msg_type, msg)
             return HttpResponseRedirect(reverse("edit_queue", args=[queue.id]))
         # This means that there is already a guest stored in the session
         elif user.is_guest:
             print("user is a guest")
+            msg2 = f"Welcome back {user.nickname}."
+            msg2_type = messages.INFO
+            messages.add_message(request, msg2_type, msg2)
             return HttpResponseRedirect(reverse("guest_sign_in"))
-    # need to add feedback here
-    # this is hit if the user is still anonymous and not a guest
         else:
-            print("user is an unathenticated non guest")
+            print("user is an unauthenticated non-guest")
             return HttpResponseRedirect(reverse("guest_sign_in"))
+    else:
+        msg = f"This link is no longer valid. Please request a new one from the {queue.owner.nickname}."
+        msg_type = messages.ERROR
+        messages.add_message(request, msg_type, msg)
+        return HttpResponseRedirect(reverse("account_signup"))
