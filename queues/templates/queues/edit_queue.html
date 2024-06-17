@@ -46,7 +46,7 @@
         <li>
             <div id="div-position-{{entry.position}}">
                 <span>{{entry.title}} added by {{entry.user}} ({{entry.duration}})</span>
-                {% if is_owner %}
+                {% if user == queue.owner %}
                 <a href=" {% url 'delete_entry' queue_id=queue.id entry_id=entry.id %}"><button
                         class="btn btn-md">Remove</button></a>
                 <div class="position-div">

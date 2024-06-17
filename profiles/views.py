@@ -28,7 +28,7 @@ def index(request):
         messages.add_message(request, messages.ERROR, error_msg)
         if user.is_authenticated:
             return HttpResponseRedirect(reverse("profile"))
-        return render(request, "profiles/index.html", {"error_msg": error_msg})
+        return render(request, "profiles/index.html", {"error_msg": error_msg, "user": user})
     elif "redirect_action" in request.session:
         view_name = request.session["redirect_action"]["action"]
         args = request.session["redirect_action"]["args"]
@@ -36,7 +36,7 @@ def index(request):
     elif user.is_authenticated:
         return HttpResponseRedirect(reverse("profile"))
     else:
-        return render(request, "profiles/index.html")
+        return render(request, "profiles/index.html", {"user":user})
 
 
 def profile(request):
@@ -96,9 +96,6 @@ def return_from_authorization(request):
     if user.has_tokens:
         msg = f"{user.nickname} is already connected to {user.youtube_handle}. If you would like to change which account is connected, please first revoke the current permissions"
     tokens = get_tokens(path)
-    #save_creds(tokens)
-    #print(tokens)
-    # set_credentials saves them
     msg = user.set_credentials(tokens)
     messages.add_message(request, messages.SUCCESS, msg)
     return HttpResponseRedirect(reverse("profile"))

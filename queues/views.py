@@ -24,7 +24,7 @@ def create_queue(request):
             # add feedback that a queue was successfully created
             return HttpResponseRedirect(reverse("edit_queue", args=[queue.id]))
     queue_form = QueueForm()
-    context = {"queue_form": queue_form}
+    context = {"queue_form": queue_form,"user":make_user(request)}
     return render(request, "queues/create_queue.html", context)
 
 
@@ -51,7 +51,6 @@ def edit_queue(request, queue_id):
     # write authorization fucntion taking a queue and a user and returning a boolean
     queue = get_object_or_404(Queue, id=queue_id)
     user = make_user(request)
-    is_owner = queue.owner_yt_id == user.youtube_id
     yt = YT(user)
     if request.method == "POST":
         recent_search = request.POST.get("searchQuery")

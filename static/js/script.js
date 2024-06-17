@@ -139,15 +139,6 @@ async function swapEntries(event) {
     writeEntryData(entry2);
 }
 
-testEntryData = {
-    entryId: 1,
-    entryTitle: "TEST",
-    entryTitle: "TEST",
-    entryPosition: 1,
-    addedBy: "test",
-    entryDuration: "test"
-}
-
 function writeEntryData(entryData) {
     position = entryData.position;
     console.log(position);

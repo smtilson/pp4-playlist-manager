@@ -57,7 +57,7 @@
     </div>
     <main class="">
         {% if user.is_authenticated %}
-        <p class="text-end m-3">{{user.username}}</p>
+        <p class="text-end m-3">{{user.nickname}}</p>
         <!--Maybe add some kind of image here. Just grab it from the youtube profile.-->
         {% endif %}
         {% block content %}
