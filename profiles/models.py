@@ -84,7 +84,7 @@ class Profile(AbstractBaseUser, PermissionsMixin, DjangoFieldsMixin, ToDictMixin
     def nickname(self):
         if self.name:
             return self.name
-        return self.email
+        return self.email.split('@')[0]
 
     def to_dict(self):
         credentials = self.credentials.to_dict()
