@@ -45,9 +45,9 @@ def profile(request):
     This can be cleaned up still.
     """
     user = make_user(request)
-    if user.is_guest or not user.is_authenticated:
-        return HttpResponseRedirect(reverse("account_signup"))
-    if not getattr(user,"credentials"):
+    if not user.is_authenticated:
+        return HttpResponseRedirect(reverse("accounts_login"))
+    if not user.credentials:
         user.initialize()
     if not user.has_tokens:
         youtube_permission_status = "Profile has no associated youtube account."

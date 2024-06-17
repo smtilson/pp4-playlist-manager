@@ -11,17 +11,18 @@ from google.auth.transport.requests import Request
 
 if os.path.isfile("env.py"):
     import env
-    
+
 os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
 
 SCOPES = [
     "https://www.googleapis.com/auth/youtube",
 ]
-LOCAL = os.environ.get("LOCAL")
+
+LOCAL = eval(os.environ.get("LOCAL"))
 if LOCAL:
     REDIRECT_URI = "http://localhost:8000/"
 else:
-    REDIRECT_URI = os.environ.get("REDIRECT_URI")
+    REDIRECT_URI = "https://pp4-playlist-manager-67004a99f0e2.herokuapp.com/"
 
 
 def get_authorization_url():
