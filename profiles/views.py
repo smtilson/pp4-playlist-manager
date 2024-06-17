@@ -46,7 +46,7 @@ def profile(request):
     """
     user = make_user(request)
     if not user.is_authenticated:
-        return HttpResponseRedirect(reverse("accounts_login"))
+        return HttpResponseRedirect(reverse("account_login"))
     if not user.credentials:
         user.initialize()
     if not user.has_tokens:
