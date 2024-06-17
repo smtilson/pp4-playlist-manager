@@ -1,5 +1,5 @@
 {% load static %}
-
+{% load crispy_forms_tags %}
 {% url 'account_login' as login_url %}
 {% url 'account_signup' as signup_url %}
 {% url 'account_logout' as logout_url %}
@@ -9,7 +9,7 @@
 <html class="h-100" lang="en">
 
 <head>
-    <title>Youtube DJ</title>
+    <title>YouTube DJ</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <!-- Google Fonts CSS -->
@@ -29,14 +29,14 @@
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 
-<body class="d-flex flex-column h-100 main-bg">
+<body id="style-override" class="d-flex flex-column h-100 main-bg">
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-light bg-black fixed-top">
         <div class="container-fluid">
             <span class="
-            row"> <a class="navbar-brand white-important col-3" href="{% url 'index' %}">YouTube DJ</a>
+            row"> <a class="navbar-brand white col-3" href="{% url 'index' %}">YouTube DJ</a>
                 {% if user.is_authenticated %}
-                <div class="container navbar text-end col-3 div-user-nickname">{{user.nickname}}</div>
+                <div class="container navbar text-end col-3 white div-user-nickname">{{user.nickname}}</div>
                 {% endif %}</span>
             <button class="navbar-toggler border-white" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText"
                 aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">

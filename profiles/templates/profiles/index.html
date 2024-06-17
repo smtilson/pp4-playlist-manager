@@ -1,6 +1,17 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<div class="text-center text-container logo-div">
+<h1 class="logo">YouTube DJ</h1>
+<h3 class="tag-line">Tag line</h3>
+</div>
+
+<div class="container text-center text-container">
+    <p>Welcome to <span>YouTube DJ</span>, a website for making collaborative playlists, we call them Queues, with your
+        friends and families. To fully utilize YouTube DJ, you must <a href="{% url 'account_signup' %}">register</a> and give
+        us permission to create and edit playlists on your YouTube account. This access is only used to upload queues to
+        YouTube (as unlisted playlists) as well a sync them.</p>
+</div>
 {% if user.is_authenticated %}
 <a href="{% url 'profile' %}">View profile page.</a>
 {% endif %}
