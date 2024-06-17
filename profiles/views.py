@@ -95,8 +95,8 @@ def return_from_authorization(request):
 
 
 def guest_sign_in(request):
+    queue = get_object_or_404(Queue, id=request.session["queue_id"])
     if request.method == "GET":
-        queue = get_object_or_404(Queue, id=request.session["queue_id"])
         context = {"queue": queue}
         return render(request, "profiles/guest_sign_in.html", context)
     elif request.method == "POST":

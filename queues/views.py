@@ -208,7 +208,7 @@ def gain_access(request, queue_secret, owner_secret):
             msg2 = f"Welcome back {user.nickname}."
             msg2_type = messages.INFO
             messages.add_message(request, msg2_type, msg2)
-            return HttpResponseRedirect(reverse("guest_sign_in"))
+            return HttpResponseRedirect(reverse("edit_queue", args=[queue.id]))
         else:
             print("user is an unauthenticated non-guest")
             return HttpResponseRedirect(reverse("guest_sign_in"))
