@@ -152,16 +152,20 @@ class Profile(AbstractBaseUser, PermissionsMixin, DjangoFieldsMixin, ToDictMixin
         # attention: why am I not saving here.
         self.credentials.set_credentials(new_credentials)
         if self.has_tokens and not (self.youtube_handle or self.youtube_id):
-            self.find_youtube_data()
-            msg = f"Successfully connected the youtube account {self.youtube_handle} to your profile."
+            success = self.find_youtube_data()
+            if success:
+                msg = f"Successfully connected the youtube account {self.youtube_handle} to your profile."
+            else:
+                msg = f"Failed to find a matching youtube account."
         else:
             msg = f"Successfully updated credentials for {self.nickname}."
         return msg
 
     def find_youtube_data(self):
         yt = YT(self)
-        self.youtube_id, self.youtube_handle = yt.find_user_youtube_data()
+        success,self.youtube_id, self.youtube_handle = yt.find_user_youtube_data()
         self.save()
+        return success
 
     def revoke_youtube_data(self):
         """

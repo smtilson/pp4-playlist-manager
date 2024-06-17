@@ -250,3 +250,40 @@ playlist_response = {
     ],
     "pageInfo": {"totalResults": 6, "resultsPerPage": 5},
 }
+
+channel_response = {
+    "kind": "youtube#channelListResponse",
+    "etag": "cA3NarQ_AaLcbF1xHbPLwQSMXM8",
+    "pageInfo": {"totalResults": 1, "resultsPerPage": 5},
+    "items": [
+        {
+            "kind": "youtube#channel",
+            "etag": "AIRgXdMbOLjLXB__BMyK9DyEmDA",
+            "id": "UC26upRWch7LfkULs6qAWi5A",
+            "snippet": {
+                "title": "Sean Tilson",
+                "description": "",
+                "customUrl": "@seantilson3420",
+                "publishedAt": "2013-09-02T04:30:35Z",
+                "thumbnails": {
+                    "default": {
+                        "url": "https://yt3.ggpht.com/ytc/AIdro_kToUKe1wlq8jnEe0B7-nDqDpJ_BJz3fe3iKbf3lO6qpZc=s88-c-k-c0x00ffffff-no-rj",
+                        "width": 88,
+                        "height": 88,
+                    },
+                    "medium": {
+                        "url": "https://yt3.ggpht.com/ytc/AIdro_kToUKe1wlq8jnEe0B7-nDqDpJ_BJz3fe3iKbf3lO6qpZc=s240-c-k-c0x00ffffff-no-rj",
+                        "width": 240,
+                        "height": 240,
+                    },
+                    "high": {
+                        "url": "https://yt3.ggpht.com/ytc/AIdro_kToUKe1wlq8jnEe0B7-nDqDpJ_BJz3fe3iKbf3lO6qpZc=s800-c-k-c0x00ffffff-no-rj",
+                        "width": 800,
+                        "height": 800,
+                    },
+                },
+                "localized": {"title": "Sean Tilson", "description": ""},
+            },
+        }
+    ],
+}

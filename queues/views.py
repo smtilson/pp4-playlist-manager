@@ -32,14 +32,11 @@ def publish(request, queue_id):
     queue = get_object_or_404(Queue, id=queue_id)
     user = make_user(request)
     if user == queue.owner:
-        try:
-            msg = queue.publish()
-        except HTTPError as e:
-            print(e)
-            print("HTTPError hit on publish")
-            msg = e
-        print(msg)
-        messages.add_message(request, messages.SUCCESS, msg)
+        # I am not sure if this try and except block is still necessary.
+        # if you take it out, you will always find out.
+        msg_type, msg = queue.publish()
+        
+        messages.add_message(request, msg_type, msg)
     else:
         msg = "Only the queue owner can publish the queue."
         messages.add_message(request, messages.ERROR, msg)
@@ -52,11 +49,18 @@ def edit_queue(request, queue_id):
     queue = get_object_or_404(Queue, id=queue_id)
     user = make_user(request)
     yt = YT(user)
+    msg = ''
     if request.method == "POST":
         recent_search = request.POST.get("searchQuery")
         if recent_search:
-            search_results = yt.search_videos(recent_search)
-            request = yt.save_search(request, queue_id, recent_search, search_results)
+            success, search_results = yt.search_videos(recent_search)
+            if not success:
+                msg = f"Search for {recent_search} failed."
+                msg_type = messages.ERROR
+            else:
+                msg = f"Search for {recent_search} succeeded."
+                msg_type = messages.INFO
+                request = yt.save_search(request, queue_id, recent_search, search_results)
     elif request.method == "GET":
         recent_search, search_results = yt.get_last_search(request, queue_id)
     context = {
@@ -65,6 +69,8 @@ def edit_queue(request, queue_id):
         "search_results": search_results,
         "user": user,
     }
+    if msg:
+        messages.add_message(request, msg_type, msg)
     return render(request, "queues/edit_queue.html", context)
 
 
@@ -153,11 +159,15 @@ def add_entry(request, queue_id, video_id):
         messages.add_message(request, msg_type, msg)
         HttpResponseRedirect(reverse("edit_queue", args=[queue_id]))
     user = make_user(request)
-    video_data = YT(user).find_video_by_id(video_id)
+    success, video_data = YT(user).find_video_by_id(video_id)
+    if not success:
+        msg = "Could not find that video. Please try again."
+        messages.add_message(request, messages.ERROR, msg)
+        return HttpResponseRedirect(reverse("edit_queue", args=[queue_id]))
     if video_data["status"] == "private":
         msg = "This video is private. It cannot be added to the queue."
         messages.add_message(request, messages.ERROR, msg)
-        HttpResponseRedirect(reverse("edit_queue", args=[queue_id]))
+        return HttpResponseRedirect(reverse("edit_queue", args=[queue_id]))
     del video_data["status"]
     entry = Entry(**video_data)
     entry.p_queue = queue
@@ -195,7 +205,7 @@ def delete_queue(request, queue_id):
     if queue.owner == user:
         try:
             # commented out due to rate limit issues.
-            # msg = queue.unpublish()
+            # msg_type, msg = queue.unpublish()
             queue.delete()
             msg = f"{queue.title} has been deleted. If the queue was published"
             msg += " on YouTube, it will remain there. Deletion of playlists"

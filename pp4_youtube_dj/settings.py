@@ -56,7 +56,7 @@ INSTALLED_APPS = [
     # "crispy_bootstrap5",
     # "cloudinary",
     "profiles",
-    # "errors",
+    "errors",
     "yt_auth",
     "yt_query",
     "queues",
