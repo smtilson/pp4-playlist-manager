@@ -89,7 +89,7 @@
     </ul>
 </div>
 
-{% if not is_guest %}
+{% if not user.is_guest %}
 <a href="{% url 'profile' %}">Back to Profile</a>
 {%else%}
 <a href="{% url 'account_signup' %}">Sign Up!</a>
