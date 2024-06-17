@@ -333,3 +333,71 @@ File ~\OneDrive\Desktop\repos\pp4-playlist-manager\venv\Lib\site-packages\django
 OperationalError: no such column: queues_entry.youtube_i
 
 https://pp4-playlist-manager-67004a99f0e2.herokuapp.com/queues/gain_access/X86UrJsH6QB7io5WHCjd/aY2vevAgwEcQQ455jnoZ
+
+
+
+Error from Tarek:
+Environment:
+
+
+Request Method: GET
+Request URL: https://pp4-playlist-manager-67004a99f0e2.herokuapp.com/?state=VEpnOWMzwU28IcjohHXbUtJsIuRIQL&code=4/0ATx3LY73fqfHdwU-3_99_qliyQfJ2fWMDqLvpn3YV5bBYei6XWg-3I9VLgdmVP_TRVLHKA&scope=https://www.googleapis.com/auth/youtube
+
+Django Version: 4.2.13
+Python Version: 3.12.3
+Installed Applications:
+['django.contrib.admin',
+ 'django.contrib.auth',
+ 'django.contrib.contenttypes',
+ 'django.contrib.sessions',
+ 'django.contrib.messages',
+ 'django.contrib.staticfiles',
+ 'django.contrib.sites',
+ 'allauth',
+ 'allauth.account',
+ 'allauth.socialaccount',
+ 'profiles',
+ 'yt_auth',
+ 'yt_query',
+ 'queues']
+Installed Middleware:
+['django.middleware.security.SecurityMiddleware',
+ 'django.contrib.sessions.middleware.SessionMiddleware',
+ 'django.middleware.common.CommonMiddleware',
+ 'django.contrib.sessions.middleware.SessionMiddleware',
+ 'django.middleware.csrf.CsrfViewMiddleware',
+ 'django.contrib.auth.middleware.AuthenticationMiddleware',
+ 'django.contrib.messages.middleware.MessageMiddleware',
+ 'django.middleware.clickjacking.XFrameOptionsMiddleware',
+ 'allauth.account.middleware.AccountMiddleware']
+
+
+
+Traceback (most recent call last):
+  File "/app/.heroku/python/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.heroku/python/lib/python3.12/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/profiles/views.py", line 23, in index
+    return return_from_authorization(request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/profiles/views.py", line 92, in return_from_authorization
+    msg = user.set_credentials(tokens)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/profiles/models.py", line 155, in set_credentials
+    self.find_youtube_data()
+    ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/profiles/models.py", line 163, in find_youtube_data
+    self.youtube_id, self.youtube_handle = yt.find_user_youtube_data()
+                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/yt_query/yt_api_utils.py", line 31, in find_user_youtube_data
+    return parse_channel_result(response)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/yt_query/yt_api_utils.py", line 147, in parse_channel_result
+    items = response["items"][0]
+            ^^^^^^^^^^^^^^^^^
+
+Exception Type: KeyError at /
+Exception Value: 'items'

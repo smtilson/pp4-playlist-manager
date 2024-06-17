@@ -1,5 +1,5 @@
 from django.shortcuts import render, reverse, get_object_or_404
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from .models import Profile, GuestProfile, make_user
 from queues.models import Queue
 from django.contrib import messages
@@ -18,19 +18,25 @@ from yt_auth.models import Credentials
 def index(request):
     path = request.get_full_path()
     print(path)
+    user = make_user(request)
     if "code" in path:
         # should this be a redirect?
         return return_from_authorization(request)
     elif "error" in path:
-        error_msg = process_error(path)
+        error_msg = process_path(path)
         print(error_msg)
-        return render(request, "profiles/index.html", {"error_msg": error_msg})
+        messages.add_message(request, messages.ERROR, error_msg)
+        if user.is_authenticated:
+            return HttpResponseRedirect(reverse("profile"))
+        return render(request, "profiles/index.html", {"error_msg": error_msg, "user": user})
     elif "redirect_action" in request.session:
         view_name = request.session["redirect_action"]["action"]
         args = request.session["redirect_action"]["args"]
         return HttpResponseRedirect(reverse(view_name, args=args))
+    elif user.is_authenticated:
+        return HttpResponseRedirect(reverse("profile"))
     else:
-        return render(request, "profiles/index.html")
+        return render(request, "profiles/index.html", {"user":user})
 
 
 def profile(request):
@@ -60,6 +66,8 @@ def profile(request):
     }
     return render(request, "profiles/profile.html", context)
 
+def test(request):
+    return JsonResponse({"test":"test"})
 
 def set_name(request):
     user = make_user(request)
@@ -88,9 +96,6 @@ def return_from_authorization(request):
     if user.has_tokens:
         msg = f"{user.nickname} is already connected to {user.youtube_handle}. If you would like to change which account is connected, please first revoke the current permissions"
     tokens = get_tokens(path)
-    #save_creds(tokens)
-    #print(tokens)
-    # set_credentials saves them
     msg = user.set_credentials(tokens)
     messages.add_message(request, messages.SUCCESS, msg)
     return HttpResponseRedirect(reverse("profile"))

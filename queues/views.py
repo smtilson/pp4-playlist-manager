@@ -1,5 +1,5 @@
 from django.shortcuts import render, reverse, get_object_or_404
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from .forms import QueueForm
 from .models import Queue, Entry
 from profiles.models import make_user
@@ -24,7 +24,7 @@ def create_queue(request):
             # add feedback that a queue was successfully created
             return HttpResponseRedirect(reverse("edit_queue", args=[queue.id]))
     queue_form = QueueForm()
-    context = {"queue_form": queue_form}
+    context = {"queue_form": queue_form,"user":make_user(request)}
     return render(request, "queues/create_queue.html", context)
 
 
@@ -51,15 +51,14 @@ def edit_queue(request, queue_id):
     # write authorization fucntion taking a queue and a user and returning a boolean
     queue = get_object_or_404(Queue, id=queue_id)
     user = make_user(request)
-    is_owner = queue.owner_yt_id == user.youtube_id
     yt = YT(user)
-    if request.method =="POST":
+    if request.method == "POST":
         recent_search = request.POST.get("searchQuery")
         if recent_search:
             search_results = yt.search_videos(recent_search)
-            request = yt.save_search(request,queue_id,recent_search,search_results)
+            request = yt.save_search(request, queue_id, recent_search, search_results)
     elif request.method == "GET":
-        recent_search, search_results = yt.get_last_search(request,queue_id)
+        recent_search, search_results = yt.get_last_search(request, queue_id)
     context = {
         "queue": queue,
         "recent_search": recent_search,
@@ -81,14 +80,43 @@ def swap(request, queue_id, entry_id):
     # refactor to use a class method
     entry = get_object_or_404(Entry, id=entry_id)
     # I don't think this is necessary here.
-    request, queue = Queue.find_queue(request,queue_id)
+    queue = get_object_or_404(Queue, id=queue_id)
     query = "other_position-entry_" + str(entry.id)
     other_entry_position = int(request.POST[query])
-    other_entry = queue.all_entries[other_entry_position-1]
-    Entry.swap_entries(entry_id,other_entry.id)
+    other_entry = queue.all_entries[other_entry_position - 1]
+    Entry.swap_entries(entry_id, other_entry.id)
     msg = f"{entry.title} and {other_entry.title} have been swapped in the queue."
     messages.add_message(request, messages.INFO, msg)
     return HttpResponseRedirect(reverse("edit_queue", args=[queue_id]))
+
+
+def swap_js(request, queue_id, entry_id, other_entry_position):
+    entry = get_object_or_404(Entry, id=entry_id)
+    entry, other_entry = entry.swap_entry_positions(other_entry_position)
+    msg = f"Entries in positions {entry.position} and {other_entry_position} have been swapped."
+    messages.add_message(request, messages.INFO, msg)
+    entry_data = {
+        "id": entry.id,
+        "title": entry.title,
+        "position": entry.position,
+        "addedBy": entry.user,
+        "duration": entry.duration,
+    }
+    other_entry_data = {
+        "id": other_entry.id,
+        "title": other_entry.title,
+        "position": other_entry.position,
+        "user": other_entry.user,
+        "duration": other_entry.duration,
+    }
+    response_dict = {
+        "entry1": entry_data,
+        "entry2": other_entry_data,
+        "msg": msg,
+        "level": "messages.INFO",
+        "level2": messages.ERROR,
+    }
+    return JsonResponse(response_dict)
 
 
 def later(request, queue_id, entry_id):
@@ -97,6 +125,7 @@ def later(request, queue_id, entry_id):
     msg = f"{entry.title} has been moved later in the queue."
     messages.add_message(request, messages.INFO, msg)
     return HttpResponseRedirect(reverse("edit_queue", args=[queue_id]))
+
 
 def sync(request, queue_id):
     queue = get_object_or_404(Queue, id=queue_id)
@@ -107,13 +136,14 @@ def sync(request, queue_id):
             msg_type = messages.SUCCESS
         except HTTPError as e:
             msg = e
-            msg_type= messages.ERROR
+            msg_type = messages.ERROR
         print(msg)
     else:
         msg = "Only the queue owner can sync the queue."
         msg_type = messages.ERROR
     messages.add_message(request, msg_type, msg)
     return HttpResponseRedirect(reverse("edit_queue", args=[queue_id]))
+
 
 def add_entry(request, queue_id, video_id):
     queue = get_object_or_404(Queue, id=queue_id)
@@ -124,16 +154,16 @@ def add_entry(request, queue_id, video_id):
         HttpResponseRedirect(reverse("edit_queue", args=[queue_id]))
     user = make_user(request)
     video_data = YT(user).find_video_by_id(video_id)
-    if video_data['status'] == "private":
+    if video_data["status"] == "private":
         msg = "This video is private. It cannot be added to the queue."
-        messages.add_message(request,messages.ERROR, msg)
+        messages.add_message(request, messages.ERROR, msg)
         HttpResponseRedirect(reverse("edit_queue", args=[queue_id]))
     del video_data["status"]
     entry = Entry(**video_data)
     entry.p_queue = queue
     # adds entry to end of list
     entry._position = queue.length
-    entry.user = user.name if user.name else user.email 
+    entry.user = user.name if user.name else user.email
     queue.save()
     entry.save()
     request.session["queue"] = queue.serialize()
@@ -164,8 +194,8 @@ def delete_queue(request, queue_id):
     # there should be a modal to double check on the front end
     if queue.owner == user:
         try:
-            #commented out due to rate limit issues.
-            #msg = queue.unpublish()
+            # commented out due to rate limit issues.
+            # msg = queue.unpublish()
             queue.delete()
             msg = f"{queue.title} has been deleted. If the queue was published"
             msg += " on YouTube, it will remain there. Deletion of playlists"

@@ -6,8 +6,7 @@ from utils import get_secret
 from mixins import DjangoFieldsMixin, ToDictMixin, ResourceID
 
 # Create your models here.
-
-
+MAX_QUEUE_LENGTH = YT.MAX_QUEUE_LENGTH
 class Queue(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
     owner = models.ForeignKey(
         Profile, on_delete=models.CASCADE, related_name="my_queues", default=1
@@ -32,7 +31,7 @@ class Queue(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
 
     @property
     def full(self) -> bool:
-        return self.length >= 50
+        return self.length >= MAX_QUEUE_LENGTH
 
     @property
     def synced(self):
@@ -250,6 +249,17 @@ class Entry(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
         e2.synced = False
         e1.save()
         e2.save()
+
+    def swap_entry_positions(self, other_position) -> None:
+        if self.position == other_position:
+            return
+        other_entry = self.p_queue.all_entries[other_position - 1]
+        self._position, other_entry._position = other_entry._position, self._position
+        self.synced = False
+        other_entry.synced = False
+        self.save()
+        other_entry.save()
+        return self, other_entry
 
     def earlier(self) -> None:
         if self._position != 0:

@@ -57,7 +57,7 @@
     </div>
     <main class="">
         {% if user.is_authenticated %}
-        <p class="text-end m-3">{{user.username}}</p>
+        <p class="text-end m-3">{{user.nickname}}</p>
         <!--Maybe add some kind of image here. Just grab it from the youtube profile.-->
         {% endif %}
         {% block content %}
@@ -77,9 +77,13 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous">
     </script>
+     <script src="https://code.jquery.com/jquery-3.2.1.js"
+     integrity="sha256-DZAnKJ/6XZ9si04Hgrsxu/8s717jcIzLy3oi35EouyE=" crossorigin="anonymous"></script>
+     <script src="{% static 'js/script.js' %}"></script>
     {% block extras %}
     <p>No Extras Loaded.</p>
     {% endblock %}
+    <script src></script>
 </body>
 
 </html>
