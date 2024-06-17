@@ -51,15 +51,14 @@
                 <a href="{% url 'delete_entry' queue_id=queue.id entry_id=entry.id %}"><button
                         class="btn btn-md">Remove</button></a>
                 <div class="position-div">
-                    <button data-href="{%url 'earlier' queue_id=queue.id entry_id=entry.id %}" class="earlier-btn position-btn" data-position="{{entry.position|add:'-1'}}">+</button>
-                    <button data-href="{%url 'later' queue.id entry.id %}" class="later-btn position-btn" data-position="{{entry.position|add:'1'}}">-</button>
-                    <form action="{% url 'swap' queue.id entry.id %}" class="swapForm" method="POST">
-                        {% csrf_token %}
-                        <label for="other_position-entry_{{entry.id}}">New Position:</label>
-                        <input id="other_position-entry_{{entry.id}}" name="other_position-entry_{{entry.id}}"
-                            class="swap-input">
-                        <button type="submit" class="btn btn-md swap-button">Move</button>
-                    </form>
+                    <button data-queue="{{queue.id}}" data-entry="{{entry.id}}" class="move-btn position-btn"
+                        data-position="{{entry.position|add:'-1'}}" data-direction="+">+</button>
+                    <button data-queue="{{queue.id}}" data-entry="{{entry.id}}" class="move-btn position-btn"
+                        data-position="{{entry.position|add:'1'}}" data-direction="-">-</button>
+                    <label for="new-position-{{entry.id}}" id="label-{{entry.id}}">New Position:</label>
+                    <input id="new-position-{{entry.id}}" type="number" class="swap-input">
+                    <button type="submit" class="btn btn-md swap-button position-btn" data-queue="{{queue.id}}"
+                        data-entry="{{entry.id}}">Swap</button>
                 </div>
                 {% endif %}
                 </span>
