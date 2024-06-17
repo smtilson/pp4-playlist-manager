@@ -38,7 +38,9 @@ def profile(request):
     Test version of profile view, to load templates properly.
     This can be cleaned up still.
     """
-    user = request.user
+    user = make_user(request)
+    if not user.is_authenticated:
+        return HttpResponseRedirect(reverse("accounts_login"))
     if not user.credentials:
         user.initialize()
     if not user.has_tokens:
