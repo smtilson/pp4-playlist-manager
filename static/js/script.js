@@ -96,7 +96,7 @@ async function moveEntry(event) {
     const direction = event.target.getAttribute("data-direction");
     console.log(entryId);
     const otherPosition = event.target.getAttribute("data-position");
-    console.log(otherPosition);
+    console.log("other position"+otherPosition);
     if (otherPosition <= 0 && direction === "+") {
         console.log("out of bounds +");
         return;
@@ -109,9 +109,10 @@ async function moveEntry(event) {
     });
     const data = await response.json();
     const entry1 = data.entry1;
-    console.log(entry1);
+    console.log(entry1.position);
     const entry2 = data.entry2;
-    console.log(entry2);
+    console.log(entry2.position);
+    console.log("going to wriet entry data");
     writeEntryData(entry1);
     writeEntryData(entry2);
 }
@@ -141,6 +142,7 @@ async function swapEntries(event) {
 
 function writeEntryData(entryData) {
     position = entryData.position;
+    console.log(entryData.title);
     console.log(position);
     positionDiv = $(`#div-position-${position}`);
     positionSpan = positionDiv.children('span')[0];
@@ -155,10 +157,10 @@ function writeEntryData(entryData) {
         }
     }
     let input = positionDiv.find('input')[0];
-    let label = positionDiv.find(label)[0];
+    let label = positionDiv.find("label")[0];
     input.setAttribute("id", `new-position-${entryData.id}`);
     label.setAttribute("for", `new-position-${entryData.id}`);
-    label.setAttribute("id", `label-${entryD.id}`);
+    label.setAttribute("id", `label-${entryData.id}`);
 }
 
 function setSwapPlaceHolderText(queueLength) {
