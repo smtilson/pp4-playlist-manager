@@ -1,5 +1,5 @@
 from django.db import models
-from profiles.models import Profile, GuestProfile
+from profiles.models import Profile, make_user
 from django.shortcuts import get_object_or_404
 from yt_query.yt_api_utils import YT
 from utils import get_secret
@@ -270,3 +270,12 @@ class Entry(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
         if self._position != self.p_queue.length - 1:
             other_entry = self.p_queue.all_entries[self._position + 1]
             self.swap_entries(self.id, other_entry.id)
+
+def has_authorization(user, queue):
+    user = make_user(user)
+    # this checks if the user is a guest with permissions.
+    if user.owner_secret == queue.owner.secret:
+        return True
+    elif queue.id in user.all_queue_ids:
+        return True
+    return False

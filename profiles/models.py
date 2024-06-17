@@ -136,6 +136,11 @@ class Profile(AbstractBaseUser, PermissionsMixin, DjangoFieldsMixin, ToDictMixin
         self.save()
 
     @property
+    def all_queue_ids(self):
+        my_queue_ids = {queue.id for queue in self.my_queues.all()}
+        other_queue_ids = {queue.id for queue in self.other_queues.all()}
+        return my_queue_ids.union(other_queue_ids)
+    @property
     # is this used?
     # this needs to be properly addressed
     def valid_credentials(self):
