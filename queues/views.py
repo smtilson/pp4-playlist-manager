@@ -65,8 +65,6 @@ def edit_queue(request, queue_id):
         "recent_search": recent_search,
         "search_results": search_results,
         "user": user,
-        "is_owner": is_owner,
-        "is_guest": user.is_guest,
     }
     return render(request, "queues/edit_queue.html", context)
 
@@ -169,9 +167,9 @@ def delete_queue(request, queue_id):
             #commented out due to rate limit issues.
             #msg = queue.unpublish()
             queue.delete()
-            msg = f"{queue.title} has been deleted. If the queue was published
-            on YouTube, it will remain there. Deletion of playlists on YouTube
-            is temporarily disabled due to API rate limits."
+            msg = f"{queue.title} has been deleted. If the queue was published"
+            msg += " on YouTube, it will remain there. Deletion of playlists"
+            msg += " on YouTube is temporarily disabled due to API rate limits."
             msg_type = messages.SUCCESS
         except HTTPError as e:
             msg = "An error occurred.\n" + e

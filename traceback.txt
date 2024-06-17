@@ -331,3 +331,5 @@ File ~\OneDrive\Desktop\repos\pp4-playlist-manager\venv\Lib\site-packages\django
 --> 328 return super().execute(query, params)
 
 OperationalError: no such column: queues_entry.youtube_i
+
+https://pp4-playlist-manager-67004a99f0e2.herokuapp.com/queues/gain_access/X86UrJsH6QB7io5WHCjd/aY2vevAgwEcQQ455jnoZ
