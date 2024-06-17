@@ -1,5 +1,9 @@
 {% block content %}
 <h3>Guest sign in.</h3>
+<p class="invitation">{{queue.owner.nickname}} has invited you to collaborate on {{queue.title}}.</p>
+{% if queue.description %}
+<p>{{queue.description}}</p>
+{% endif %}
 <form method="POST" action="guest_sign_in">
     {% csrf_token %}
     <label for="guest_name">Nickname:</label>

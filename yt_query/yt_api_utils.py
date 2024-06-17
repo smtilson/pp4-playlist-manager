@@ -8,8 +8,10 @@ from django.shortcuts import get_object_or_404
 if os.path.isfile("env.py"):
     import env
 
+
 YOUTUBE_API_KEY = os.environ.get("YOUTUBE_API_KEY")
 class YT:
+    MAX_QUEUE_LENGTH = 20
     def __init__(self, user: "Profile") -> None:
         self.user = user
         self.api_key = YOUTUBE_API_KEY
@@ -72,7 +74,7 @@ class YT:
 
     def get_published_playlist(self, playlist_id):
         request = self.guest_service.playlistItems().list(
-            part="snippet,id", playlistId=playlist_id, maxResults=50
+            part="snippet,id", playlistId=playlist_id, maxResults=20
         )
         response = request.execute()
         return process_response(response)

@@ -6,8 +6,7 @@ from utils import get_secret
 from mixins import DjangoFieldsMixin, ToDictMixin, ResourceID
 
 # Create your models here.
-
-
+MAX_QUEUE_LENGTH = YT.MAX_QUEUE_LENGTH
 class Queue(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
     owner = models.ForeignKey(
         Profile, on_delete=models.CASCADE, related_name="my_queues", default=1
@@ -32,7 +31,7 @@ class Queue(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
 
     @property
     def full(self) -> bool:
-        return self.length >= 50
+        return self.length >= MAX_QUEUE_LENGTH
 
     @property
     def synced(self):
