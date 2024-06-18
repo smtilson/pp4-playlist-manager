@@ -5,8 +5,9 @@ $(document).ready(function () {
     initialize();
 })
 
-const DOMAIN = "http://localhost:8000/";
-//const DOMAIN = "https://pp4-playlist-manager-67004a99f0e2.herokuapp.com/";
+//const DOMAIN = "http://localhost:8000/";
+const DOMAIN = "https://pp4-playlist-manager-67004a99f0e2.herokuapp.com/";
+console.log("The current domain is " + DOMAIN);
 function initialize() {
     const moveBtns = $('.move-btn');
     for (let btn of moveBtns) {
