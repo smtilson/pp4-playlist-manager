@@ -3,7 +3,7 @@ $(document).ready(function () {
     initSwapInputs();
     initialize();
     initialize();
-    inputBackgroundColor();
+    formStyle();
 })
 
 //const DOMAIN = "http://localhost:8000/";
@@ -151,9 +151,13 @@ function validateSwapInputs(entryId) {
     console.log("validate triggered");
 }
 
-function inputBackgroundColor() {
+function formStyle() {
     console.log("input bg hit");
     const inputs = $('input');
+    const labels = $('label');
+    for (let label of labels) {
+        label.classList.add("form-label");
+    }
     for (let input of inputs) {
         input.classList.add("js-input-background");
         input.classList.add("form-control");

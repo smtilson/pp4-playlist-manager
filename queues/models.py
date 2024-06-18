@@ -13,7 +13,6 @@ class Queue(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
     owner = models.ForeignKey(
         Profile, on_delete=models.CASCADE, related_name="my_queues", default=1
     )
-    owner_yt_id = models.CharField(max_length=100, default="")
     # what is the difference between this field and the yt_id below? Just that one interacts with the resource Id mixin?
     collaborators = models.ManyToManyField(Profile, related_name="other_queues")
     title = models.CharField(max_length=100, default="")

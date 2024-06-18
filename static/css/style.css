@@ -33,8 +33,7 @@ body {
     background-color: #303436
 }
 
-#style-override input[type="text"],
-#style-override input[type="textarea"] {
+#style-override input {
     color: white;
     background-color: black;
 }
@@ -84,7 +83,12 @@ body {
     border-width: 2px;
 }
 
-
+#style-override .modal-body,
+#style-override .modal-header,
+#style-override .modal-footer {
+    color: white;
+    background-color: #303436
+}
 /* Messages Div */
 
 #style-override .message-div {
