@@ -1,6 +1,5 @@
 {% extends 'base.html' %}
 {% load i18n %}
-{% load crispy_forms_tags %}
 
 {% block content %}
 <div class="text-center logo-div my-container">
@@ -13,7 +12,7 @@
 </div>
 <div class="text-center my-container">
     Once logged in, you will be able to <a href="{% url 'create_queue' %}">Create</a>, <a
-        href="{% url 'edit_queue' %}">Edit</a>, and 'Share' queues with friends.
+        href="{% url 'edit_queue' 1 %}">Edit</a>, and 'Share' queues with friends.
     You and your friends will be able to add videos from YouTube to the queue from the edit page.
     Get the most out of YouTube Dj by creating an account and pairing it with your YouTube account. Link to something
     about the usage of yotube credentials. Once paired with a YouTube account, you will be able to 'Publish' your queues to

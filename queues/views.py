@@ -17,17 +17,15 @@ def create_queue(request):
         messages.add_message(request, messages.INFO, msg)
         return HttpResponseRedirect(reverse("account_login"))
     if request.method == "POST":
-        queue_form = QueueForm(data=request.POST)
-        if queue_form.is_valid():
-            queue = queue_form.save(commit=False)
-            owner = make_user(request)
-            queue.owner = owner
-            queue.owner_yt_id = owner.youtube_id
-            queue.save()
-            msg = f"{queue.title} has been created."
-            messages.add_message(request, messages.SUCCESS, msg)
-            # add feedback that a queue was successfully created
-            return HttpResponseRedirect(reverse("edit_queue", args=[queue.id]))
+        
+        queue_name = request.PORT.get('queue-name')
+        owner = make_user(request)
+        queue.owner = owner
+        queue.owner_yt_id = owner.youtube_id
+        queue.save()
+        msg = f"{queue.title} has been created."
+        messages.add_message(request, messages.SUCCESS, msg)
+        return HttpResponseRedirect(reverse("edit_queue", args=[queue.id]))
     queue_form = QueueForm()
     context = {"queue_form": queue_form, "user": make_user(request)}
     return render(request, "queues/create_queue.html", context)

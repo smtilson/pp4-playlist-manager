@@ -33,6 +33,17 @@ body {
     background-color: #303436
 }
 
+#style-override input[type="text"],
+#style-override input[type="textarea"] {
+    color: white;
+    background-color: black;
+}
+
+#style-override form .js-input-background{
+    color: white;
+    background-color: black;
+}
+
 #style-override .bkg-grey {
     background-color: #272727
 }
