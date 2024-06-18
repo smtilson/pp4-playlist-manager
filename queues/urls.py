@@ -18,9 +18,6 @@ urlpatterns = [
         views.delete_queue,
         name="delete_queue",
     ),
-    path("earlier/<int:queue_id>/<int:entry_id>",views.earlier,name="earlier"),
-    path("later/<int:queue_id>/<int:entry_id>",views.later,name="later"),
-    path("swap/<int:queue_id>/<int:entry_id>",views.swap,name="swap"),
-    path("swap-js/<int:queue_id>/<int:entry_id>/<int:other_entry_position>",views.swap_js,name="swap_js"),
+    path("swap/<int:queue_id>/<int:entry_id>/<int:other_entry_position>",views.swap,name="swap"),
     path("publish/<int:queue_id>", views.publish, name="publish"),
 ]

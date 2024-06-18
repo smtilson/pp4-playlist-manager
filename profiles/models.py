@@ -221,6 +221,10 @@ class GuestProfile(ToDictMixin):
             {"name", "queue_id", "queue_secret", "email", "owner_secret"}
         )
 
+    @property
+    def all_queue_ids(self):
+        return [self.queue_id]
+    
     def convert_to_profile(self):
         pass
 

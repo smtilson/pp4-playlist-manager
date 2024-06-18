@@ -261,21 +261,7 @@ class Entry(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
         other_entry.save()
         return self, other_entry
 
-    def earlier(self) -> None:
-        if self._position != 0:
-            other_entry = self.p_queue.all_entries[self._position - 1]
-            self.swap_entries(self.id, other_entry.id)
-
-    def later(self) -> None:
-        if self._position != self.p_queue.length - 1:
-            other_entry = self.p_queue.all_entries[self._position + 1]
-            self.swap_entries(self.id, other_entry.id)
-
 def has_authorization(user, queue):
-    user = make_user(user)
-    # this checks if the user is a guest with permissions.
-    if user.owner_secret == queue.owner.secret:
-        return True
-    elif queue.id in user.all_queue_ids:
+    if queue.id in getattr(user, "all_queue_ids", []):
         return True
     return False

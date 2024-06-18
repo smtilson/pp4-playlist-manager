@@ -82,7 +82,7 @@ def edit_queue(request, queue_id):
     return render(request, "queues/edit_queue.html", context)
 
 
-def swap_js(request, queue_id, entry_id, other_entry_position):
+def swap(request, queue_id, entry_id, other_entry_position):
     queue = get_object_or_404(Queue, id=queue_id)
     user = make_user(request)
     if not user == queue.owner:
