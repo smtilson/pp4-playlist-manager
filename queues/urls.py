@@ -18,6 +18,6 @@ urlpatterns = [
         views.delete_queue,
         name="delete_queue",
     ),
-    path("swap/<int:queue_id>/<int:entry_id>/<int:other_entry_position>",views.swap,name="swap"),
+    path("swap/<int:entry_id>/<int:other_entry_position>",views.swap,name="swap"),
     path("publish/<int:queue_id>", views.publish, name="publish"),
 ]

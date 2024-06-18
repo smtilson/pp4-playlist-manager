@@ -5,8 +5,8 @@ $(document).ready(function () {
     initialize();
 })
 
-//const DOMAIN = "http://localhost:8000/";
-const DOMAIN = "https://pp4-playlist-manager-67004a99f0e2.herokuapp.com/";
+const DOMAIN = "http://localhost:8000/";
+//const DOMAIN = "https://pp4-playlist-manager-67004a99f0e2.herokuapp.com/";
 function initialize() {
     const moveBtns = $('.move-btn');
     for (let btn of moveBtns) {
@@ -35,14 +35,16 @@ async function testFetch() {
     console.log(data);
 }
 
+
+
+
 async function moveEntry(event) {
     // how do I give feedback in this set up?
-    const queueId = event.target.getAttribute("data-queue");
     const entryId = event.target.getAttribute("data-entry");
     const direction = event.target.getAttribute("data-direction");
     console.log(entryId);
     const otherPosition = event.target.getAttribute("data-position");
-    console.log(otherPosition);
+    console.log("other position" + otherPosition);
     if (otherPosition <= 0 && direction === "+") {
         console.log("out of bounds +");
         return;
@@ -50,79 +52,27 @@ async function moveEntry(event) {
         console.log("out of bounds -");
         return;
     }
-    const response = await fetch(DOMAIN + `/queues/swap/${queueId}/${entryId}/${otherPosition}`, {
-        method: 'GET'
-    });
-    const data = await response.json();
-    const entry1 = data.entry1;
-    console.log(entry1);
-    const entry2 = data.entry2;
-    console.log(entry2);
-    writeEntryData(entry1);
-    writeEntryData(entry2);
-}
-
-
-async function swapEntries(event) {
-    console.log("swap triggered");
-    const queueId = event.target.getAttribute("data-queue");
-    console.log(queueId);
-    const entryId = event.target.getAttribute("data-entry");
-    console.log(entryId);
-    const newPosition = $(`#new-position-${entryId}`).val();
-    console.log(newPosition);
-    if (newPosition < 1 || newPosition > getQueueLength()) {
-        console.log("out of bounds");
-        return;
-    }
-    const response = await fetch(DOMAIN + `/queues/swap-js/${queueId}/${entryId}/${newPosition}`, {
-        method: 'GET'
-    });
-    const data = await response.json();
-    const entry1 = data.entry1;
-    const entry2 = data.entry2;
-    writeEntryData(entry1);
-    writeEntryData(entry2);
-    async function testFetch() {
-        const response = await fetch(DOMAIN + "test")
-        const data = await response.json();
-        console.log(data);
-    }
-}
-
-async function moveEntry(event) {
-    // how do I give feedback in this set up?
-    const queueId = event.target.getAttribute("data-queue");
-    const entryId = event.target.getAttribute("data-entry");
-    const direction = event.target.getAttribute("data-direction");
-    console.log(entryId);
-    const otherPosition = event.target.getAttribute("data-position");
-    console.log("other position"+otherPosition);
-    if (otherPosition <= 0 && direction === "+") {
-        console.log("out of bounds +");
-        return;
-    } else if (otherPosition > getQueueLength() && direction == "-") {
-        console.log("out of bounds -");
-        return;
-    }
-    const response = await fetch(DOMAIN + `/queues/swap/${queueId}/${entryId}/${otherPosition}`, {
-        method: 'GET'
+    const address = DOMAIN + `queues/swap/${entryId}/${otherPosition}`;
+    console.log(address);
+    const response = await fetch(DOMAIN + `queues/swap/${entryId}/${otherPosition}`, {
+        method: 'GET',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
     });
     const data = await response.json();
     const entry1 = data.entry1;
     console.log(entry1.position);
     const entry2 = data.entry2;
     console.log(entry2.position);
-    console.log("going to wriet entry data");
+    console.log("going to write entry data");
     writeEntryData(entry1);
     writeEntryData(entry2);
 }
 
-
 async function swapEntries(event) {
     console.log("swap triggered");
-    const queueId = event.target.getAttribute("data-queue");
-    console.log(queueId);
     const entryId = event.target.getAttribute("data-entry");
     console.log(entryId);
     const newPosition = $(`#new-position-${entryId}`).val();
@@ -131,8 +81,12 @@ async function swapEntries(event) {
         console.log("out of bounds");
         return;
     }
-    const response = await fetch(DOMAIN + `/queues/swap-js/${queueId}/${entryId}/${newPosition}`, {
-        method: 'GET'
+    const response = await fetch(DOMAIN + `queues/swap/${entryId}/${newPosition}`, {
+        method: 'GET',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
     });
     const data = await response.json();
     const entry1 = data.entry1;

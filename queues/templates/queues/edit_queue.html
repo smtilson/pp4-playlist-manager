@@ -9,7 +9,7 @@
     <p>{{queue.description}}</p>
     <p><span id="queueLength">{{queue.length}}</span> entries</p>
 </div>
-{% if user == queue.owner %}
+{% if is_owner %}
 <div class="owner-buttons">
     <a href="{% url 'gain_access' queue.secret queue.owner.secret %}"><button>Share</button></a></h3>
     {% if not queue.published and user.has_tokens %}
@@ -46,7 +46,7 @@
         <li>
             <div id="div-position-{{entry.position}}">
                 <span>{{entry.title}} added by {{entry.user}} ({{entry.duration}})</span>
-                {% if user == queue.owner %}
+                {% if is_owner %}
                 <a href=" {% url 'delete_entry' queue_id=queue.id entry_id=entry.id %}"><button
                         class="btn btn-md">Remove</button></a>
                 <div class="position-div">
@@ -78,7 +78,7 @@
                     class="btn btn-md">Add</button></a>
             {% else %}
             <p>{{queue.title}} is full.</p>
-            {% if user == queue.owner%}
+            {% if is_owner %}
             <p>Remove some entries to make room.</p>
             {%else%}
             <p>Ask {{queue.owner.nickname}} to make some room in the queue.</p>

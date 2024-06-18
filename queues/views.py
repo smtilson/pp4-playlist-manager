@@ -60,6 +60,7 @@ def edit_queue(request, queue_id):
     user = make_user(request)
     queue = get_object_or_404(Queue, id=queue_id)
     # write authorization fucntion taking a queue and a user and returning a boolean
+    is_owner = user == queue.owner
     if not has_authorization(user, queue):
         msg = "You do not have authorization to edit this queue."
         msg_type = messages.INFO
@@ -78,17 +79,12 @@ def edit_queue(request, queue_id):
         "recent_search": recent_search,
         "search_results": search_results,
         "user": user,
+        "is_owner": is_owner,
     }
     return render(request, "queues/edit_queue.html", context)
 
 
-def swap(request, queue_id, entry_id, other_entry_position):
-    queue = get_object_or_404(Queue, id=queue_id)
-    user = make_user(request)
-    if not user == queue.owner:
-        msg = "You must be the owner of the queue in order to reorder its entries."
-        messages.add_message(request, messages.ERROR, msg)
-        return HttpResponseRedirect(reverse("edit_queue", args=[queue.id]))
+def swap(request, entry_id, other_entry_position):
     entry = get_object_or_404(Entry, id=entry_id)
     entry, other_entry = entry.swap_entry_positions(other_entry_position)
     msg = f"Entries in positions {entry.position} and {other_entry_position} have been swapped."
@@ -114,6 +110,8 @@ def swap(request, queue_id, entry_id, other_entry_position):
         "level": "messages.INFO",
         "level2": messages.ERROR,
     }
+    print("swap hit")
+    print(f"{response_dict['entry1']['position']=}")
     return JsonResponse(response_dict)
 
 

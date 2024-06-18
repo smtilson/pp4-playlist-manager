@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     # "cloudinary_storage",
     "django.contrib.sites",
+    "corsheaders",
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
@@ -83,12 +84,31 @@ LOGOUT_REDIRECT_URL = "/"
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
 
+CORS_ORIGIN_WHITELIST = [
+    "http://127.0.0.1:8000",
+    "http://localhost:8000",
+    "https://pp4-playlist-manager-67004a99f0e2.herokuapp.com",
+]
+
+CORS_ALLOW_HEADERS = ['*'] 
+'''[
+    "accept",
+    "accept-encoding",
+    "authorization",
+    "content-type",
+    "dnt",
+    "origin",
+    "user-agent",
+    "x-csrftoken",
+    "x-requested-with",
+]'''
+
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     # "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
-    "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
@@ -102,6 +122,8 @@ CSRF_TRUSTED_ORIGINS = [
     "https://8000-smtilson-pp4playlistman-ym3t1koq57f.ws.codeinstitute-ide.net",
     "https://*.herokuapp.com",
     "http://*.127.0.0.1:8000",
+    "http://localhost:8000",
+    "https://pp4-playlist-manager-67004a99f0e2.herokuapp.com/",
 ]
 
 
