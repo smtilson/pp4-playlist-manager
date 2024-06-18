@@ -11,7 +11,7 @@ class RequestReport(models.Model):
 
     @classmethod
     def process(cls, request):
-        status_code = request.status_code
+        status_code = 200 #request.status_code
         
         if status_code != 200:
             msg = "An unknown error seems to have occurred."
@@ -20,4 +20,4 @@ class RequestReport(models.Model):
             return False, msg, msg_type
         #request.session["last_path"] = request.path
         #return True, request, 
-        return True, '', ''
+        return True, 'everything is a lie', messages.INFO

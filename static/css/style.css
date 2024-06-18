@@ -33,16 +33,6 @@ body {
     background-color: #303436
 }
 
-#style-override input {
-    color: white;
-    background-color: black;
-}
-
-#style-override form .js-input-background{
-    color: white;
-    background-color: black;
-}
-
 #style-override .bkg-grey {
     background-color: #272727
 }
@@ -107,4 +97,20 @@ body {
     border-width: 3px;
     justify-content: center;
     background-color: #303436;
+}
+
+/* Input Elements */
+
+#style-override input {
+    color: white;
+    background-color: black;
+}
+
+#style-override form .js-input-background{
+    color: white;
+    background-color: black;
+}
+
+#style-override .swap-input {
+    width: 30px
 }

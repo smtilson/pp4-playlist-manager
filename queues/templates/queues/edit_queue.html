@@ -25,16 +25,16 @@
         </div>
         {% if user.has_tokens %}
 
-            {% if not queue.published %}
-            <div class="col">
+        {% if not queue.published %}
+        <div class="col">
             <a href="{% url 'publish' queue.id %}"><button class="btn btn-success">Publish</button></a>
             <p>Playlists are published as unlisted.</p><!--by default-->
-            </div>
-            {% elif not queue.synced %}
-            <div class="col">
-                <a href="{% url 'sync' queue.id %}"><button class="btn btn-success">Sync</button></a>
-            </div>
-            {% endif %}
+        </div>
+        {% elif not queue.synced %}
+        <div class="col">
+            <a href="{% url 'sync' queue.id %}"><button class="btn btn-success">Sync</button></a>
+        </div>
+        {% endif %}
         <!-- Unpublish Modal Trigger -->
         <div class="col">
             <button type="button" data-bs-toggle="modal" data-bs-target="#unpublishModal"
@@ -119,21 +119,48 @@
             </div>
             {% else %}
             <ol>
-                
+
 
                 {% for entry in queue.all_entries %}
                 <li>
                     <div id="div-position-{{entry.position}}">
                         <span>{{entry.title}} added by {{entry.username}} <!--({{entry.duration}})--></span>
                         {% if is_owner %}
-                        <a href=" {% url 'delete_entry' queue_id=queue.id entry_id=entry.id %}"><button
-                                class="btn btn-md">Remove</button></a>
+                        <!-- Remove Entry Modal-->
+                        <div class="col">
+                            <button type="button" data-bs-toggle="modal" data-bs-target="#removeEntryModal"
+                                class="btn btn-danger">Remove</button>
+                        </div>
+                        <div class="modal fade" id="removeEntryModal" tabindex="-1" aria-labelledby="removeEntryModalLabel"
+                            aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="removeEntryModalLabel">Remove {{entry.title}}</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        Are you sure you want to remove this video from the Queue? {% if entry.username != user.nickname %}Hopefully, {{entry.username}} won't be too upset with
+                                        you. {% else %} I suppose you can always add it back later. {% endif %}
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                            data-bs-dismiss="modal">Close</button>
+                                        <a href="{% url 'delete_entry' queue_id=queue.id entry_id=entry.id %}"><button
+                                                type="button" class="btn btn-danger">Remove</button></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="position-div">
                             <button data-queue="{{queue.id}}" data-entry="{{entry.id}}" class="move-btn position-btn"
                                 data-position="{{entry.position|add:'-1'}}" data-direction="+">+</button>
                             <button data-queue="{{queue.id}}" data-entry="{{entry.id}}" class="move-btn position-btn"
                                 data-position="{{entry.position|add:'1'}}" data-direction="-">-</button>
-                            <label for="new-position-{{entry.id}}" id="label-{{entry.id}}" class="form-label">New Position:</label>
+                            <label for="new-position-{{entry.id}}" id="label-{{entry.id}}" class="form-label">New
+                                Position:</label>
                             <input id="new-position-{{entry.id}}" type="number" class="swap-input form-control">
                             <button type="submit" class="btn btn-md swap-button position-btn" data-queue="{{queue.id}}"
                                 data-entry="{{entry.id}}">Swap</button>
