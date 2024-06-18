@@ -93,14 +93,14 @@ def swap(request, entry_id, other_entry_position):
         "id": entry.id,
         "title": entry.title,
         "position": entry.position,
-        "addedBy": entry.user,
+        "addedBy": entry.username,
         "duration": entry.duration,
     }
     other_entry_data = {
         "id": other_entry.id,
         "title": other_entry.title,
         "position": other_entry.position,
-        "user": other_entry.user,
+        "user": other_entry.username,
         "duration": other_entry.duration,
     }
     response_dict = {
@@ -157,7 +157,7 @@ def add_entry(request, queue_id, video_id):
             entry.p_queue = queue
             # adds entry to end of list
             entry._position = queue.length
-            entry.user = user.name if user.name else user.email
+            entry.user = user.nickname
             queue.save()
             entry.save()
             msg = f"{entry.title} has been added to the queue."

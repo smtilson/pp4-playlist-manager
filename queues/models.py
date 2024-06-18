@@ -201,9 +201,6 @@ class Entry(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
     p_queue = models.ForeignKey(Queue, on_delete=models.CASCADE, related_name="entries")
     video_id = models.CharField(max_length=100)
     duration = models.CharField(max_length=100, default="")
-    # this corresponds to the user who added the video to the queue
-    # actually, make this a char field and base it on the name of the user.
-    # then the on delete shit won't matter.
     user = models.CharField(
         max_length=50, default="I am embarassed to have added this."
     )
@@ -219,8 +216,12 @@ class Entry(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
         ordering = ["_position"]
 
     def __str__(self):
-        return f"{self.position}. {self.title} added by {self.user}"
-
+        return f"{self.position}. {self.title} added by {self.username}"
+    @property
+    def username(self):
+        if '@' in self.user:
+            return self.user.split('@')[0]
+        return self.user
     @property
     def playlist_id(self):
         return self.p_queue.yt_id

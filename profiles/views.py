@@ -3,11 +3,11 @@ from django.http import HttpResponseRedirect, JsonResponse
 from .models import Profile, GuestProfile, make_user
 from queues.models import Queue
 from django.contrib import messages
+from django.utils.safestring import mark_safe
 from error_processing import process_path
 from yt_auth.token_auth import (
     get_authorization_url,
     get_tokens,
-    save_creds,
     revoke_tokens,
 )
 from yt_auth.models import Credentials
@@ -94,14 +94,20 @@ def revoke_authorization(request):
         msg = "You must be logged in to revoke your authorization."
         messages.add_message(request, messages.INFO, msg)
         return HttpResponseRedirect(reverse("account_login"))
-    msg = revoke_tokens(user)
-    print(msg)
-    # there should be a modal for this
+    status_code = revoke_tokens(user)
+    if status_code == 200:
+        msg = "Credentials successfully revoked for " + user.youtube_handle
+        msg_type = messages.SUCCESS
+    else:
+        address = '<a href="https://myaccount.google.com/permissions">Third party apps and services</a>'
+        msg = "An error occurred. Your credentials have been wiped from our "
+        msg += f"system. To be on the safe side, please visit {address}"
+        msg += "to revoke your permissions."
+        msg_type = messages.ERROR
     user.revoke_youtube_data()
-    messages.add_message(request, messages.SUCCESS, msg)
+    # there should be a modal for this
+    messages.add_message(request, msg_type, mark_safe(msg))
     return HttpResponseRedirect(reverse("profile"))
-    # return HttpResponseRedirect(reverse('test'))
-
 
 def return_from_authorization(request):
     # do I need to check here that they don't have credentials since it is checked on the front end

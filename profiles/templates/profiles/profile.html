@@ -53,7 +53,7 @@
             {% for queue in my_queues %}
             <div class="my-container text-center">
                 <h4><a href="{% url 'edit_queue' queue.id %}">{{queue.title}}</a></h4>
-                <h5>Created on {{queue.date_created}}</h5>
+                <!--<h5>Created on {{queue.date_created}}</h5>-->
                 <h5> {% if queue.length != 1 %}
                     {{queue.length}} videos
                     {% else %}
@@ -78,7 +78,7 @@
             {% for queue in other_queues %}
             <div class="my-container text-center">
                 <h4><a href="{% url 'edit_queue' queue.id %}">{{queue.title}}</a></h4>
-                <h5>Created on {{queue.date_created}} by {{queue.owner.nickname}}</h5>
+                <h5>Created <!--on {{queue.date_created}} -->by {{queue.owner.nickname}}</h5>
                 <h5> {% if queue.length != 1 %}
                     {{queue.length}} videos
                     {% else %}

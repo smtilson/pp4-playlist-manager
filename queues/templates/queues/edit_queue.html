@@ -11,87 +11,112 @@
         <h4>Description:</h4>
         <p>{{queue.description}}</p>
         <p><span id="queueLength">{{queue.length}}</span> entries</p>
+        {% if queue.published %}
+        <div>
+            <a href="{{queue.url}}" target="_blank"><button class="btn btn-success">Play on YouTube</button></a>
+        </div>
+        {% endif %}
     </div>
     {% if is_owner %}
-    <div class="owner-buttons my-container">
-        <div class="row">
-        <a href="{% url 'gain_access' queue.secret queue.owner.secret %}"><button>Share</button></a></h3>
-        {% if not queue.published and user.has_tokens %}
-        <a href="{% url 'publish' queue.id %}"><button>Publish</button></a>
-        <p>Playlists are published as unlisted.</p><!--by default-->
-        {% elif not queue.synced and user.has_tokens %}
-        <a href="{% url 'sync' queue.id %}"><button>Sync</button></a>
-        {%endif%}
-        <a href="{% url 'delete_queue' queue.id %}"><button>Delete</button></a>
+    <div class="owner-buttons my-container row">
+        <div class="col">
+            <a href="{% url 'gain_access' queue.secret queue.owner.secret %}"><button
+                    class="btn btn-success">Share</button></a></h3>
+        </div>
+        {% if user.has_tokens %}
+        <div class="col">
+            {% if not queue.published %}
+
+            <a href="{% url 'publish' queue.id %}"><button class="btn btn-success">Publish</button></a>
+            <p>Playlists are published as unlisted.</p><!--by default-->
+
+            {% elif not queue.synced %}
+            <a href="{% url 'sync' queue.id %}"><button class="btn btn-success">Sync</button></a>
+            {%endif%}
+        </div>
+        {% endif %}
+        <div class="col">
+            <a href="{% url 'delete_queue' queue.id %}"><button class="btn btn-danger">Delete</button></a>
         </div>
     </div>
     {% endif %}
-    {% if queue.published %}
-    <div>
-        <a href="{{queue.url}}"><button>Play on YouTube</button></a>
-    </div>
-    {% endif %}
-    {% if queue.full %}
-    <h2>The queue is full.</h2>
-    <p>Remove some tracks if you would like to add more.</p>
-    {% else %}
-    <h3>Search for videos or songs to add to the Queue.</h3>
-    <form id="searchForm" method="POST">
-        {% csrf_token %}
-        <span>
-            <label for="searchQuery">Search:</label>
-            <input type="text" id="searchQuery" name="searchQuery" value="{{recent_search}}">
-        </span>
-        <button id="searchButton" type="submit" class="btn btn-lg">Search</button>
-    </form>
-    {% endif %}
-    <div>
-        <ol>
-            {% for entry in queue.all_entries %}
-            <li>
-                <div id="div-position-{{entry.position}}">
-                    <span>{{entry.title}} added by {{entry.user}} ({{entry.duration}})</span>
-                    {% if is_owner %}
-                    <a href=" {% url 'delete_entry' queue_id=queue.id entry_id=entry.id %}"><button
-                            class="btn btn-md">Remove</button></a>
-                    <div class="position-div">
-                        <button data-queue="{{queue.id}}" data-entry="{{entry.id}}" class="move-btn position-btn"
-                            data-position="{{entry.position|add:'-1'}}" data-direction="+">+</button>
-                        <button data-queue="{{queue.id}}" data-entry="{{entry.id}}" class="move-btn position-btn"
-                            data-position="{{entry.position|add:'1'}}" data-direction="-">-</button>
-                        <label for="new-position-{{entry.id}}" id="label-{{entry.id}}">New Position:</label>
-                        <input id="new-position-{{entry.id}}" type="number" class="swap-input">
-                        <button type="submit" class="btn btn-md swap-button position-btn" data-queue="{{queue.id}}"
-                            data-entry="{{entry.id}}">Swap</button>
-                    </div>
-                    {% endif %}
-                    </span>
-                </div>
-            </li>
-            {% endfor %}
-        </ol>
-    </div>
 
-    <div>
-        <h3>Search results for {{recent_search}}</h3>
-        <ul>
-            {% for result in search_results %}
-            <li>
-                {{result.title}}
-                {% if not queue.full %}
-                <a href="{% url 'add_entry' queue_id=queue.id video_id=result.id %}"><button
-                        class="btn btn-md">Add</button></a>
-                {% else %}
-                <p>{{queue.title}} is full.</p>
-                {% if is_owner %}
-                <p>Remove some entries to make room.</p>
-                {%else%}
-                <p>Ask {{queue.owner.nickname}} to make some room in the queue.</p>
-                {% endif %}
-                {% endif %}
-            </li>
-            {% endfor %}
-        </ul>
+    {% if queue.full %}
+    <div class="logo my-container text-center">
+        <h2 class="logo">The queue is full.</h2>
+        <p>Remove some tracks if you would like to add more.</p>
+    </div>
+    {% else %}
+    <div class="row my-container text-center">
+        <h3>Search for videos or songs to add to the Queue.</h3>
+    </div>
+    <div class="row my-container">
+        <form id="searchForm" method="POST">
+            {% csrf_token %}
+            <span>
+                <label for="searchQuery">Search:</label>
+                <input type="text" id="searchQuery" name="searchQuery" value="{{recent_search}}">
+            </span>
+            <button id="searchButton" type="submit" class="btn btn-lg">Search</button>
+        </form>
+    </div>
+    {% endif %}
+    <div class="container">
+        <div class="row">
+            <div class="my-container col">
+                <ol>
+                    {% for entry in queue.all_entries %}
+                    <li>
+                        <div id="div-position-{{entry.position}}">
+                            <span>{{entry.title}} added by {{entry.username}} <!--({{entry.duration}})--></span>
+                            {% if is_owner %}
+                            <a href=" {% url 'delete_entry' queue_id=queue.id entry_id=entry.id %}"><button
+                                    class="btn btn-md">Remove</button></a>
+                            <div class="position-div">
+                                <button data-queue="{{queue.id}}" data-entry="{{entry.id}}"
+                                    class="move-btn position-btn" data-position="{{entry.position|add:'-1'}}"
+                                    data-direction="+">+</button>
+                                <button data-queue="{{queue.id}}" data-entry="{{entry.id}}"
+                                    class="move-btn position-btn" data-position="{{entry.position|add:'1'}}"
+                                    data-direction="-">-</button>
+                                <label for="new-position-{{entry.id}}" id="label-{{entry.id}}">New Position:</label>
+                                <input id="new-position-{{entry.id}}" type="number" class="swap-input">
+                                <button type="submit" class="btn btn-md swap-button position-btn"
+                                    data-queue="{{queue.id}}" data-entry="{{entry.id}}">Swap</button>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ol>
+            </div>
+
+            <div class="col">
+                <div class="logo-div my-container">
+                    <h3>Search results for {{recent_search}}</h3>
+                </div>
+                <div class="my-container">
+                    <ul>
+                        {% for result in search_results %}
+                        <li>
+                            {{result.title}}
+                            {% if not queue.full %}
+                            <a href="{% url 'add_entry' queue_id=queue.id video_id=result.id %}"><button
+                                    class="btn btn-md">Add</button></a>
+                            {% else %}
+                            <p>{{queue.title}} is full.</p>
+                            {% if is_owner %}
+                            <p>Remove some entries to make room.</p>
+                            {%else%}
+                            <p>Ask {{queue.owner.nickname}} to make some room in the queue.</p>
+                            {% endif %}
+                            {% endif %}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 {% endblock content %}

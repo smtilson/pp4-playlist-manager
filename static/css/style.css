@@ -41,6 +41,10 @@ body {
     background-color: #0F0F0F
 }
 
+#style-override .bkg-red {
+    background-color: #FF0000
+}
+
 #style-override .border-white {
     border-color: white;
 }
