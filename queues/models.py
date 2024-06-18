@@ -7,6 +7,8 @@ from mixins import DjangoFieldsMixin, ToDictMixin, ResourceID
 
 # Create your models here.
 MAX_QUEUE_LENGTH = YT.MAX_QUEUE_LENGTH
+
+
 class Queue(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
     owner = models.ForeignKey(
         Profile, on_delete=models.CASCADE, related_name="my_queues", default=1
@@ -50,7 +52,7 @@ class Queue(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
     @property
     def all_entries(self):
         return [entry for entry in self.entries.all() if not entry.to_delete]
-    
+
     @property
     def deleted_entries(self):
         return [entry for entry in self.entries.all() if entry.to_delete]
@@ -168,12 +170,30 @@ class Queue(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
     def sync(self):
         yt = YT(self.owner)
         self.remove_excess(yt)
+        self.resort()
         for entry in self.all_entries:
             if not entry.published:
                 entry.publish(yt)
             elif not entry.synced:
                 entry.sync(yt)
         self.save()
+
+    def resort(self):
+        positions = {entry._position for entry in self.all_entries}
+        count = 0
+        while len(positions) != self.length:
+            for pos in positions:
+                current = [
+                    entry for entry in self.all_entries if entry._position == pos
+                    ]
+                if len(current) == 1:
+                    continue
+                for index, entry in enumerate(current):
+                    entry._position = index + pos
+                    count += 1
+                    entry.save()
+        print(f"Resort finished, {count} entries moved.")
+        
 
 
 class Entry(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
@@ -260,6 +280,7 @@ class Entry(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
         self.save()
         other_entry.save()
         return self, other_entry
+
 
 def has_authorization(user, queue):
     if queue.id in getattr(user, "all_queue_ids", []):
