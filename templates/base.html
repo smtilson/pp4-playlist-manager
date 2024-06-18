@@ -37,9 +37,11 @@
             row"> <a class="navbar-brand white col-3" href="{% url 'index' %}">YouTube DJ</a>
                 {% if user.is_authenticated %}
                 <div class="container navbar text-end col-3 white div-user-nickname">{{user.nickname}}</div>
-                {% endif %}</span>
-            <button class="navbar-toggler border-white" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText"
-                aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+                {% endif %}
+            </span>
+            <button class="navbar-toggler border-white" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarText" aria-controls="navbarText" aria-expanded="false"
+                aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon white-important"></span>
             </button>
             <!-- Mobile Navbar -->
@@ -102,6 +104,11 @@
 
     <!-- Footer -->
     <footer class="footer">
+        {% if user.is_authenticated %}
+        <a href="{% url 'profile' %}">Back to profile page</a>
+        {% else %}
+        <a href="{% url 'account_signup' %}">Sign Up!</a>
+        {% endif %}
         {% block copyright%}
         <p>No Copyright Loaded</p>
         {% endblock copyright %}

@@ -1,67 +1,91 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-6 text-center logo-div my-container">
+            <h2 class="text-center logo">Profile: {{user.nickname}}</h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="my-container text-center logo-div">
+                <h3>Profile Data</h3>
+            </div>
+            <div class="my-container text-center">
+                <ul>
+                    {% for key, value in info_dict.items %}
+                    <li>{{key}}: {{value}}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
 
-<h2>Profile page for {{user.nickname}}</h2>
-<h3>Profile Data</h3>
-<ul>
-    {% for key, value in info_dict.items %}
-    <li>{{key}}:  {{value}}</li>
-    {% endfor %}
-</ul>
-{% if not user.name %}
-<div>
-    Please add a name so that your friends know who made the queue or added the videos. (Maybe they will even move it up in the queue!)
-<form action="{% url 'set_name' %}" method="POST">
-    {% csrf_token %}
-<span><label for="name">Name:</label><input type="text" name="name" id="name"></span>
-<button type="submit">Submit</button>
-</form>
-</div>
-{% endif %}
-{% if not user.has_tokens %}
-<a href="{{authorization_url}}" target="_blank">Give Youtube DJ permissions.</a>
-{% else %}
-<a href="{% url 'revoke_authorization' %}">Revoke Credentials</a>
-{% endif %}
-<hr>
-<a href="{% url 'create_queue' %}">Create New Queue</a>
-<h2>My Queues</h2>
-{% for queue in my_queues %}
-<div>
-    <h4><a href="{% url 'edit_queue' queue.id %}">{{queue.title}}</a></h4>
-    <h5>Created on {{queue.date_created}}</h5>
-    <h5> {% if queue.length != 1 %}
-        {{queue.length}} videos
-        {% else %}
-        1 video
-        {% endif %}
-    </h5>
-    <p>change these to buttons</p>
-    {% if user == queue.owner %}
-    <a href="#">Share Queue Link</a>
-    <a href="{% url 'publish' queue.id %}">Publish Queue to Youtube</a>
+        <div class="col-md-6">
+            {% if not user.name %}
+            <div>
+                Please add a name so that your friends know who made the queue or added the videos. (Maybe they will
+                even move
+                it up
+                in the queue!)
+                <form action="{% url 'set_name' %}" method="POST">
+                    {% csrf_token %}
+                    <span><label for="name">Name:</label><input type="text" name="name" id="name"></span>
+                    <button type="submit">Submit</button>
+                </form>
+            </div>
+            {% endif %}
+            {% if not user.has_tokens %}
+            <a href="{{authorization_url}}" target="_blank"><button class="btn md btn-success">Give Youtube DJ
+                    permissions</button></a>
+            {% else %}
+            <a href="{% url 'revoke_authorization' %}">Revoke Credentials</a>
+            {% endif %}
+            <hr>
+            <a href="{% url 'create_queue' %}">Create New Queue</a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="logo-div text-center my-container">
+            <h2>My Queues</h2>
+        </div>
+            {% for queue in my_queues %}
+            <div class="my-container text-center">
+                <h4><a href="{% url 'edit_queue' queue.id %}">{{queue.title}}</a></h4>
+                <h5>Created on {{queue.date_created}}</h5>
+                <h5> {% if queue.length != 1 %}
+                    {{queue.length}} videos
+                    {% else %}
+                    1 video
+                    {% endif %}
+                </h5>
+                <p>change these to buttons</p>
+                {% if user == queue.owner %}
+                <a href="#">Share Queue Link</a>
+                <a href="{% url 'publish' queue.id %}">Publish Queue to Youtube</a>
 
-    <a href="{% url 'delete_queue' queue.id %}">Delete Queue</a>
+                <a href="{% url 'delete_queue' queue.id %}">Delete Queue</a>
 
-    {% endif %}
-</div>
-<hr>
-<hr>
-{% endfor %}
-<h2>My Collaborative Queues</h2>
-{% for queue in other_queues %}
-<div>
-    <h4><a href="{% url 'edit_queue' queue.id %}">{{queue.title}}</a></h4>
-    <h5>Created on {{queue.date_created}} by {{queue.owner.nickname}}</h5>
-    <h5> {% if queue.length != 1 %}
-        {{queue.length}} videos
-        {% else %}
-        1 video
-        {% endif %}
-    </h5>
-</div>
-<hr>
-<hr>
-{% endfor %}
-{% endblock content %}
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        <div class="col-md-6">
+            <div class="logo-div my-container text-center">
+            <h2>My Collaborative Queues</h2>
+        </div>
+            {% for queue in other_queues %}
+            <div class="my-container text-center">
+                <h4><a href="{% url 'edit_queue' queue.id %}">{{queue.title}}</a></h4>
+                <h5>Created on {{queue.date_created}} by {{queue.owner.nickname}}</h5>
+                <h5> {% if queue.length != 1 %}
+                    {{queue.length}} videos
+                    {% else %}
+                    1 video
+                    {% endif %}
+                </h5>
+            </div>
+            {% endfor %}
+        </div>
+        {% endblock content %}

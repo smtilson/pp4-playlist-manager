@@ -1,5 +1,8 @@
 {% block content %}
-<h3>Guest sign in.</h3>
+<div class="text-center logo-div my-container">
+<h1 class="logo text-center">Guest sign in.</h1>
+</div>
+<div class="text-center my-container">
 <p class="invitation">{{queue.owner.nickname}} has invited you to collaborate on {{queue.title}}.</p>
 {% if queue.description %}
 <p>{{queue.description}}</p>
@@ -12,7 +15,10 @@
     <input id="guest_email" type="text" name="guest_email" placeholder="(Optional)">
     <button type="submit">Proceed to {{queue.title}}</button>
 </form>
-
+</div>
+<div class="text-center my-container">
 <h3>Have an account?</h3>
+make this a button.
 <a href="{% url 'account_login'%}">Login</a>
+</div>
 {% endblock content %}

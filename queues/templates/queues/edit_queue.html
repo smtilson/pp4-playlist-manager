@@ -1,98 +1,97 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h2>Edit Queue {{queue.title}}</h2>
-<div>
-    <h3>Owned by {{queue.owner.nickname}}</h3>
-    <p>Created on {{queue.created_at}}</p>
-    <h4>Description:</h4>
-    <p>{{queue.description}}</p>
-    <p><span id="queueLength">{{queue.length}}</span> entries</p>
-</div>
-{% if is_owner %}
-<div class="owner-buttons">
-    <a href="{% url 'gain_access' queue.secret queue.owner.secret %}"><button>Share</button></a></h3>
-    {% if not queue.published and user.has_tokens %}
-    <a href="{% url 'publish' queue.id %}"><button>Publish</button></a>
-    <p>Playlists are published as unlisted.</p><!--by default-->
-    {% elif not queue.synced and user.has_tokens %}
-    <a href="{% url 'sync' queue.id %}"><button>Sync</button></a>
-    {%endif%}
-    <a href="{% url 'delete_queue' queue.id %}"><button>Delete</button></a>
-</div>
-{% endif %}
-{% if queue.published %}
-<div>
-    <a href="{{queue.url}}"><button>Play on YouTube</button></a>
-</div>
-{% endif %}
-{% if queue.full %}
-<h2>The queue is full.</h2>
-<p>Remove some tracks if you would like to add more.</p>
-{% else %}
-<h3>Search for videos or songs to add to the Queue.</h3>
-<form id="searchForm" method="POST">
-    {% csrf_token %}
-    <span>
-        <label for="searchQuery">Search:</label>
-        <input type="text" id="searchQuery" name="searchQuery" value="{{recent_search}}">
-    </span>
-    <button id="searchButton" type="submit" class="btn btn-lg">Search</button>
-</form>
-{% endif %}
-<div>
-    <ol>
-        {% for entry in queue.all_entries %}
-        <li>
-            <div id="div-position-{{entry.position}}">
-                <span>{{entry.title}} added by {{entry.user}} ({{entry.duration}})</span>
-                {% if is_owner %}
-                <a href=" {% url 'delete_entry' queue_id=queue.id entry_id=entry.id %}"><button
-                        class="btn btn-md">Remove</button></a>
-                <div class="position-div">
-                    <button data-queue="{{queue.id}}" data-entry="{{entry.id}}" class="move-btn position-btn"
-                        data-position="{{entry.position|add:'-1'}}" data-direction="+">+</button>
-                    <button data-queue="{{queue.id}}" data-entry="{{entry.id}}" class="move-btn position-btn"
-                        data-position="{{entry.position|add:'1'}}" data-direction="-">-</button>
-                    <label for="new-position-{{entry.id}}" id="label-{{entry.id}}">New Position:</label>
-                    <input id="new-position-{{entry.id}}" type="number" class="swap-input">
-                    <button type="submit" class="btn btn-md swap-button position-btn" data-queue="{{queue.id}}"
-                        data-entry="{{entry.id}}">Swap</button>
+<div class="container">
+    <div class="logo-div my-container text-center">
+        <h2 class="logo">Edit {{queue.title}}</h2>
+    </div>
+    <div class="queue-info my-container text-center">
+        <h3>Owned by {{queue.owner.nickname}}</h3>
+        <p>Created on {{queue.created_at}}</p>
+        <h4>Description:</h4>
+        <p>{{queue.description}}</p>
+        <p><span id="queueLength">{{queue.length}}</span> entries</p>
+    </div>
+    {% if is_owner %}
+    <div class="owner-buttons my-container">
+        <div class="row">
+        <a href="{% url 'gain_access' queue.secret queue.owner.secret %}"><button>Share</button></a></h3>
+        {% if not queue.published and user.has_tokens %}
+        <a href="{% url 'publish' queue.id %}"><button>Publish</button></a>
+        <p>Playlists are published as unlisted.</p><!--by default-->
+        {% elif not queue.synced and user.has_tokens %}
+        <a href="{% url 'sync' queue.id %}"><button>Sync</button></a>
+        {%endif%}
+        <a href="{% url 'delete_queue' queue.id %}"><button>Delete</button></a>
+        </div>
+    </div>
+    {% endif %}
+    {% if queue.published %}
+    <div>
+        <a href="{{queue.url}}"><button>Play on YouTube</button></a>
+    </div>
+    {% endif %}
+    {% if queue.full %}
+    <h2>The queue is full.</h2>
+    <p>Remove some tracks if you would like to add more.</p>
+    {% else %}
+    <h3>Search for videos or songs to add to the Queue.</h3>
+    <form id="searchForm" method="POST">
+        {% csrf_token %}
+        <span>
+            <label for="searchQuery">Search:</label>
+            <input type="text" id="searchQuery" name="searchQuery" value="{{recent_search}}">
+        </span>
+        <button id="searchButton" type="submit" class="btn btn-lg">Search</button>
+    </form>
+    {% endif %}
+    <div>
+        <ol>
+            {% for entry in queue.all_entries %}
+            <li>
+                <div id="div-position-{{entry.position}}">
+                    <span>{{entry.title}} added by {{entry.user}} ({{entry.duration}})</span>
+                    {% if is_owner %}
+                    <a href=" {% url 'delete_entry' queue_id=queue.id entry_id=entry.id %}"><button
+                            class="btn btn-md">Remove</button></a>
+                    <div class="position-div">
+                        <button data-queue="{{queue.id}}" data-entry="{{entry.id}}" class="move-btn position-btn"
+                            data-position="{{entry.position|add:'-1'}}" data-direction="+">+</button>
+                        <button data-queue="{{queue.id}}" data-entry="{{entry.id}}" class="move-btn position-btn"
+                            data-position="{{entry.position|add:'1'}}" data-direction="-">-</button>
+                        <label for="new-position-{{entry.id}}" id="label-{{entry.id}}">New Position:</label>
+                        <input id="new-position-{{entry.id}}" type="number" class="swap-input">
+                        <button type="submit" class="btn btn-md swap-button position-btn" data-queue="{{queue.id}}"
+                            data-entry="{{entry.id}}">Swap</button>
+                    </div>
+                    {% endif %}
+                    </span>
                 </div>
+            </li>
+            {% endfor %}
+        </ol>
+    </div>
+
+    <div>
+        <h3>Search results for {{recent_search}}</h3>
+        <ul>
+            {% for result in search_results %}
+            <li>
+                {{result.title}}
+                {% if not queue.full %}
+                <a href="{% url 'add_entry' queue_id=queue.id video_id=result.id %}"><button
+                        class="btn btn-md">Add</button></a>
+                {% else %}
+                <p>{{queue.title}} is full.</p>
+                {% if is_owner %}
+                <p>Remove some entries to make room.</p>
+                {%else%}
+                <p>Ask {{queue.owner.nickname}} to make some room in the queue.</p>
                 {% endif %}
-                </span>
-            </div>
-        </li>
-        {% endfor %}
-    </ol>
+                {% endif %}
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
 </div>
-
-<div>
-    <h3>Search results for {{recent_search}}</h3>
-    <ul>
-        {% for result in search_results %}
-        <li>
-            {{result.title}}
-            {% if not queue.full %}
-            <a href="{% url 'add_entry' queue_id=queue.id video_id=result.id %}"><button
-                    class="btn btn-md">Add</button></a>
-            {% else %}
-            <p>{{queue.title}} is full.</p>
-            {% if is_owner %}
-            <p>Remove some entries to make room.</p>
-            {%else%}
-            <p>Ask {{queue.owner.nickname}} to make some room in the queue.</p>
-            {% endif %}
-            {% endif %}
-        </li>
-        {% endfor %}
-    </ul>
-</div>
-
-{% if not user.is_guest %}
-<a href="{% url 'profile' %}">Back to Profile</a>
-{%else%}
-<a href="{% url 'account_signup' %}">Sign Up!</a>
-<!--Special sign up for Guest user.-->
-{% endif %}
 {% endblock content %}

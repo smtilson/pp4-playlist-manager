@@ -29,7 +29,7 @@ def create_queue(request):
             # add feedback that a queue was successfully created
             return HttpResponseRedirect(reverse("edit_queue", args=[queue.id]))
     queue_form = QueueForm()
-    context = {"queue_form": queue_form,"user":make_user(request)}
+    context = {"queue_form": queue_form, "user": make_user(request)}
     return render(request, "queues/create_queue.html", context)
 
 
@@ -136,6 +136,7 @@ def sync(request, queue_id):
 def add_entry(request, queue_id, video_id):
     queue = get_object_or_404(Queue, id=queue_id)
     user = make_user(request)
+    msg_type = messages.ERROR
     if not has_authorization(user, queue):
         msg = "You do not have authorization to add entries to this queue."
         messages.add_message(request, messages.INFO, msg)
@@ -143,11 +144,11 @@ def add_entry(request, queue_id, video_id):
     if queue.full:
         msg = "This queue is at max capacity."
         if user == queue.owner:
-             msg+="Remove some entries if you would like to add more."
+            msg += "Remove some entries if you would like to add more."
         else:
             msg += "Ask the owner to remove some entries so you can add more."
         msg_type = messages.ERROR
-        
+
     else:
         video_data = YT(user).find_video_by_id(video_id)
         if video_data["status"] != "private":
@@ -160,6 +161,7 @@ def add_entry(request, queue_id, video_id):
             queue.save()
             entry.save()
             msg = f"{entry.title} has been added to the queue."
+            msg_type = messages.SUCCESS
         else:
             msg = "This video is private. It cannot be added to the queue."
             msg_type = messages.ERROR
@@ -211,7 +213,7 @@ def gain_access(request, queue_secret, owner_secret):
     # I am not sure if this particular change from request.user to make_user(request)) was relevant/necessary
     user = make_user(request)
     request.session["queue_id"] = queue.id
-    request.session["redirect_action"]={"action":"edit_queue","args":[queue.id]}
+    request.session["redirect_action"] = {"action": "edit_queue", "args": [queue.id]}
     if owner_secret != queue.owner.secret:
         msg = f"This link is no longer valid. Please request a new one from the {queue.owner.nickname}."
         msg_type = messages.ERROR
@@ -231,4 +233,3 @@ def gain_access(request, queue_secret, owner_secret):
     msg_type = messages.SUCCESS
     messages.add_message(request, msg_type, msg)
     return HttpResponseRedirect(reverse("edit_queue", args=[queue.id]))
-    
