@@ -1,5 +1,5 @@
 from django.db import models
-from profiles.models import Profile, GuestProfile
+from profiles.models import Profile, make_user
 from django.shortcuts import get_object_or_404
 from yt_query.yt_api_utils import YT
 from utils import get_secret
@@ -7,6 +7,8 @@ from mixins import DjangoFieldsMixin, ToDictMixin, ResourceID
 
 # Create your models here.
 MAX_QUEUE_LENGTH = YT.MAX_QUEUE_LENGTH
+
+
 class Queue(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
     owner = models.ForeignKey(
         Profile, on_delete=models.CASCADE, related_name="my_queues", default=1
@@ -50,7 +52,7 @@ class Queue(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
     @property
     def all_entries(self):
         return [entry for entry in self.entries.all() if not entry.to_delete]
-    
+
     @property
     def deleted_entries(self):
         return [entry for entry in self.entries.all() if entry.to_delete]
@@ -168,12 +170,30 @@ class Queue(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
     def sync(self):
         yt = YT(self.owner)
         self.remove_excess(yt)
+        self.resort()
         for entry in self.all_entries:
             if not entry.published:
                 entry.publish(yt)
             elif not entry.synced:
                 entry.sync(yt)
         self.save()
+
+    def resort(self):
+        positions = {entry._position for entry in self.all_entries}
+        count = 0
+        while len(positions) != self.length:
+            for pos in positions:
+                current = [
+                    entry for entry in self.all_entries if entry._position == pos
+                    ]
+                if len(current) == 1:
+                    continue
+                for index, entry in enumerate(current):
+                    entry._position = index + pos
+                    count += 1
+                    entry.save()
+        print(f"Resort finished, {count} entries moved.")
+        
 
 
 class Entry(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
@@ -261,12 +281,8 @@ class Entry(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
         other_entry.save()
         return self, other_entry
 
-    def earlier(self) -> None:
-        if self._position != 0:
-            other_entry = self.p_queue.all_entries[self._position - 1]
-            self.swap_entries(self.id, other_entry.id)
 
-    def later(self) -> None:
-        if self._position != self.p_queue.length - 1:
-            other_entry = self.p_queue.all_entries[self._position + 1]
-            self.swap_entries(self.id, other_entry.id)
+def has_authorization(user, queue):
+    if queue.id in getattr(user, "all_queue_ids", []):
+        return True
+    return False

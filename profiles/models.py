@@ -84,7 +84,7 @@ class Profile(AbstractBaseUser, PermissionsMixin, DjangoFieldsMixin, ToDictMixin
     def nickname(self):
         if self.name:
             return self.name
-        return self.email
+        return self.email.split('@')[0]
 
     def to_dict(self):
         credentials = self.credentials.to_dict()
@@ -135,6 +135,11 @@ class Profile(AbstractBaseUser, PermissionsMixin, DjangoFieldsMixin, ToDictMixin
         self.credentials.save()
         self.save()
 
+    @property
+    def all_queue_ids(self):
+        my_queue_ids = {queue.id for queue in self.my_queues.all()}
+        other_queue_ids = {queue.id for queue in self.other_queues.all()}
+        return my_queue_ids.union(other_queue_ids)
     @property
     # is this used?
     # this needs to be properly addressed
@@ -216,6 +221,10 @@ class GuestProfile(ToDictMixin):
             {"name", "queue_id", "queue_secret", "email", "owner_secret"}
         )
 
+    @property
+    def all_queue_ids(self):
+        return [self.queue_id]
+    
     def convert_to_profile(self):
         pass
 

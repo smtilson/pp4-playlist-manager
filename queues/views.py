@@ -1,7 +1,7 @@
 from django.shortcuts import render, reverse, get_object_or_404
 from django.http import HttpResponseRedirect, JsonResponse
 from .forms import QueueForm
-from .models import Queue, Entry
+from .models import Queue, Entry, has_authorization
 from profiles.models import make_user
 from django.contrib import messages
 from yt_query.yt_api_utils import YT
@@ -11,6 +11,11 @@ from urllib.error import HTTPError
 
 
 def create_queue(request):
+    user = make_user(request)
+    if not user.is_authenticated:
+        msg = "You must be logged in to create a queue."
+        messages.add_message(request, messages.INFO, msg)
+        return HttpResponseRedirect(reverse("account_login"))
     if request.method == "POST":
         queue_form = QueueForm(data=request.POST)
         if queue_form.is_valid():
@@ -29,8 +34,12 @@ def create_queue(request):
 
 
 def publish(request, queue_id):
-    queue = get_object_or_404(Queue, id=queue_id)
     user = make_user(request)
+    queue = get_object_or_404(Queue, id=queue_id)
+    if not has_authorization(user, queue) and user.is_authenticated:
+        msg = "You must be logged in and be authorized in order to publish a queue."
+        messages.add_message(request, messages.INFO, msg)
+        return HttpResponseRedirect(reverse("account_login"))
     if user == queue.owner:
         try:
             msg = queue.publish()
@@ -48,9 +57,14 @@ def publish(request, queue_id):
 
 
 def edit_queue(request, queue_id):
-    # write authorization fucntion taking a queue and a user and returning a boolean
-    queue = get_object_or_404(Queue, id=queue_id)
     user = make_user(request)
+    queue = get_object_or_404(Queue, id=queue_id)
+    # write authorization fucntion taking a queue and a user and returning a boolean
+    if not has_authorization(user, queue):
+        msg = "You do not have authorization to edit this queue."
+        msg_type = messages.INFO
+        messages.add_message(request, msg_type, msg)
+        return HttpResponseRedirect(reverse("account_login"))
     yt = YT(user)
     if request.method == "POST":
         recent_search = request.POST.get("searchQuery")
@@ -68,29 +82,13 @@ def edit_queue(request, queue_id):
     return render(request, "queues/edit_queue.html", context)
 
 
-def earlier(request, queue_id, entry_id):
-    entry = get_object_or_404(Entry, id=entry_id)
-    entry.earlier()
-    msg = f"{entry.title} has been moved earlier in the queue."
-    messages.add_message(request, messages.INFO, msg)
-    return HttpResponseRedirect(reverse("edit_queue", args=[queue_id]))
-
-
-def swap(request, queue_id, entry_id):
-    # refactor to use a class method
-    entry = get_object_or_404(Entry, id=entry_id)
-    # I don't think this is necessary here.
+def swap(request, queue_id, entry_id, other_entry_position):
     queue = get_object_or_404(Queue, id=queue_id)
-    query = "other_position-entry_" + str(entry.id)
-    other_entry_position = int(request.POST[query])
-    other_entry = queue.all_entries[other_entry_position - 1]
-    Entry.swap_entries(entry_id, other_entry.id)
-    msg = f"{entry.title} and {other_entry.title} have been swapped in the queue."
-    messages.add_message(request, messages.INFO, msg)
-    return HttpResponseRedirect(reverse("edit_queue", args=[queue_id]))
-
-
-def swap_js(request, queue_id, entry_id, other_entry_position):
+    user = make_user(request)
+    if not user == queue.owner:
+        msg = "You must be the owner of the queue in order to reorder its entries."
+        messages.add_message(request, messages.ERROR, msg)
+        return HttpResponseRedirect(reverse("edit_queue", args=[queue.id]))
     entry = get_object_or_404(Entry, id=entry_id)
     entry, other_entry = entry.swap_entry_positions(other_entry_position)
     msg = f"Entries in positions {entry.position} and {other_entry_position} have been swapped."
@@ -119,18 +117,13 @@ def swap_js(request, queue_id, entry_id, other_entry_position):
     return JsonResponse(response_dict)
 
 
-def later(request, queue_id, entry_id):
-    entry = get_object_or_404(Entry, id=entry_id)
-    entry.later()
-    msg = f"{entry.title} has been moved later in the queue."
-    messages.add_message(request, messages.INFO, msg)
-    return HttpResponseRedirect(reverse("edit_queue", args=[queue_id]))
-
-
 def sync(request, queue_id):
     queue = get_object_or_404(Queue, id=queue_id)
     user = make_user(request)
-    if user == queue.owner:
+    if not user == queue.owner:
+        msg = "You must be the owner of the queue in order to sync it with YouTube."
+        msg_type = messages.ERROR
+    else:
         try:
             msg = queue.sync()
             msg_type = messages.SUCCESS
@@ -138,45 +131,48 @@ def sync(request, queue_id):
             msg = e
             msg_type = messages.ERROR
         print(msg)
-    else:
-        msg = "Only the queue owner can sync the queue."
-        msg_type = messages.ERROR
     messages.add_message(request, msg_type, msg)
     return HttpResponseRedirect(reverse("edit_queue", args=[queue_id]))
 
 
 def add_entry(request, queue_id, video_id):
     queue = get_object_or_404(Queue, id=queue_id)
-    if queue.full:
-        msg = "This queue is at max capacity. Remove some tracks if you would like to add more."
-        msg_type = messages.ERROR
-        messages.add_message(request, msg_type, msg)
-        HttpResponseRedirect(reverse("edit_queue", args=[queue_id]))
     user = make_user(request)
-    video_data = YT(user).find_video_by_id(video_id)
-    if video_data["status"] == "private":
-        msg = "This video is private. It cannot be added to the queue."
-        messages.add_message(request, messages.ERROR, msg)
-        HttpResponseRedirect(reverse("edit_queue", args=[queue_id]))
-    del video_data["status"]
-    entry = Entry(**video_data)
-    entry.p_queue = queue
-    # adds entry to end of list
-    entry._position = queue.length
-    entry.user = user.name if user.name else user.email
-    queue.save()
-    entry.save()
-    request.session["queue"] = queue.serialize()
-    msg = f"{entry.title} has been added to the queue."
-    messages.add_message(request, messages.SUCCESS, msg)
+    if not has_authorization(user, queue):
+        msg = "You do not have authorization to add entries to this queue."
+        messages.add_message(request, messages.INFO, msg)
+        return HttpResponseRedirect(reverse("account_login"))
+    if queue.full:
+        msg = "This queue is at max capacity."
+        if user == queue.owner:
+             msg+="Remove some entries if you would like to add more."
+        else:
+            msg += "Ask the owner to remove some entries so you can add more."
+        msg_type = messages.ERROR
+        
+    else:
+        video_data = YT(user).find_video_by_id(video_id)
+        if video_data["status"] != "private":
+            del video_data["status"]
+            entry = Entry(**video_data)
+            entry.p_queue = queue
+            # adds entry to end of list
+            entry._position = queue.length
+            entry.user = user.name if user.name else user.email
+            queue.save()
+            entry.save()
+            msg = f"{entry.title} has been added to the queue."
+        else:
+            msg = "This video is private. It cannot be added to the queue."
+            msg_type = messages.ERROR
+    messages.add_message(request, msg_type, msg)
     return HttpResponseRedirect(reverse("edit_queue", args=[queue_id]))
 
 
 def delete_entry(request, queue_id, entry_id):
-    entry = get_object_or_404(Entry, id=entry_id)
     queue = get_object_or_404(Queue, id=queue_id)
     user = make_user(request)
-    # add appropriate feedback messages
+    entry = get_object_or_404(Entry, id=entry_id)
     if user == queue.owner:
         queue.remove_entry(entry)
         msg = f"{entry.title} has been removed from the queue."
@@ -218,32 +214,23 @@ def gain_access(request, queue_secret, owner_secret):
     user = make_user(request)
     request.session["queue_id"] = queue.id
     request.session["redirect_action"]={"action":"edit_queue","args":[queue.id]}
-    if owner_secret == queue.owner.secret:
-        print("secrets match")
-        msg = f"{queue.owner.nickname} has given you access to {queue.title}."
-        msg_type = messages.SUCCESS
-        messages.add_message(request, msg_type, msg)
-        if user.is_authenticated:
-            print("user is authenticated")
-            user.other_queues.add(queue)
-            queue.save()
-            user.save()
-            msg = f"{queue.owner.nickname} has given you access to {queue.title}."
-            msg_type = messages.SUCCESS
-            messages.add_message(request, msg_type, msg)
-            return HttpResponseRedirect(reverse("edit_queue", args=[queue.id]))
-        # This means that there is already a guest stored in the session
-        elif user.is_guest:
-            print("user is a guest")
-            msg2 = f"Welcome back {user.nickname}."
-            msg2_type = messages.INFO
-            messages.add_message(request, msg2_type, msg2)
-            return HttpResponseRedirect(reverse("edit_queue", args=[queue.id]))
-        else:
-            print("user is an unauthenticated non-guest")
-            return HttpResponseRedirect(reverse("guest_sign_in"))
-    else:
+    if owner_secret != queue.owner.secret:
         msg = f"This link is no longer valid. Please request a new one from the {queue.owner.nickname}."
         msg_type = messages.ERROR
         messages.add_message(request, msg_type, msg)
         return HttpResponseRedirect(reverse("account_signup"))
+    elif not user.is_authenticated and not user.is_guest:
+        return HttpResponseRedirect(reverse("guest_sign_in"))
+    elif user.is_authenticated:
+        user.other_queues.add(queue)
+        queue.save()
+        user.save()
+        msg = f"{queue.title} has been added to your list of queues."
+    # This means that there is already a guest stored in the session
+    elif user.is_guest:
+        msg = f"Welcome back {user.nickname}."
+    msg += f"{queue.owner.nickname} has given you access to {queue.title}."
+    msg_type = messages.SUCCESS
+    messages.add_message(request, msg_type, msg)
+    return HttpResponseRedirect(reverse("edit_queue", args=[queue.id]))
+    

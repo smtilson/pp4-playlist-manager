@@ -57,22 +57,5 @@ def produce_url_code(**kwargs) -> str:
     return url_code
 
 
-def parse_url_code(url_code: str) -> dict:
-    pass
 
-def get_user(request):
-    guest_user = request.session.get("guest_user")
-    if guest_user:
-        return guest_user
-    return request.user
 
-def has_authorization(user, queue):
-    user = make_user(user)
-    if user in queue.collaborators.all():
-        return True
-    # another condition could go here, like checking against the queue.secret
-    elif user.owner_secret == queue.owner.secret:
-        return True
-    return False
-
-    pass

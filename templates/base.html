@@ -1,14 +1,15 @@
 {% load static %}
-
+{% load crispy_forms_tags %}
 {% url 'account_login' as login_url %}
 {% url 'account_signup' as signup_url %}
 {% url 'account_logout' as logout_url %}
+{% url 'index' as index_url %}
 
 <!DOCTYPE html>
 <html class="h-100" lang="en">
 
 <head>
-    <title>Youtube DJ</title>
+    <title>YouTube DJ</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <!-- Google Fonts CSS -->
@@ -17,7 +18,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;700&display=swap" rel="stylesheet">-->
 
     <!-- Font Awesome CSS -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
+        type="text/css" />
+    <!--<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">-->
 
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet"
@@ -26,23 +29,55 @@
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 
-<body>
-
+<body id="style-override" class="d-flex flex-column h-100 main-bg">
     <!-- Navigation -->
-    <nav class="navbar">
-        <div>
-            <ul>
+    <nav class="navbar navbar-expand-lg navbar-light bg-black fixed-top">
+        <div class="container-fluid">
+            <span class="
+            row"> <a class="navbar-brand white col-3" href="{% url 'index' %}">YouTube DJ</a>
                 {% if user.is_authenticated %}
-                <li class="nav-item"><a class="nav-link" href="{% url 'account_logout' %}">Logout</a></li>
-                {% else %}
-                <li class="nav-item"><a class="nav-link" href="{% url 'account_login' %}">Login</a></li>
-                <li class="nav-item"><a class="nav-link" href="{% url 'account_signup' %}">Sign Uo</a></li>
-                {% endif %}
-            </ul>
-        </div>
+                <div class="container navbar text-end col-3 white div-user-nickname">{{user.nickname}}</div>
+                {% endif %}</span>
+            <button class="navbar-toggler border-white" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText"
+                aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon white-important"></span>
+            </button>
+            <!-- Mobile Navbar -->
+            <div class="collapse navbar-collapse" id="navbarText">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == index_url %}active" aria-current="page{% endif %}"
+                            href="{% url 'index' %}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == about_url %}active" aria-current="page{% endif %}"
+                            href="{% url 'index' %}">About NOT IMPLEMENTED</a>
+                    </li>
+                    {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == logout_url %}active" aria-current="page{% endif %}"
+                            href="{% url 'account_logout' %}">Logout</a>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == signup_url %}active" aria-current="page{% endif %}"
+                            href="{% url 'account_signup' %}">Sign Up!</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == login_url %}active" aria-current="page{% endif %}"
+                            href="{% url 'account_login' %}">Login</a>
+                    </li>
+                    {% endif %}
+                </ul>
+                <!-- Do I want this span at all?-->
+                <span class="navbar-text text-muted">
+                    YouTube DJ plays YOUR hits!
+                </span>
+            </div>
     </nav>
+
     <!-- displaying Django messages -->
-    <div class="container">
+    <div class="container message-div">
         <div class="row">
             <div class="col-md-8 offset-md-2">
                 {% for message in messages %}
@@ -56,10 +91,9 @@
         </div>
     </div>
     <main class="">
-        {% if user.is_authenticated %}
-        <p class="text-end m-3">{{user.nickname}}</p>
+
         <!--Maybe add some kind of image here. Just grab it from the youtube profile.-->
-        {% endif %}
+
         {% block content %}
         <!-- Content Goes here -->
         <p>No Content Loaded.</p>
@@ -76,10 +110,10 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous">
-    </script>
-     <script src="https://code.jquery.com/jquery-3.2.1.js"
-     integrity="sha256-DZAnKJ/6XZ9si04Hgrsxu/8s717jcIzLy3oi35EouyE=" crossorigin="anonymous"></script>
-     <script src="{% static 'js/script.js' %}"></script>
+        </script>
+    <script src="https://code.jquery.com/jquery-3.2.1.js"
+        integrity="sha256-DZAnKJ/6XZ9si04Hgrsxu/8s717jcIzLy3oi35EouyE=" crossorigin="anonymous"></script>
+    <script src="{% static 'js/script.js' %}"></script>
     {% block extras %}
     <p>No Extras Loaded.</p>
     {% endblock %}

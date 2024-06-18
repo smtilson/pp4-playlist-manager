@@ -28,7 +28,9 @@ def index(request):
         messages.add_message(request, messages.ERROR, error_msg)
         if user.is_authenticated:
             return HttpResponseRedirect(reverse("profile"))
-        return render(request, "profiles/index.html", {"error_msg": error_msg, "user": user})
+        return render(
+            request, "profiles/index.html", {"error_msg": error_msg, "user": user}
+        )
     elif "redirect_action" in request.session:
         view_name = request.session["redirect_action"]["action"]
         args = request.session["redirect_action"]["args"]
@@ -36,7 +38,7 @@ def index(request):
     elif user.is_authenticated:
         return HttpResponseRedirect(reverse("profile"))
     else:
-        return render(request, "profiles/index.html", {"user":user})
+        return render(request, "profiles/index.html", {"user": user})
 
 
 def profile(request):
@@ -46,6 +48,8 @@ def profile(request):
     """
     user = make_user(request)
     if not user.is_authenticated:
+        msg = "You must be logged in to view your profile."
+        messages.add_message(request, messages.INFO, msg)
         return HttpResponseRedirect(reverse("account_login"))
     if not user.credentials:
         user.initialize()
@@ -66,11 +70,17 @@ def profile(request):
     }
     return render(request, "profiles/profile.html", context)
 
+
 def test(request):
-    return JsonResponse({"test":"test"})
+    return JsonResponse({"test": "test"})
+
 
 def set_name(request):
     user = make_user(request)
+    if not user.is_authenticated:
+        msg = "You must be logged in to set your name."
+        messages.add_message(request, messages.INFO, msg)
+        return HttpResponseRedirect(reverse("account_login"))
     user.name = request.POST["name"]
     user.save()
     msg = f"Name set to {user.name}"
@@ -80,6 +90,10 @@ def set_name(request):
 
 def revoke_authorization(request):
     user = make_user(request)
+    if not user.is_authenticated:
+        msg = "You must be logged in to revoke your authorization."
+        messages.add_message(request, messages.INFO, msg)
+        return HttpResponseRedirect(reverse("account_login"))
     msg = revoke_tokens(user)
     print(msg)
     # there should be a modal for this
@@ -91,18 +105,36 @@ def revoke_authorization(request):
 
 def return_from_authorization(request):
     # do I need to check here that they don't have credentials since it is checked on the front end
-    user = request.user
+    user = make_user(request)
+    if not user.is_authenticated:
+        msg = "How did you get here, I am genuinely curious."
+        messages.add_message(request, messages.INFO, msg)
+        return HttpResponseRedirect(reverse("account_login"))
     path = request.get_full_path()
     if user.has_tokens:
         msg = f"{user.nickname} is already connected to {user.youtube_handle}. If you would like to change which account is connected, please first revoke the current permissions"
-    tokens = get_tokens(path)
-    msg = user.set_credentials(tokens)
-    messages.add_message(request, messages.SUCCESS, msg)
+        msg_type = messages.INFO
+    else:
+        tokens = get_tokens(path)
+        msg = user.set_credentials(tokens)
+        msg_type = messages.SUCCESS
+    messages.add_message(request, msg_type, msg)
     return HttpResponseRedirect(reverse("profile"))
 
 
 def guest_sign_in(request):
     queue = get_object_or_404(Queue, id=request.session["queue_id"])
+    user = make_user(request)
+    if user.is_authenticated:
+        msg = "You are already logged in."
+        msg_type = messages.INFO
+        messages.add_message(request, msg_type, msg)
+        if "redirect_action" in request.session:
+            view_name = request.session["redirect_action"]["action"]
+            args = request.session["redirect_action"]["args"]
+            return HttpResponseRedirect(reverse(view_name, args=args))
+        else:
+            return HttpResponseRedirect(reverse("profile"))
     if request.method == "GET":
         context = {"queue": queue}
         return render(request, "profiles/guest_sign_in.html", context)
@@ -113,12 +145,10 @@ def guest_sign_in(request):
             name=name,
             email=email,
             queue_id=queue.id,
-            queue_secret= queue.secret,
+            queue_secret=queue.secret,
             owner_secret=queue.owner.secret,
         )
         request.session["guest_user"] = user.serialize()
         msg = f"Guest account set up for {user.nickname}"
         messages.add_message(request, messages.SUCCESS, msg)
-        return HttpResponseRedirect(
-            reverse("edit_queue", args=[queue.id])
-        )
+        return HttpResponseRedirect(reverse("edit_queue", args=[queue.id]))
