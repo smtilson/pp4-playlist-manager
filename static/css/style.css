@@ -4,15 +4,61 @@ Red color: FF0000
 Grey :272727
 White: FFFFFF
 other grey: AAAAAA
+lighter grey from darkreader: 303436
 */
 
+
+
+
+
+/* Base Styles */
 body {
     background-color: #272727;
     color: white;
 }
 
+#style-override ul {
+    list-style-type: none;
+}
+
+#style-override a {
+    color: white;
+}
+
 #style-override .white {
     color: white;
+}
+
+#style-override .bkg-light-grey {
+    background-color: #303436
+}
+
+#style-override .bkg-grey {
+    background-color: #272727
+}
+
+#style-override .bkg-black {
+    background-color: #0F0F0F
+}
+
+#style-override .bkg-red {
+    background-color: #FF0000
+}
+
+#style-override .border-white {
+    border-color: white;
+}
+
+#style-override .border-light-grey {
+    border-color: #303436
+}
+
+#style-override .border-grey {
+    border-color: #272727
+}
+
+#style-override .border-black {
+    border-color: #0F0F0F
 }
 
 /* Header Styles */
@@ -27,20 +73,44 @@ body {
     border-width: 2px;
 }
 
-
+#style-override .modal-body,
+#style-override .modal-header,
+#style-override .modal-footer {
+    color: white;
+    background-color: #303436
+}
 /* Messages Div */
 
 #style-override .message-div {
     margin-top: 100px;
 }
 
-#style-override .text-container {
+/* My Containers */
+
+#style-override .my-container {
+    align-self: center;
+    padding: 30px;
+    margin: 10%;
     border-radius: 15px;
     border-style: solid;
-    border-color: white;
+    border-color: #0f0f0f;
     border-width: 3px;
     justify-content: center;
-    background-color: #0F0F0F;
-    padding: 5px;
-    margin: 10px;
+    background-color: #303436;
+}
+
+/* Input Elements */
+
+#style-override input {
+    color: white;
+    background-color: black;
+}
+
+#style-override form .js-input-background{
+    color: white;
+    background-color: black;
+}
+
+#style-override .swap-input {
+    width: 30px
 }

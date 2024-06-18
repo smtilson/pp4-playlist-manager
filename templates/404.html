@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+
+<div class="logo-div my-container text-center">
+    <h1>YouTube DJ</h1>
+</div>
+<div class="my-container text-center">
+    <h2 class="text-center">Page Not Found</h2>
+</div>
+<div class="my-container">
+    <h4 class="text-center">The page you requested doesn't appear to exist.</h4>
+    <div class="text content text-spacing-helper">
+        {% if user.is_authenticated %}
+        You could return to your <a href="{% url 'profile' %}">profile</a> or <a href="{% url 'create_queue'%}">create a
+            new queue</a>.
+        {% else %}
+        To continue to the site either <a href="{% url 'account_signup' %}">sign up</a> or <a
+            href="{% url 'account_login' %}">log in</a>.
+        {% endif %}
+    </div>
+</div>
+
+</div>
+{% endblock content %}

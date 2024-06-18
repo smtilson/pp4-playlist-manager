@@ -50,29 +50,30 @@ def get_tokens(authorization_path):
 
 # Gotten from the YouTubeAPI documentation
 def revoke_tokens(user):
-    handle = user.youtube_handle
+    # this seems to be working but is returning an invalid service code.
     if not user.has_tokens:
         return f"This app does not currently have authorization for {user.nickname}"
     else:
+        'https://accounts.google.com/o/oauth2/revoke?token=1//09P7hvjPbmwvxCgYIARAAGAkSNwF-L9Ir7yye9MIzEun9VL_IflUo-F4NZ8ImjkpHu0URu3ZfebcBPiz1yLWj8Q7hJGCCmB9no_0'
+        
         credentials = user.google_credentials
+        requests.post('https://oauth2.googleapis.com/revoke',
+    params={'token': credentials.token},
+    headers = {'content-type': 'application/x-www-form-urlencoded'})
     revoke = requests.post(
         "https://oauth2.googleapis.com/revoke",
         params={"token": credentials.token},
         headers={"content-type": "application/x-www-form-urlencoded"},
     )
+    print(revoke)
+
 
     status_code = getattr(revoke, "status_code")
-    if status_code == 200:
-        return "Credentials successfully revoked for " + handle
-    else:
-        return "An error occurred."
-
+    return status_code
+    
 
 def refresh_tokens(user):
-    # maybe this should be called when we already know the tokens are expired so we can get authorization again.
     credentials = user.google_credentials
-    print(credentials.valid)
-    print(credentials.expired)
     old_dict = json_to_dict(credentials.to_json())
     new_dict = {}
     credentials.refresh(Request())
@@ -80,15 +81,3 @@ def refresh_tokens(user):
     user.set_credentials(credentials)
     print(old_dict == new_dict)
 
-
-def save_creds(credentials):
-    # "wb" is write bytes
-    with open("token.pickle", "wb") as f:
-        print("Saving credentials ...")
-        pickle.dump(credentials, f)
-
-
-def retrieve_creds():
-    with open("token.pickle", "rb") as token:
-        credentials = pickle.load(token)
-    return credentials

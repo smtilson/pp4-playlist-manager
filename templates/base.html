@@ -1,5 +1,4 @@
 {% load static %}
-{% load crispy_forms_tags %}
 {% url 'account_login' as login_url %}
 {% url 'account_signup' as signup_url %}
 {% url 'account_logout' as logout_url %}
@@ -31,16 +30,18 @@
 
 <body id="style-override" class="d-flex flex-column h-100 main-bg">
     <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-black fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top bkg-black">
         <div class="container-fluid">
             <span class="
             row"> <a class="navbar-brand white col-3" href="{% url 'index' %}">YouTube DJ</a>
                 {% if user.is_authenticated %}
                 <div class="container navbar text-end col-3 white div-user-nickname">{{user.nickname}}</div>
-                {% endif %}</span>
-            <button class="navbar-toggler border-white" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText"
-                aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon white-important"></span>
+                {% endif %}
+            </span>
+            <button class="navbar-toggler border-white" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarText" aria-controls="navbarText" aria-expanded="false"
+                aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
             </button>
             <!-- Mobile Navbar -->
             <div class="collapse navbar-collapse" id="navbarText">
@@ -102,6 +103,11 @@
 
     <!-- Footer -->
     <footer class="footer">
+        {% if user.is_authenticated %}
+        <a href="{% url 'profile' %}">Back to profile page</a>
+        {% else %}
+        <a href="{% url 'account_signup' %}">Sign Up!</a>
+        {% endif %}
         {% block copyright%}
         <p>No Copyright Loaded</p>
         {% endblock copyright %}
