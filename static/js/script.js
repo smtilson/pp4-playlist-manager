@@ -50,7 +50,7 @@ async function moveEntry(event) {
         console.log("out of bounds -");
         return;
     }
-    const response = await fetch(DOMAIN + `/queues/swap-js/${queueId}/${entryId}/${otherPosition}`, {
+    const response = await fetch(DOMAIN + `/queues/swap/${queueId}/${entryId}/${otherPosition}`, {
         method: 'GET'
     });
     const data = await response.json();
