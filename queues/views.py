@@ -21,6 +21,7 @@ def create_queue(request):
         messages.add_message(request, messages.INFO, msg)
         return HttpResponseRedirect(reverse("account_login"))
     if request.method == "POST":
+
         if not request.POST["queue-title"]:
             raise ValueError("Queue title cannot be empty.")
         queue_title = request.POST["queue-title"]
@@ -31,6 +32,7 @@ def create_queue(request):
         messages.add_message(request, messages.SUCCESS, msg)
         return HttpResponseRedirect(reverse("edit_queue", args=[queue.id]))
     context = {"user": make_user(request)}
+
     return render(request, "queues/create_queue.html", context)
 
 
@@ -186,7 +188,8 @@ def add_entry(request, queue_id, video_id):
     msg_type = messages.ERROR
     if not has_authorization(user, queue):
         msg = "You do not have authorization to add entries to this queue."
-        messages.add_message(request, messages.INFO, msg)
+        msg_type = messages.INFO
+        messages.add_message(request, msg_type, msg)
         return HttpResponseRedirect(reverse("account_login"))
     if queue.full:
         msg = "This queue is at max capacity."
