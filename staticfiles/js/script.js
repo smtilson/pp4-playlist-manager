@@ -2,8 +2,8 @@ $(document).ready(function () {
     console.log("page loaded");
     initSwapInputs();
     initialize();
-    initialize();
     formStyle();
+    console.log("everything loaded");
 })
 
 const sampleDomain = window.location.hostname;
@@ -57,7 +57,7 @@ async function moveEntry(event) {
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
-          },
+        },
     });
     const data = await response.json();
     const entry1 = data.entry1;
@@ -84,7 +84,7 @@ async function swapEntries(event) {
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
-          },
+        },
     });
     const data = await response.json();
     const entry1 = data.entry1;
@@ -157,5 +157,6 @@ function formStyle() {
     for (let input of inputs) {
         input.classList.add("js-input-background");
         input.classList.add("form-control");
-}
+    }
+    console.log("form style done");
 }
