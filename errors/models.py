@@ -10,14 +10,15 @@ class RequestReport(models.Model):
     user_dict = models.JSONField()
 
     @classmethod
-    def process(cls, request):
-        status_code = 200 #request.status_code
-        
-        if status_code != 200:
+    def process(cls, response):
+        status_code = response.status_code
+        print(response)
+        if status_code not in {200, 302}:
             msg = "An unknown error seems to have occurred."
             msg_type = messages.ERROR
-
             return False, msg, msg_type
         #request.session["last_path"] = request.path
-        #return True, request, 
+        #return True, request,
+        elif status_code == 302:
+            return True, 'redirected', messages.INFO 
         return True, 'everything is a lie', messages.INFO
