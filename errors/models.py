@@ -12,13 +12,18 @@ class RequestReport(models.Model):
     @classmethod
     def process(cls, response):
         status_code = response.status_code
-        print(response)
-        if status_code not in {200, 302}:
+        if status_code == 404:
+            msg = "The page you requested does not exist."
+            msg_type = messages.ERROR
+        elif status_code not in {200, 302}:
             msg = "An unknown error seems to have occurred."
             msg_type = messages.ERROR
-            return False, msg, msg_type
         #request.session["last_path"] = request.path
         #return True, request,
         elif status_code == 302:
-            return True, 'redirected', messages.INFO 
-        return True, 'everything is a lie', messages.INFO
+            msg = 'You have been redirected.'
+            msg_type = messages.INFO
+        else:
+            msg = 'Everything proceeded normally.'
+            msg_type = messages.SUCCESS
+        return status_code, msg, msg_type

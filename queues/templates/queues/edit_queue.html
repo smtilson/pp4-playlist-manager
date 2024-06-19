@@ -19,20 +19,14 @@
 
         {% endif %}
     </div>
-
-    {% if is_owner %}
-
-    <div class="owner-buttons my-container btn-group" role="owner-buttons">
-
+    <div class="my-button-group my-container btn-group" role="group" aria-label="Control Buttons">
+        <a href="{% url 'edit_queue' queue.id %}"><button type="button" class="btn btn-success">Refresh</button></a>
+        {% if is_owner %}
         <a href="{% url 'gain_access' queue.secret queue.owner.secret %}"><button
                 class="btn btn-success">Share</button></a></h3>
-
-
         <!-- Delete Modal Trigger -->
-
         <button type="button" data-bs-toggle="modal" data-bs-target="#deleteModal"
             class="btn btn-danger">Delete</button>
-
         <!-- Delete Modal -->
         <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
             <div class="modal-dialog">
@@ -52,19 +46,13 @@
                 </div>
             </div>
         </div>
-
         {% if user.has_tokens %}
         {% if not queue.published %}
-
         <a href="{% url 'publish' queue.id %}"><button class="btn btn-success">Publish</button></a>
-
         {% else %}
-
         <!-- Unpublish Modal Trigger -->
-
         <button type="button" data-bs-toggle="modal" data-bs-target="#unpublishModal"
             class="btn btn-danger">Unpublish</button>
-
         <!-- Unpublish Modal -->
         <div class="modal fade" id="unpublishModal" tabindex="-1" aria-labelledby="unpublishModalLabel"
             aria-hidden="true">
@@ -85,13 +73,8 @@
                 </div>
             </div>
         </div>
-
-
         <a href=" {% url 'sync' queue.id %}"><button class="btn btn-success">Sync</button></a>
-
         {% endif %}
-
-
         {% endif %}
         {% endif %}
     </div>
