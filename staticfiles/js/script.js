@@ -97,7 +97,7 @@ function writeEntryData(entryData) {
     position = entryData.position;
     console.log(entryData.title);
     console.log(position);
-    positionDiv = $(`#div-position-${position}`);
+    positionDiv = $(`#div-${position}`);
     positionSpan = positionDiv.children('span')[0];
     positionSpan.innerText = entryData.title + " added by " + entryData.user + "(" + entryData.duration + ")";
     for (let button of positionDiv.find('.position-btn')) {
