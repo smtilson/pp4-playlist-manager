@@ -5,6 +5,7 @@ Grey :272727
 White: FFFFFF
 other grey: AAAAAA
 lighter grey from darkreader: 303436
+border color from dark reader 877D6F
 */
 
 
@@ -17,8 +18,12 @@ body {
     color: white;
 }
 
-#style-override ul {
+#style-override ul li {
     list-style-type: none;
+}
+
+#style-override ul {
+    padding: 0;
 }
 
 #style-override a {
@@ -89,11 +94,12 @@ body {
 
 #style-override .my-container {
     align-self: center;
-    padding: 30px;
-    margin: 10%;
+    padding: 20px;
+    margin: 1em;
+    width: 90%;
     border-radius: 15px;
     border-style: solid;
-    border-color: #0f0f0f;
+    border-color: #877D6F;
     border-width: 3px;
     justify-content: center;
     background-color: #303436;
@@ -111,6 +117,23 @@ body {
     background-color: black;
 }
 
+
 #style-override .swap-input {
-    width: 30px
+    width: 70px;
+}
+
+/* Button Styles */
+
+#style-override .my-button-group {
+    gap: 5px;
+}
+
+#style-override .my-btn-border button{
+    border-color: black;
+    border-width: 1px;
+}
+
+#style-override .my-button-group .btn {
+    border-color: black;
+    border-width: 1px;
 }

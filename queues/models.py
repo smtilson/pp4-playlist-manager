@@ -216,6 +216,12 @@ class Entry(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
 
     def __str__(self):
         return f"{self.position}. {self.title} added by {self.username}"
+    
+    @property
+    def title_abv(self):
+        if len(self.title) > 35:
+            return self.title[:30]+"..."
+        return self.title
     @property
     def username(self):
         if '@' in self.user:

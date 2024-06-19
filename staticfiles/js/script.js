@@ -2,12 +2,14 @@ $(document).ready(function () {
     console.log("page loaded");
     initSwapInputs();
     initialize();
-    initialize();
     formStyle();
+    console.log("everything loaded");
 })
 
-//const DOMAIN = "http://localhost:8000/";
-const DOMAIN = "https://pp4-playlist-manager-67004a99f0e2.herokuapp.com/";
+const sampleDomain = window.location.hostname;
+console.log("The current sample domain is " + sampleDomain);
+const DOMAIN = "http://localhost:8000/";
+//const DOMAIN = "https://pp4-playlist-manager-67004a99f0e2.herokuapp.com/";
 console.log("The current domain is " + DOMAIN);
 function initialize() {
     const moveBtns = $('.move-btn');
@@ -31,20 +33,14 @@ function initSwapInputs() {
     const queueLength = getQueueLength();
     setSwapPlaceHolderText(queueLength);
 }
-async function testFetch() {
-    const response = await fetch(DOMAIN + "test")
-    const data = await response.json();
-    console.log(data);
-}
-
-
-
 
 async function moveEntry(event) {
     // how do I give feedback in this set up?
+    console.log("moveEntry hit");
     const entryId = event.target.getAttribute("data-entry");
+    console.log("entryId: " + entryId);
     const direction = event.target.getAttribute("data-direction");
-    console.log(entryId);
+    console.log("direction: " + direction);
     const otherPosition = event.target.getAttribute("data-position");
     console.log("other position" + otherPosition);
     if (otherPosition <= 0 && direction === "+") {
@@ -61,7 +57,7 @@ async function moveEntry(event) {
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
-          },
+        },
     });
     const data = await response.json();
     const entry1 = data.entry1;
@@ -88,7 +84,7 @@ async function swapEntries(event) {
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
-          },
+        },
     });
     const data = await response.json();
     const entry1 = data.entry1;
@@ -101,7 +97,7 @@ function writeEntryData(entryData) {
     position = entryData.position;
     console.log(entryData.title);
     console.log(position);
-    positionDiv = $(`#div-position-${position}`);
+    positionDiv = $(`#div-${position}`);
     positionSpan = positionDiv.children('span')[0];
     positionSpan.innerText = entryData.title + " added by " + entryData.user + "(" + entryData.duration + ")";
     for (let button of positionDiv.find('.position-btn')) {
@@ -161,5 +157,6 @@ function formStyle() {
     for (let input of inputs) {
         input.classList.add("js-input-background");
         input.classList.add("form-control");
-}
+    }
+    console.log("form style done");
 }
