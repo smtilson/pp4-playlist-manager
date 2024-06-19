@@ -70,10 +70,8 @@ def profile(request):
     if not user.has_tokens:
         youtube_permission_status = "Profile has no associated youtube account."
     else:
-        youtube_permission_status = "Youtube DJ has access to your youtube account."
+        youtube_permission_status = f"Youtube DJ has access to {user.youtube_handle}."
     info_dict = user.info_dict
-    info_dict["Youtube Access"] = youtube_permission_status
-    info_dict["Are Credentials Valid?"] = user.valid_credentials
     context = {
         "user": user,
         "view_name": "profile",
@@ -81,6 +79,7 @@ def profile(request):
         "info_dict": info_dict,
         "my_queues": user.my_queues.all(),
         "other_queues": user.other_queues.all(),
+        "youtube_access":youtube_permission_status,
     }
     response = render(request, "profiles/profile.html", context)
     status, msg, msg_type = RequestReport.process(response)

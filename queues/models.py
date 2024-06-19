@@ -219,7 +219,7 @@ class Entry(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
     
     @property
     def title_abv(self):
-        if len(self.title) > 35:
+        if len(self.title) > 30:
             return self.title[:30]+"..."
         return self.title
     @property

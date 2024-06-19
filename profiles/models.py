@@ -99,25 +99,7 @@ class Profile(AbstractBaseUser, PermissionsMixin, DjangoFieldsMixin, ToDictMixin
 
     @property
     def info_dict(self):
-        info_dict = self.to_dict()
-        exclude = [
-            "last_login",
-            "credentials",
-            "is_guest",
-            "is_staff",
-            "is_superuser",
-            "is_active",
-            "secret",
-            "password",
-            "id",
-            "youtube_id",
-        ]
-        info_dict["date_joined"] = str(self.date_joined)
-        return {
-            format_field_name(key): value
-            for key, value in info_dict.items()
-            if key not in exclude
-        }
+        return {"Name": self.nickname, "Email": self.email}
 
     # I should only have one of these maybe?
     def serialize(self):
