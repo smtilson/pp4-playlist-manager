@@ -114,3 +114,14 @@ body {
 #style-override .swap-input {
     width: 30px
 }
+
+/* Button Styles */
+
+#style-override .my-button-group {
+    gap: 5px;
+}
+
+#style-override .my-button-group .btn {
+    border-color: black;
+    border-width: 1px;
+}

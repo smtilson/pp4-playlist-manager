@@ -11,35 +11,49 @@
         <h4>Description:</h4>
         <p>{{queue.description}}</p>
         <p><span id="queueLength">{{queue.length}}</span> entries</p>
+
+
         {% if queue.published %}
-        <div>
-            <a href="{{queue.url}}" target="_blank"><button class="btn btn-success">Play on YouTube</button></a>
-        </div>
+
+        <a href="{{queue.url}}" target="_blank"><button class="btn btn-success">Play on YouTube</button></a>
+
         {% endif %}
     </div>
-    {% if is_owner %}
-    <div class="owner-buttons my-container row">
-        <div class="col">
-            <a href="{% url 'gain_access' queue.secret queue.owner.secret %}"><button
-                    class="btn btn-success">Share</button></a></h3>
+    <div class="my-button-group my-container btn-group" role="group" aria-label="Control Buttons">
+        <a href="{% url 'edit_queue' queue.id %}"><button type="button" class="btn btn-success">Refresh</button></a>
+        {% if is_owner %}
+        <a href="{% url 'gain_access' queue.secret queue.owner.secret %}"><button
+                class="btn btn-success">Share</button></a></h3>
+        <!-- Delete Modal Trigger -->
+        <button type="button" data-bs-toggle="modal" data-bs-target="#deleteModal"
+            class="btn btn-danger">Delete</button>
+        <!-- Delete Modal -->
+        <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="deleteModalLabel">Delete {{queue.title}}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        Are you sure you want to Delete queue.title?
+                        This will delete the queue from YouTube DJ, but not delete the playlist from YouTube.
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <a href="{% url 'delete_queue' queue.id %}"><button class="btn btn-danger">Delete</button></a>
+                    </div>
+                </div>
+            </div>
         </div>
         {% if user.has_tokens %}
-
         {% if not queue.published %}
-        <div class="col">
-            <a href="{% url 'publish' queue.id %}"><button class="btn btn-success">Publish</button></a>
-            <p>Playlists are published as unlisted.</p><!--by default-->
-        </div>
-        {% elif not queue.synced %}
-        <div class="col">
-            <a href="{% url 'sync' queue.id %}"><button class="btn btn-success">Sync</button></a>
-        </div>
-        {% endif %}
+        <a href="{% url 'publish' queue.id %}"><button class="btn btn-success">Publish</button></a>
+        {% else %}
         <!-- Unpublish Modal Trigger -->
-        <div class="col">
-            <button type="button" data-bs-toggle="modal" data-bs-target="#unpublishModal"
-                class="btn btn-danger">Unpublish</button>
-        </div>
+        <button type="button" data-bs-toggle="modal" data-bs-target="#unpublishModal"
+            class="btn btn-danger">Unpublish</button>
+        <!-- Unpublish Modal -->
         <div class="modal fade" id="unpublishModal" tabindex="-1" aria-labelledby="unpublishModalLabel"
             aria-hidden="true">
             <div class="modal-dialog">
@@ -59,146 +73,127 @@
                 </div>
             </div>
         </div>
-        {%endif%}
-        <!-- Delete Modal Trigger -->
-        <div class="col">
-            <button type="button" data-bs-toggle="modal" data-bs-target="#deleteModal"
-                class="btn btn-danger">Delete</button>
-        </div>
+        <a href=" {% url 'sync' queue.id %}"><button class="btn btn-success">Sync</button></a>
+        {% endif %}
+        {% endif %}
+        {% endif %}
+    </div>
+    {% if queue.full %}
+    <div class="logo my-container text-center">
+        <h2 class="logo">The queue is full.</h2>
+        <p>Remove some tracks if you would like to add more.</p>
+    </div>
+    {% else %}
+    <div class="row my-container text-center">
+        <h3>Search for videos or songs to add to the Queue.</h3>
+    </div>
+    <div class="row my-container">
+        <form id="searchForm" method="POST">
+            {% csrf_token %}
+            <span>
+                <label class="form-label" for="searchQuery">Search:</label>
+                <input type="text" id="searchQuery" name="searchQuery" class="form-control" value="{{recent_search}}">
+            </span>
+            <button id="searchButton" type="submit" class="btn btn-lg">Search</button>
+        </form>
+    </div>
+    {% endif %}
+    <div class="container">
+        <div class="row">
+            <div class="my-container col">
+                {% if not queue.all_entries %}
+                <div class="logo text-center">
+                    <h2 class="logo">No entries yet.</h2>
+                    <p>Add some videos to the Queue.</p>
+                </div>
+                {% else %}
+                <ol>
 
-        <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="deleteModalLabel">Delete {{queue.title}}</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        Are you sure you want to Delete {{queue.title}}?
-                        This will delete the queue from YouTube DJ, but not delete the playlist from YouTube.
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <a href="{% url 'delete_queue' queue.id %}"><button class="btn btn-danger">Delete</button></a>
-                    </div>
+
+                    {% for entry in queue.all_entries %}
+                    <li>
+                        <div id="div-position-{{entry.position}}">
+                            <span>{{entry.title}} added by {{entry.username}} <!--({{entry.duration}})--></span>
+                            {% if is_owner %}
+                            <!-- Remove Entry Modal-->
+                            <div class="col">
+                                <button type="button" data-bs-toggle="modal" data-bs-target="#removeEntryModal"
+                                    class="btn btn-danger">Remove</button>
+                            </div>
+                            <div class="modal fade" id="removeEntryModal" tabindex="-1"
+                                aria-labelledby="removeEntryModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="removeEntryModalLabel">Remove {{entry.title}}
+                                            </h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            Are you sure you want to remove this video from the Queue? % if
+                                            entry.username
+                                            != user.nickname % Hopefully, {{entry.username}} won't be too upset with
+                                            you. % else % I suppose you can always add it back later. % endif %
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary"
+                                                data-bs-dismiss="modal">Close</button>
+                                            <a href="{% url 'delete_entry' queue_id=queue.id entry_id=entry.id %}"><button
+                                                    type="button" class="btn btn-danger">Remove</button></a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="position-div">
+                                <button data-queue="{{queue.id}}" data-entry="{{entry.id}}"
+                                    class="move-btn position-btn" data-position="{{entry.position|add:-1}}"
+                                    data-direction="+">+</button>
+                                <button data-queue="{{queue.id}}" data-entry="{{entry.id}}"
+                                    class="move-btn position-btn" data-position="{{entry.position|add:1}}"
+                                    data-direction="-">-</button>
+                                <label for="new-position-{{entry.id}}" id="label-{{entry.id}}" class="form-label">New
+                                    Position:</label>
+                                <input id="new-position-{{entry.id}}" type="number" class="swap-input form-control">
+                                <button type="submit" class="btn btn-md swap-button position-btn"
+                                    data-queue="{{queue.id}}" data-entry="{{entry.id}}">Swap</button>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ol>
+                {% endif %}
+            </div>
+
+            <div class="col">
+                <div class="logo-div my-container">
+                    <h3>Search results for {{recent_search}}</h3>
+                </div>
+                <div class="my-container">
+                    <ul>
+
+                        {% for result in search_results %}
+                        <li>
+                            {{result.title}}
+                            {% if not queue.full %}
+                            <a href="{% url 'add_entry' queue_id=queue.id video_id=result.id %}"><button
+                                    class="btn btn-md btn-success">Add</button></a>
+                            {% else %}
+                            <p>{{queue.title}} is full.</p>
+                            {% if is_owner %}
+                            <p>Remove some entries to make room.</p>
+                            {% else %}
+                            <p>Ask {{queue.owner.nickname}} to make some room in the queue.</p>
+                            {% endif %}
+                            {% endif %}
+                        </li>
+                        {% endfor %}
+                    </ul>
                 </div>
             </div>
         </div>
     </div>
-
-</div>
-{% endif %}
-
-{% if queue.full %}
-<div class="logo my-container text-center">
-    <h2 class="logo">The queue is full.</h2>
-    <p>Remove some tracks if you would like to add more.</p>
-</div>
-{% else %}
-<div class="row my-container text-center">
-    <h3>Search for videos or songs to add to the Queue.</h3>
-</div>
-<div class="row my-container">
-    <form id="searchForm" method="POST">
-        {% csrf_token %}
-        <span>
-            <label class="form-label" for="searchQuery">Search:</label>
-            <input type="text" id="searchQuery" name="searchQuery" class="form-control" value="{{recent_search}}">
-        </span>
-        <button id="searchButton" type="submit" class="btn btn-lg">Search</button>
-    </form>
-</div>
-{% endif %}
-<div class="container">
-    <div class="row">
-        <div class="my-container col">
-            {% if not queue.all_entries %}
-            <div class="logo text-center">
-                <h2 class="logo">No entries yet.</h2>
-                <p>Add some videos to the Queue.</p>
-            </div>
-            {% else %}
-            <ol>
-
-
-                {% for entry in queue.all_entries %}
-                <li>
-                    <div id="div-position-{{entry.position}}">
-                        <span>{{entry.title}} added by {{entry.username}} <!--({{entry.duration}})--></span>
-                        {% if is_owner %}
-                        <!-- Remove Entry Modal-->
-                        <div class="col">
-                            <button type="button" data-bs-toggle="modal" data-bs-target="#removeEntryModal"
-                                class="btn btn-danger">Remove</button>
-                        </div>
-                        <div class="modal fade" id="removeEntryModal" tabindex="-1" aria-labelledby="removeEntryModalLabel"
-                            aria-hidden="true">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="removeEntryModalLabel">Remove {{entry.title}}</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                            aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        Are you sure you want to remove this video from the Queue? {% if entry.username != user.nickname %}Hopefully, {{entry.username}} won't be too upset with
-                                        you. {% else %} I suppose you can always add it back later. {% endif %}
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary"
-                                            data-bs-dismiss="modal">Close</button>
-                                        <a href="{% url 'delete_entry' queue_id=queue.id entry_id=entry.id %}"><button
-                                                type="button" class="btn btn-danger">Remove</button></a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="position-div">
-                            <button data-queue="{{queue.id}}" data-entry="{{entry.id}}" class="move-btn position-btn"
-                                data-position="{{entry.position|add:'-1'}}" data-direction="+">+</button>
-                            <button data-queue="{{queue.id}}" data-entry="{{entry.id}}" class="move-btn position-btn"
-                                data-position="{{entry.position|add:'1'}}" data-direction="-">-</button>
-                            <label for="new-position-{{entry.id}}" id="label-{{entry.id}}" class="form-label">New
-                                Position:</label>
-                            <input id="new-position-{{entry.id}}" type="number" class="swap-input form-control">
-                            <button type="submit" class="btn btn-md swap-button position-btn" data-queue="{{queue.id}}"
-                                data-entry="{{entry.id}}">Swap</button>
-                        </div>
-                        {% endif %}
-                    </div>
-                </li>
-                {% endfor %}
-            </ol>
-            {% endif%}
-        </div>
-
-        <div class="col">
-            <div class="logo-div my-container">
-                <h3>Search results for {{recent_search}}</h3>
-            </div>
-            <div class="my-container">
-                <ul>
-                    {% for result in search_results %}
-                    <li>
-                        {{result.title}}
-                        {% if not queue.full %}
-                        <a href="{% url 'add_entry' queue_id=queue.id video_id=result.id %}"><button
-                                class="btn btn-md">Add</button></a>
-                        {% else %}
-                        <p>{{queue.title}} is full.</p>
-                        {% if is_owner %}
-                        <p>Remove some entries to make room.</p>
-                        {%else%}
-                        <p>Ask {{queue.owner.nickname}} to make some room in the queue.</p>
-                        {% endif %}
-                        {% endif %}
-                    </li>
-                    {% endfor %}
-                </ul>
-            </div>
-        </div>
-    </div>
-</div>
 </div>
 {% endblock content %}

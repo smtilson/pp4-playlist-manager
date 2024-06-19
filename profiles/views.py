@@ -23,14 +23,12 @@ def index(request):
     Returns:
     """
     path = request.get_full_path()
-    print(path)
     user = make_user(request)
     if "code" in path:
         # should this be a redirect?
         response = return_from_authorization(request)
     elif "error" in path:
         error_msg = process_path(path)
-        print(error_msg)
         messages.add_message(request, messages.ERROR, error_msg)
         if user.is_authenticated:
             response = HttpResponseRedirect(reverse("profile"))
@@ -46,10 +44,13 @@ def index(request):
         response = HttpResponseRedirect(reverse("profile"))
     else:
         response = render(request, "profiles/index.html", {"user": user})
-    success, msg, msg_type = RequestReport.process(response)
-    if not success:
+    status, msg, msg_type = RequestReport.process(response)
+    if status == 404:
         messages.add_message(request, msg_type, msg)
         response = HttpResponseRedirect(reverse("404"))
+    elif status not in {200, 302}:
+        messages.add_message(request, msg_type, msg)
+        response = HttpResponseRedirect(reverse("profile"))
     return response
 
 
@@ -83,10 +84,13 @@ def profile(request):
         "other_queues": user.other_queues.all(),
     }
     response = render(request, "profiles/profile.html", context)
-    success, msg, msg_type = RequestReport.process(response)
-    if not success:
+    status, msg, msg_type = RequestReport.process(response)
+    if status == 404:
         messages.add_message(request, msg_type, msg)
         response = HttpResponseRedirect(reverse("404"))
+    elif status not in {200, 302}:
+        messages.add_message(request, msg_type, msg)
+        response = HttpResponseRedirect(reverse("index"))
     return response
 
 
@@ -107,10 +111,13 @@ def set_name(request):
     msg = f"Name set to {user.name}"
     messages.add_message(request, messages.SUCCESS, msg)
     response = HttpResponseRedirect(reverse("profile"))
-    success, msg, msg_type = RequestReport.process(response)
-    if not success:
+    status, msg, msg_type = RequestReport.process(response)
+    if status == 404:
         messages.add_message(request, msg_type, msg)
         response = HttpResponseRedirect(reverse("404"))
+    elif status not in {200, 302}:
+        messages.add_message(request, msg_type, msg)
+        response = HttpResponseRedirect(reverse("profile"))
     return response
 
 def revoke_authorization(request):
@@ -140,10 +147,13 @@ def revoke_authorization(request):
     # there should be a modal for this
     messages.add_message(request, msg_type, mark_safe(msg))
     response = HttpResponseRedirect(reverse("profile"))
-    success, msg, msg_type = RequestReport.process(response)
-    if not success:
+    status, msg, msg_type = RequestReport.process(response)
+    if status == 404:
         messages.add_message(request, msg_type, msg)
         response = HttpResponseRedirect(reverse("404"))
+    elif status not in {200, 302}:
+        messages.add_message(request, msg_type, msg)
+        response = HttpResponseRedirect(reverse("profile"))
     return response
 
 def return_from_authorization(request):
@@ -169,10 +179,13 @@ def return_from_authorization(request):
         msg_type = messages.SUCCESS
     messages.add_message(request, msg_type, msg)
     response = HttpResponseRedirect(reverse("profile"))
-    success, msg, msg_type = RequestReport.process(response)
-    if not success:
+    status, msg, msg_type = RequestReport.process(response)
+    if status == 404:
         messages.add_message(request, msg_type, msg)
         response = HttpResponseRedirect(reverse("404"))
+    elif status not in {200, 302}:
+        messages.add_message(request, msg_type, msg)
+        response = HttpResponseRedirect(reverse("profile"))
     return response
 
 def guest_sign_in(request):
@@ -212,8 +225,11 @@ def guest_sign_in(request):
         msg = f"Guest account set up for {user.nickname}"
         messages.add_message(request, messages.SUCCESS, msg)
         response = HttpResponseRedirect(reverse("edit_queue", args=[queue.id]))
-    success, msg, msg_type = RequestReport.process(response)
-    if not success:
+    status, msg, msg_type = RequestReport.process(response)
+    if status == 404:
         messages.add_message(request, msg_type, msg)
         response = HttpResponseRedirect(reverse("404"))
+    elif status not in {200, 302}:
+        messages.add_message(request, msg_type, msg)
+        response = HttpResponseRedirect(reverse("index"))
     return response

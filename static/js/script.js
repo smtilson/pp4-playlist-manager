@@ -6,8 +6,10 @@ $(document).ready(function () {
     formStyle();
 })
 
-//const DOMAIN = "http://localhost:8000/";
-const DOMAIN = "https://pp4-playlist-manager-67004a99f0e2.herokuapp.com/";
+const sampleDomain = window.location.hostname;
+console.log("The current sample domain is " + sampleDomain);
+const DOMAIN = "http://localhost:8000/";
+//const DOMAIN = "https://pp4-playlist-manager-67004a99f0e2.herokuapp.com/";
 console.log("The current domain is " + DOMAIN);
 function initialize() {
     const moveBtns = $('.move-btn');
@@ -31,20 +33,14 @@ function initSwapInputs() {
     const queueLength = getQueueLength();
     setSwapPlaceHolderText(queueLength);
 }
-async function testFetch() {
-    const response = await fetch(DOMAIN + "test")
-    const data = await response.json();
-    console.log(data);
-}
-
-
-
 
 async function moveEntry(event) {
     // how do I give feedback in this set up?
+    console.log("moveEntry hit");
     const entryId = event.target.getAttribute("data-entry");
+    console.log("entryId: " + entryId);
     const direction = event.target.getAttribute("data-direction");
-    console.log(entryId);
+    console.log("direction: " + direction);
     const otherPosition = event.target.getAttribute("data-position");
     console.log("other position" + otherPosition);
     if (otherPosition <= 0 && direction === "+") {
