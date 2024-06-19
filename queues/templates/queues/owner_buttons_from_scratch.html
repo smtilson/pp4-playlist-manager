@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Loaded owner buttons from scratch template</h1>
+
+
+{% if queue.published %}
+<div>
+    <a href="{{queue.url}}" target="_blank"><button class="btn btn-success">Play on YouTube</button></a>
+</div>
+{% endif %}
+
+{% endblock %}

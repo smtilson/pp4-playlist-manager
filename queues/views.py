@@ -6,9 +6,18 @@ from profiles.models import make_user
 from django.contrib import messages
 from yt_query.yt_api_utils import YT
 from urllib.error import HTTPError
+from collections import defaultdict
 
 # Create your views here.
 
+def default():
+    return 10
+
+def debug_template(request):
+    context ={}
+    context["queue"]=Queue.objects.first() 
+    context["is_owner"] = True
+    return render(request, "queues/owner_buttons_from_scratch.html", context)
 
 def create_queue(request):
     user = make_user(request)
