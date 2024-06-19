@@ -4,7 +4,7 @@ from django.test import TestCase
 from queues.models import Queue
 
 
-class TestBlogViews(TestCase):
+class TestProfileViews(TestCase):
 
     def setUp(self):
         self.user = Profile.objects.create_superuser(
@@ -30,16 +30,31 @@ class TestBlogViews(TestCase):
         self.queue1.save()
         self.queue2.save()
 
-    def test_profile_view(self):
+    def test_index(self):
+        pass
+
+    def test_profile(self):
         response = self.client.get(reverse("profile"))
         self.assertEqual(response.status_code, 302)
         self.client.login(email="Testy@McTestFace.com", password="myPassword")
         response = self.client.get(reverse("profile"))
         self.assertEqual(response.status_code, 200)
         
+    def test_set_name(self):
+        pass
+
+    def test_revoke_authorization(self):
+        pass
+
+    def test_return_from_authorization(self):
+        pass
+
+    def test_guest_sign_in(self):
+        pass
     '''def test_render_post_detail_page_with_comment_form(self):
         response = self.client.get(reverse("post_detail", args=["blog-title"]))
         self.assertEqual(response.status_code, 200)
         self.assertIn(b"Blog title", response.content)
         self.assertIn(b"Blog content", response.content)
         self.assertIsInstance(response.context["comment_form"], CommentForm)'''
+

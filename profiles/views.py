@@ -11,7 +11,6 @@ from yt_auth.token_auth import (
     get_tokens,
     revoke_tokens,
 )
-from yt_auth.models import Credentials
 
 # Create your views here.
 
@@ -120,6 +119,39 @@ def set_name(request):
         response = HttpResponseRedirect(reverse("profile"))
     return response
 
+
+
+def return_from_authorization(request):
+    """
+    Handles the redirect from Oauth2 authorization process.
+    Args: request (HttpRequest)
+    Returns: Redirects to appropriate page based on the outcome of the
+    Oauth2 authorization process.
+    """
+    # do I need to check here that they don't have credentials since it is checked on the front end
+    user = make_user(request)
+    if not user.is_authenticated:
+        msg = "How did you get here, I am genuinely curious."
+        messages.add_message(request, messages.INFO, msg)
+        response = HttpResponseRedirect(reverse("account_login"))
+    path = request.get_full_path()
+    if user.has_tokens:
+        msg = f"{user.nickname} is already connected to {user.youtube_handle}. If you would like to change which account is connected, please first revoke the current permissions"
+        msg_type = messages.INFO
+    else:
+        tokens = get_tokens(path)
+        msg = user.set_credentials(tokens)
+        msg_type = messages.SUCCESS
+    messages.add_message(request, msg_type, msg)
+    response = HttpResponseRedirect(reverse("profile"))
+    status, msg, msg_type = RequestReport.process(response)
+    if status == 404:
+        messages.add_message(request, msg_type, msg)
+        response = HttpResponseRedirect(reverse("404"))
+    elif status not in {200, 302}:
+        messages.add_message(request, msg_type, msg)
+        response = HttpResponseRedirect(reverse("profile"))
+    return response
 def revoke_authorization(request):
     """
     Invalidates google credentials and clears them from the database. In case
@@ -146,38 +178,6 @@ def revoke_authorization(request):
     user.revoke_youtube_data()
     # there should be a modal for this
     messages.add_message(request, msg_type, mark_safe(msg))
-    response = HttpResponseRedirect(reverse("profile"))
-    status, msg, msg_type = RequestReport.process(response)
-    if status == 404:
-        messages.add_message(request, msg_type, msg)
-        response = HttpResponseRedirect(reverse("404"))
-    elif status not in {200, 302}:
-        messages.add_message(request, msg_type, msg)
-        response = HttpResponseRedirect(reverse("profile"))
-    return response
-
-def return_from_authorization(request):
-    """
-    Handles the redirect from Oauth2 authorization process.
-    Args: request (HttpRequest)
-    Returns: Redirects to appropriate page based on the outcome of the
-    Oauth2 authorization process.
-    """
-    # do I need to check here that they don't have credentials since it is checked on the front end
-    user = make_user(request)
-    if not user.is_authenticated:
-        msg = "How did you get here, I am genuinely curious."
-        messages.add_message(request, messages.INFO, msg)
-        response = HttpResponseRedirect(reverse("account_login"))
-    path = request.get_full_path()
-    if user.has_tokens:
-        msg = f"{user.nickname} is already connected to {user.youtube_handle}. If you would like to change which account is connected, please first revoke the current permissions"
-        msg_type = messages.INFO
-    else:
-        tokens = get_tokens(path)
-        msg = user.set_credentials(tokens)
-        msg_type = messages.SUCCESS
-    messages.add_message(request, msg_type, msg)
     response = HttpResponseRedirect(reverse("profile"))
     status, msg, msg_type = RequestReport.process(response)
     if status == 404:
