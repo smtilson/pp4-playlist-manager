@@ -162,19 +162,24 @@ def sync(request, queue_id):
     """
     queue = get_object_or_404(Queue, id=queue_id)
     user = make_user(request)
-    if not user == queue.owner:
-        msg = "You must be the owner of the queue in order to sync it with YouTube."
-        msg_type = messages.ERROR
+    if queue.synced:
+        msg = "This queue is already synced with YouTube."
+        msg_type = messages.INFO
+        response = HttpResponseRedirect(reverse("edit_queue", args=[queue_id]))
     else:
-        try:
-            msg = queue.sync()
-            msg_type = messages.SUCCESS
-        except HTTPError as e:
-            msg = e
+        if not user == queue.owner:
+            msg = "You must be the owner of the queue in order to sync it with YouTube."
             msg_type = messages.ERROR
-        print(msg)
-    messages.add_message(request, msg_type, msg)
-    response = HttpResponseRedirect(reverse("edit_queue", args=[queue_id]))
+        else:
+            try:
+                msg = queue.sync()
+                msg_type = messages.SUCCESS
+            except HTTPError as e:
+                msg = e
+                msg_type = messages.ERROR
+            print(msg)
+        messages.add_message(request, msg_type, msg)
+        response = HttpResponseRedirect(reverse("edit_queue", args=[queue_id]))
     success, msg, msg_type = RequestReport.process(response)
     if not success:
         messages.add_message(request, msg_type, msg)

@@ -11,18 +11,96 @@
         <h4>Description:</h4>
         <p>{{queue.description}}</p>
         <p><span id="queueLength">{{queue.length}}</span> entries</p>
-        
 
-    
-    
-    {% block owner_buttons %}
-    {% endblock %}
-    {% if queue.full  %}
+
+        {% if queue.published %}
+
+        <a href="{{queue.url}}" target="_blank"><button class="btn btn-success">Play on YouTube</button></a>
+
+        {% endif %}
+    </div>
+
+    {% if is_owner %}
+
+    <div class="owner-buttons my-container btn-group" role="owner-buttons">
+
+        <a href="{% url 'gain_access' queue.secret queue.owner.secret %}"><button
+                class="btn btn-success">Share</button></a></h3>
+
+
+        <!-- Delete Modal Trigger -->
+
+        <button type="button" data-bs-toggle="modal" data-bs-target="#deleteModal"
+            class="btn btn-danger">Delete</button>
+
+        <!-- Delete Modal -->
+        <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="deleteModalLabel">Delete {{queue.title}}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        Are you sure you want to Delete queue.title?
+                        This will delete the queue from YouTube DJ, but not delete the playlist from YouTube.
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <a href="{% url 'delete_queue' queue.id %}"><button class="btn btn-danger">Delete</button></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% if user.has_tokens %}
+        {% if not queue.published %}
+
+        <a href="{% url 'publish' queue.id %}"><button class="btn btn-success">Publish</button></a>
+
+        {% else %}
+
+        <!-- Unpublish Modal Trigger -->
+
+        <button type="button" data-bs-toggle="modal" data-bs-target="#unpublishModal"
+            class="btn btn-danger">Unpublish</button>
+
+        <!-- Unpublish Modal -->
+        <div class="modal fade" id="unpublishModal" tabindex="-1" aria-labelledby="unpublishModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="unpublishModalLabel">Unpublish {{queue.title}}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        Are you sure you want to unpublish?
+                        This will remove the playlist from YouTube, but not delete the Queue on YouTube DJ.
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-danger">Unpublish</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <a href=" {% url 'sync' queue.id %}"><button class="btn btn-success">Sync</button></a>
+
+        {% endif %}
+
+
+        {% endif %}
+        {% endif %}
+    </div>
+    {% if queue.full %}
     <div class="logo my-container text-center">
         <h2 class="logo">The queue is full.</h2>
         <p>Remove some tracks if you would like to add more.</p>
     </div>
-    {% else  %}
+    {% else %}
     <div class="row my-container text-center">
         <h3>Search for videos or songs to add to the Queue.</h3>
     </div>
@@ -36,16 +114,16 @@
             <button id="searchButton" type="submit" class="btn btn-lg">Search</button>
         </form>
     </div>
-    {% endif  %}
+    {% endif %}
     <div class="container">
         <div class="row">
             <div class="my-container col">
-                {% if not queue.all_entries  %}
+                {% if not queue.all_entries %}
                 <div class="logo text-center">
                     <h2 class="logo">No entries yet.</h2>
                     <p>Add some videos to the Queue.</p>
                 </div>
-                {% else  %}
+                {% else %}
                 <ol>
 
 
@@ -53,7 +131,7 @@
                     <li>
                         <div id="div-position-{{entry.position}}">
                             <span>{{entry.title}} added by {{entry.username}} <!--({{entry.duration}})--></span>
-                            {% if is_owner  %}
+                            {% if is_owner %}
                             <!-- Remove Entry Modal-->
                             <div class="col">
                                 <button type="button" data-bs-toggle="modal" data-bs-target="#removeEntryModal"
@@ -98,7 +176,7 @@
                                 <button type="submit" class="btn btn-md swap-button position-btn"
                                     data-queue="{{queue.id}}" data-entry="{{entry.id}}">Swap</button>
                             </div>
-                            {% endif  %}
+                            {% endif %}
                         </div>
                     </li>
                     {% endfor %}
@@ -116,17 +194,17 @@
                         {% for result in search_results %}
                         <li>
                             {{result.title}}
-                            {% if not queue.full  %}
+                            {% if not queue.full %}
                             <a href="{% url 'add_entry' queue_id=queue.id video_id=result.id %}"><button
                                     class="btn btn-md btn-success">Add</button></a>
-                            {% else  %}
+                            {% else %}
                             <p>{{queue.title}} is full.</p>
-                            {% if is_owner  %}
+                            {% if is_owner %}
                             <p>Remove some entries to make room.</p>
                             {% else %}
                             <p>Ask {{queue.owner.nickname}} to make some room in the queue.</p>
-                            {% endif  %}
-                            {% endif  %}
+                            {% endif %}
+                            {% endif %}
                         </li>
                         {% endfor %}
                     </ul>
