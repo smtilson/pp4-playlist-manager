@@ -109,10 +109,9 @@ def swap(request, entry_id, other_entry_position):
           other_entry_position (int)
     Returns: JSON response containing the swapped entry data.
     """
-    success, msg, msg_type = RequestReport.process(response)
-    if not success:
-        messages.add_message(request, msg_type, msg)
-        response = HttpResponseRedirect(reverse("404"))
+    print("swap hit")
+    print(f"{entry_id=}")
+    print(f"{other_entry_position=}")
     entry = get_object_or_404(Entry, id=entry_id)
     entry, other_entry = entry.swap_entry_positions(other_entry_position)
     msg = f"Entries in positions {entry.position} and {other_entry_position} have been swapped."
@@ -124,6 +123,8 @@ def swap(request, entry_id, other_entry_position):
         "addedBy": entry.username,
         "duration": entry.duration,
     }
+    print(f"{entry.position=}")
+    print(f"{other_entry.position=}")
     other_entry_data = {
         "id": other_entry.id,
         "title": other_entry.title,

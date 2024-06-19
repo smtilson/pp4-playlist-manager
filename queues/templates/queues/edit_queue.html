@@ -28,9 +28,10 @@
         {% if not queue.published %}
         <div class="col">
             <a href="{% url 'publish' queue.id %}"><button class="btn btn-success">Publish</button></a>
-            <p>Playlists are published as unlisted.</p><!--by default-->
         </div>
-        {% elif not queue.synced %}
+        {% else %}
+
+        {% if not queue.synced %}
         <div class="col">
             <a href="{% url 'sync' queue.id %}"><button class="btn btn-success">Sync</button></a>
         </div>
@@ -40,6 +41,7 @@
             <button type="button" data-bs-toggle="modal" data-bs-target="#unpublishModal"
                 class="btn btn-danger">Unpublish</button>
         </div>
+        <!-- Unpublish Modal -->
         <div class="modal fade" id="unpublishModal" tabindex="-1" aria-labelledby="unpublishModalLabel"
             aria-hidden="true">
             <div class="modal-dialog">
@@ -60,12 +62,13 @@
             </div>
         </div>
         {%endif%}
+        {% endif %}
         <!-- Delete Modal Trigger -->
         <div class="col">
             <button type="button" data-bs-toggle="modal" data-bs-target="#deleteModal"
                 class="btn btn-danger">Delete</button>
         </div>
-
+        <!-- Delete Modal -->
         <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -87,7 +90,7 @@
     </div>
 
 </div>
-{% endif %}
+1{% endif %}
 
 {% if queue.full %}
 <div class="logo my-container text-center">
@@ -131,8 +134,8 @@
                             <button type="button" data-bs-toggle="modal" data-bs-target="#removeEntryModal"
                                 class="btn btn-danger">Remove</button>
                         </div>
-                        <div class="modal fade" id="removeEntryModal" tabindex="-1" aria-labelledby="removeEntryModalLabel"
-                            aria-hidden="true">
+                        <div class="modal fade" id="removeEntryModal" tabindex="-1"
+                            aria-labelledby="removeEntryModalLabel" aria-hidden="true">
                             <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-header">
@@ -141,7 +144,8 @@
                                             aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
-                                        Are you sure you want to remove this video from the Queue? {% if entry.username != user.nickname %}Hopefully, {{entry.username}} won't be too upset with
+                                        Are you sure you want to remove this video from the Queue? {% if entry.username
+                                        != user.nickname %}Hopefully, {{entry.username}} won't be too upset with
                                         you. {% else %} I suppose you can always add it back later. {% endif %}
                                     </div>
                                     <div class="modal-footer">
@@ -156,9 +160,9 @@
 
                         <div class="position-div">
                             <button data-queue="{{queue.id}}" data-entry="{{entry.id}}" class="move-btn position-btn"
-                                data-position="{{entry.position|add:'-1'}}" data-direction="+">+</button>
+                                data-position="{{entry.position|add:-1}}" data-direction="+">+</button>
                             <button data-queue="{{queue.id}}" data-entry="{{entry.id}}" class="move-btn position-btn"
-                                data-position="{{entry.position|add:'1'}}" data-direction="-">-</button>
+                                data-position="{{entry.position|add:1}}" data-direction="-">-</button>
                             <label for="new-position-{{entry.id}}" id="label-{{entry.id}}" class="form-label">New
                                 Position:</label>
                             <input id="new-position-{{entry.id}}" type="number" class="swap-input form-control">
@@ -184,7 +188,7 @@
                         {{result.title}}
                         {% if not queue.full %}
                         <a href="{% url 'add_entry' queue_id=queue.id video_id=result.id %}"><button
-                                class="btn btn-md">Add</button></a>
+                                class="btn btn-md btn-success">Add</button></a>
                         {% else %}
                         <p>{{queue.title}} is full.</p>
                         {% if is_owner %}
