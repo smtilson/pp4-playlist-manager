@@ -33,11 +33,9 @@ def create_queue(request):
             queue.save()
             msg = f"{queue.title} has been created."
             messages.add_message(request, messages.SUCCESS, msg)
-            print("hit post method block of create queue view")
             response = HttpResponseRedirect(reverse("edit_queue", args=[queue.id]))
         else:
             context = {"user": user}
-            print("hit else block of create queue view")
             response = render(request, "queues/create_queue.html", context)
     status, msg, msg_type = RequestReport.process(response)
     if status == 404:
@@ -53,10 +51,16 @@ def edit_queue(request, queue_id):
     user = make_user(request)
     queue = get_object_or_404(Queue, id=queue_id)
     is_owner = user == queue.owner
+    print(user.all_queue_ids)
+    print(queue_id)
+    print(user.nickname)
+    print(f"{queue_id in user.all_queue_ids=}")
+    print(has_authorization(user, queue))
     if not has_authorization(user, queue):
         msg = "You do not have authorization to edit this queue."
         msg_type = messages.INFO
         messages.add_message(request, msg_type, msg)
+        print("not authorized to edit")
         response = HttpResponseRedirect(reverse("account_login"))
     yt = YT(user)
     if request.method == "POST":

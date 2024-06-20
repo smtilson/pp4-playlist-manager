@@ -60,6 +60,10 @@ class TestProfileViews(TestCase):
     def test_logout_view(self):
         self.client.login(email="Testy@McTestFace.com", password="myPassword")
         response = self.client.get(reverse("account_logout"))
-        self.assertEqual(response.status_code, 200)
-        response = self.client.get(reverse("account_logout"), follow=True)
-        #self.assertContains(response,'Sign In')
+        path = response.request.get("PATH_INFO")
+        print(path)
+        self.assertEqual(path,'/accounts/logout/')
+        response = self.client.post(reverse("account_logout"), follow=True)
+        path = response.request.get("PATH_INFO")
+        self.assertEqual(path,'/')
+        

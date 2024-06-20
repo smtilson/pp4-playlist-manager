@@ -322,6 +322,8 @@ class Entry(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
 
 
 def has_authorization(user, queue):
-    if queue.id in getattr(user, "all_queue_ids", []):
+    if not user.is_authenticated and not user.is_guest:
+        return False
+    elif queue.id in getattr(user, "all_queue_ids", []):
         return True
     return False
