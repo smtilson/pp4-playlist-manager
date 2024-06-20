@@ -4,6 +4,7 @@ from django.test import TestCase
 from queues.models import Queue
 
 
+
 class TestProfileViews(TestCase):
 
     def setUp(self):

@@ -113,19 +113,7 @@ class Queue(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
         self.save()
         return f"Queue {self.title} successfully added to youtube."
 
-    def test_publish(self):
-        if self.published:
-            msg = f"Queue {self.title} is already uploaded to youtube."
-        else:
-            msg = f"Queue {self.title} successfully added to youtube."
-        self.yt_id="test_publish"
-        for entry in self.all_entries:
-            entry.test_publish()
-        for entry in self.deleted_entries:
-            entry.delete()
-        self.save()
-        return msg, [entry.to_dict() for entry in self.all_entries]
-
+    
     @property
     def url(self):
         if self.published:
@@ -150,14 +138,6 @@ class Queue(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
         self.save()
         print(response)
 
-    def test_unpublish(self) -> None:
-        if not self.published:
-            print("This playlist isn't published yet.")
-            return
-        self.clear_resource_id()
-        for entry in self.entries.all():
-            entry.clear_resource_id()
-        self.save()
 
     def pop(self, index: int = -1):
         entry = self[index]
@@ -184,19 +164,8 @@ class Queue(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
         self.save()
         
    
-    def test_remove_excess(self):
-        for entry in self.deleted_entries:
-            entry.delete()
+    
 
-    def test_sync(self):
-        self.remove_excess()
-        self.resort()
-        for entry in self.all_entries:
-            if not entry.published:
-                entry.test_publish()
-            elif not entry.synced:
-                entry.test_sync()
-        self.save()
     
     def resort(self):
         positions = {entry._position for entry in self.all_entries}
@@ -276,19 +245,7 @@ class Entry(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
         self.published = True
         self.synced = True
         self.save()
-    def test_publish(self):
-        self.kind+='p'
-        self.yt_id+= 'p'
-        self.published = True
-        self.synced = True
-        self.save()
     
-    def test_sync(self):
-        self.kind+='s'
-        self.yt_id+= 's'
-        self.synced = True
-        self.save()
-
     def to_dict(self) -> dict:
         return self.to_dict_mixin(self.field_names(), {"p_queue"})
 
@@ -321,9 +278,9 @@ class Entry(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
         return self, other_entry
 
 
-def has_authorization(user, queue):
+def has_authorization(user, queue_id):
     if not user.is_authenticated and not user.is_guest:
         return False
-    elif queue.id in getattr(user, "all_queue_ids", []):
+    elif queue_id in getattr(user, "all_queue_ids", []):
         return True
     return False

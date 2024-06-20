@@ -27,9 +27,9 @@ There are several different avenues for future development.
 7. Enabling syncing of queues with published playlists so that a queue will reflect songs added to the playlist through YouTube.
 8. Enable "friends" or "Frequent Collaborators" and browsing features so that you can see what queues other people are working on/have and request permissions to collaborate on them.
 9. Enable better "Share" functionality. Right now, one must copy the link associated to the share button. Instead, it would be nice if for mobile devices it opened the share menu and on desktop it copied the address automatically when you clicked it.
+10. Increasing the size of Queues and the number of max search results. This artifical limit is imposed due to the rate limit of the YouTube Data API.
 
-Things I would add in the future would be:
-addressing the number of results that are returned. Right now I am limited by the apy rate limit.
+
 ## Deployment
 
 ### Setting up APIs
@@ -79,3 +79,17 @@ external user, enter your email address
 
 ## Testing
 Do to the extensive mature of testing on this project, there is a separate document that addresses this portion of the readme, it can be found here: Link
+
+
+## References
+
+### StackOverflow
+
+#### Git
+1. [Reverting a repo to previous commit](https://stackoverflow.com/questions/4114095/how-do-i-revert-a-git-repository-to-a-previous-commit)
+
+### YouTube tutorial
+The following tutorials were good starts. The YouTube and Oauth tutorials didn't cover a lot of what I ended up doing. Nonetheless, they were helpful.
+1. [Corey Schafer: YouTube API tutorial](https://www.youtube.com/watch?v=th5_9woFJmk)
+2. [Corey Schafer: Oauth and YouTube API tutorial](https://www.youtube.com/watch?v=vQQEaSnQ_bs)
+3. [Fetch JS API tutorial](https://www.youtube.com/watch?v=uBR2wAvGces)
