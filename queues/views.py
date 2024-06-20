@@ -23,19 +23,21 @@ def create_queue(request):
         msg = "You must be logged in to create a queue."
         messages.add_message(request, messages.INFO, msg)
         response = HttpResponseRedirect(reverse("account_login"))
-    if request.method == "POST":
-        if not request.POST["queue-title"]:
-            raise ValueError("Queue title cannot be empty.")
-        queue_title = request.POST["queue-title"]
-        queue_description = request.POST.get("queue-description")
-        queue = Queue(title=queue_title, description=queue_description, owner=user)
-        queue.save()
-        msg = f"{queue.title} has been created."
-        messages.add_message(request, messages.SUCCESS, msg)
-        response = HttpResponseRedirect(reverse("edit_queue", args=[queue.id]))
     else:
-        context = {"user": make_user(request)}
-        response = render(request, "queues/create_queue.html", context)
+        if request.method == "POST":
+            if not request.POST["queue-title"]:
+                raise ValueError("Queue title cannot be empty.")
+            queue_title = request.POST["queue-title"]
+            queue_description = request.POST.get("queue-description")
+            queue = Queue(title=queue_title, description=queue_description, owner=user)
+            queue.save()
+            msg = f"{queue.title} has been created."
+            messages.add_message(request, messages.SUCCESS, msg)
+            response = HttpResponseRedirect(reverse("edit_queue", args=[queue.id]))
+        else:
+            context = {"user": make_user(request)}
+            print("hit else block of create queue view")
+            response = render(request, "queues/create_queue.html", context)
     status, msg, msg_type = RequestReport.process(response)
     if status == 404:
         messages.add_message(request, msg_type, msg)
@@ -122,16 +124,12 @@ def delete_queue(request, queue_id):
 def publish(request, queue_id):
     user = make_user(request)
     queue = get_object_or_404(Queue, id=queue_id)
-    if not has_authorization(user, queue) and user.is_authenticated:
-        msg = "You must be logged in and be authorized in order to publish a queue."
-        messages.add_message(request, messages.INFO, msg)
-        response = HttpResponseRedirect(reverse("account_login"))
-    if not queue.yt_id:
-        msg = "There is no channel associated with this queue. It can not be published. Please connect your account to a valid YouTube account in order to prevent this from happening in the future."
+    if not queue.owner.youtube_channel:
+        msg = "There is no channel associated with this queue. It can not be published. Please connect your account to a valid YouTube account in order."
         msg_type = messages.ERROR
         messages.add_message(request, msg_type, msg)
         response = HttpResponseRedirect(reverse("edit_queue", args=[queue_id]))
-    if user == queue.owner:
+    elif user == queue.owner:
         try:
             msg = queue.publish()
         except HTTPError as e:

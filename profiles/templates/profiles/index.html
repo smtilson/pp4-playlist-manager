@@ -33,7 +33,7 @@
     <p>Have an account already, please <a href="{% url 'account_login' %}">login</a>.</p>
     {% else %}
     <p>You are logged in as <a href="{% url 'profile' %}">{{ user.nickname }}</a>.</p>
-    <a href="{% url 'account_logout' %}"><button class="btn">Logout</button></a>
+    <a href="{% url 'account_logout' %}" class="btn">Logout</a>
     {% endif %}
 </div>
 

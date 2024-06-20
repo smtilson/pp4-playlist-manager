@@ -61,27 +61,29 @@ def profile(request):
         otherwise renders the appropriate "profile" page.
     """
     user = make_user(request)
+    print(f"{user.is_authenticated=}")
     if not user.is_authenticated:
         msg = "You must be logged in to view your profile."
         messages.add_message(request, messages.INFO, msg)
         response = HttpResponseRedirect(reverse("account_login"))
-    if not user.credentials:
-        user.initialize()
-    if not user.has_tokens:
-        youtube_permission_status = "Profile has no associated youtube account."
     else:
-        youtube_permission_status = f"Youtube DJ has access to {user.youtube_handle}."
-    info_dict = user.info_dict
-    context = {
-        "user": user,
-        "view_name": "profile",
-        "authorization_url": get_authorization_url(),
-        "info_dict": info_dict,
-        "my_queues": user.my_queues.all(),
-        "other_queues": user.other_queues.all(),
-        "youtube_access":youtube_permission_status,
-    }
-    response = render(request, "profiles/profile.html", context)
+        if not user.credentials:
+            user.initialize()
+        if not user.has_tokens:
+            youtube_permission_status = "Profile has no associated youtube account."
+        else:
+            youtube_permission_status = f"Youtube DJ has access to {user.youtube_handle}."
+        info_dict = user.info_dict
+        context = {
+            "user": user,
+            "view_name": "profile",
+            "authorization_url": get_authorization_url(),
+            "info_dict": info_dict,
+            "my_queues": user.my_queues.all(),
+            "other_queues": user.other_queues.all(),
+            "youtube_access":youtube_permission_status,
+        }
+        response = render(request, "profiles/profile.html", context)
     status, msg, msg_type = RequestReport.process(response)
     if status == 404:
         messages.add_message(request, msg_type, msg)

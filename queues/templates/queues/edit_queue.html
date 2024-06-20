@@ -11,7 +11,7 @@
             <p>Created on {{queue.created_at}}</p>
             <h4>Description:</h4>
             <p>{{queue.description}}</p>
-            <p><span id="queueLength">{{queue.length}}</span> entries</p>
+            <p><span id="queueLength">{{queue.length}}</span> entr{% if queue.length != 1%}ies{% else %}y{% endif %}</p>
             {% if queue.published %}
             <a href="{{queue.url}}" target="_blank"><button class="btn btn-success">Play on YouTube</button></a>
             {% endif %}
