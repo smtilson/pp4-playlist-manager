@@ -41,19 +41,19 @@ def index(request):
         args = request.session["redirect_action"]["args"]
         response = HttpResponseRedirect(reverse(view_name, args=args))
     elif user.is_authenticated:
-        return HttpResponseRedirect(reverse("profile"))
-        #response = HttpResponseRedirect(reverse("profile"))
+        
+        response = HttpResponseRedirect(reverse("profile"))
     else:
-        return HttpResponseRedirect(reverse("profile"))
-        #response = render(request, "profiles/index.html", {"user": user})
-    status, msg, msg_type = RequestReport.process(response)
-    '''if status == 404:
+        
+        response = render(request, "profiles/index.html", {"user": user})
+    '''status, msg, msg_type = RequestReport.process(response)
+    if status == 404:
         messages.add_message(request, msg_type, msg)
         response = HttpResponseRedirect(reverse("404"))
     elif status not in {200, 302}:
         messages.add_message(request, msg_type, msg)
-        response = HttpResponseRedirect(reverse("profile"))
-    return response'''
+        response = HttpResponseRedirect(reverse("profile"))'''
+    return response
 
 
 def profile(request):
@@ -114,13 +114,13 @@ def set_name(request):
     msg = f"Name set to {user.name}"
     messages.add_message(request, messages.SUCCESS, msg)
     response = HttpResponseRedirect(reverse("profile"))
-    status, msg, msg_type = RequestReport.process(response)
+    '''status, msg, msg_type = RequestReport.process(response)
     if status == 404:
         messages.add_message(request, msg_type, msg)
         response = HttpResponseRedirect(reverse("404"))
     elif status not in {200, 302}:
         messages.add_message(request, msg_type, msg)
-        response = HttpResponseRedirect(reverse("profile"))
+        response = HttpResponseRedirect(reverse("profile"))'''
     return response
 
 
@@ -155,14 +155,15 @@ def return_from_authorization(request):
                 msg_type = messages.SUCCESS
         messages.add_message(request, msg_type, msg)
         response = HttpResponseRedirect(reverse("profile"))
-    status, msg, msg_type = RequestReport.process(response)
+    '''status, msg, msg_type = RequestReport.process(response)
     if status == 404:
         messages.add_message(request, msg_type, msg)
         response = HttpResponseRedirect(reverse("404"))
     elif status not in {200, 302}:
         messages.add_message(request, msg_type, msg)
-        response = HttpResponseRedirect(reverse("profile"))
+        response = HttpResponseRedirect(reverse("profile"))'''
     return response
+
 def revoke_authorization(request):
     """
     Invalidates google credentials and clears them from the database. In case
@@ -190,13 +191,13 @@ def revoke_authorization(request):
     # there should be a modal for this
     messages.add_message(request, msg_type, mark_safe(msg))
     response = HttpResponseRedirect(reverse("profile"))
-    status, msg, msg_type = RequestReport.process(response)
+    '''status, msg, msg_type = RequestReport.process(response)
     if status == 404:
         messages.add_message(request, msg_type, msg)
         response = HttpResponseRedirect(reverse("404"))
     elif status not in {200, 302}:
         messages.add_message(request, msg_type, msg)
-        response = HttpResponseRedirect(reverse("profile"))
+        response = HttpResponseRedirect(reverse("profile"))'''
     return response
 
 def guest_sign_in(request):
@@ -236,11 +237,11 @@ def guest_sign_in(request):
         msg = f"Guest account set up for {user.nickname}"
         messages.add_message(request, messages.SUCCESS, msg)
         response = HttpResponseRedirect(reverse("edit_queue", args=[queue.id]))
-    status, msg, msg_type = RequestReport.process(response)
+    '''status, msg, msg_type = RequestReport.process(response)
     if status == 404:
         messages.add_message(request, msg_type, msg)
         response = HttpResponseRedirect(reverse("404"))
     elif status not in {200, 302}:
         messages.add_message(request, msg_type, msg)
-        response = HttpResponseRedirect(reverse("index"))
+        response = HttpResponseRedirect(reverse("index"))'''
     return response

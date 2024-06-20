@@ -37,13 +37,13 @@ def create_queue(request):
         else:
             context = {"user": user}
             response = render(request, "queues/create_queue.html", context)
-    status, msg, msg_type = RequestReport.process(response)
+    '''status, msg, msg_type = RequestReport.process(response)
     if status == 404:
         messages.add_message(request, msg_type, msg)
         response = HttpResponseRedirect(reverse("404"))
     elif status not in {200, 302}:
         messages.add_message(request, msg_type, msg)
-        response = HttpResponseRedirect(reverse("profile"))
+        response = HttpResponseRedirect(reverse("profile"))'''
     return response
 
 def edit_queue(request, queue_id):
@@ -75,7 +75,7 @@ def edit_queue(request, queue_id):
         }
         print("reset response to eqit_queue hit in else block")
         response = render(request, "queues/edit_queue.html", context)
-    status, msg, msg_type = RequestReport.process(response)
+    '''status, msg, msg_type = RequestReport.process(response)
     if status == 404:
         messages.add_message(request, msg_type, msg)
         response = HttpResponseRedirect(reverse("404"))
@@ -86,7 +86,7 @@ def edit_queue(request, queue_id):
     else:
         print("else status in edit view hit")
         print(status)
-    print(response.status_code)
+    print(response.status_code)'''
     return response
 
 
@@ -118,13 +118,13 @@ def delete_queue(request, queue_id):
         msg_type = messages.ERROR
     messages.add_message(request, msg_type, msg)
     response = HttpResponseRedirect(reverse("profile"))
-    status, msg, msg_type = RequestReport.process(response)
+    '''status, msg, msg_type = RequestReport.process(response)
     if status == 404:
         messages.add_message(request, msg_type, msg)
         response = HttpResponseRedirect(reverse("404"))
     elif status not in {200, 302}:
         messages.add_message(request, msg_type, msg)
-        response = HttpResponseRedirect(reverse("edit_queue", args=[queue_id]))
+        response = HttpResponseRedirect(reverse("edit_queue", args=[queue_id]))'''
     return response
 
 
@@ -148,13 +148,13 @@ def publish(request, queue_id):
         messages.add_message(request, messages.ERROR, msg)
     # does that work with a redirect response.
     response = HttpResponseRedirect(reverse("edit_queue", args=[queue_id]))
-    status, msg, msg_type = RequestReport.process(response)
+    '''status, msg, msg_type = RequestReport.process(response)
     if status == 404:
         messages.add_message(request, msg_type, msg)
         response = HttpResponseRedirect(reverse("404"))
     elif status not in {200, 302}:
         messages.add_message(request, msg_type, msg)
-        response = HttpResponseRedirect(reverse("edit_queue", args=[queue_id]))
+        response = HttpResponseRedirect(reverse("edit_queue", args=[queue_id]))'''
     return response
 
 
@@ -186,13 +186,13 @@ def sync(request, queue_id):
             msg_type = messages.ERROR
     messages.add_message(request, msg_type, msg)
     response = HttpResponseRedirect(reverse("edit_queue", args=[queue_id]))
-    status, msg, msg_type = RequestReport.process(response)
+    '''status, msg, msg_type = RequestReport.process(response)
     if status == 404:
         messages.add_message(request, msg_type, msg)
         response = HttpResponseRedirect(reverse("404"))
     elif status not in {200, 302}:
         messages.add_message(request, msg_type, msg)
-        response = HttpResponseRedirect(reverse("edit_queue", args=[queue_id]))
+        response = HttpResponseRedirect(reverse("edit_queue", args=[queue_id]))'''
     return response
 
 
@@ -238,13 +238,13 @@ def add_entry(request, queue_id, video_id):
             msg_type = messages.ERROR
     messages.add_message(request, msg_type, msg)
     response = HttpResponseRedirect(reverse("edit_queue", args=[queue_id]))
-    status, msg, msg_type = RequestReport.process(response)
+    '''status, msg, msg_type = RequestReport.process(response)
     if status == 404:
         messages.add_message(request, msg_type, msg)
         response = HttpResponseRedirect(reverse("404"))
     elif status not in {200, 302}:
         messages.add_message(request, msg_type, msg)
-        response = HttpResponseRedirect(reverse("profile"))
+        response = HttpResponseRedirect(reverse("profile"))'''
     return response
 
 
@@ -268,12 +268,12 @@ def delete_entry(request, queue_id, entry_id):
         msg_type = messages.ERROR
     messages.add_message(request, msg_type, msg)
     response = HttpResponseRedirect(reverse("edit_queue", args=[queue_id]))
-    status, msg, msg_type = RequestReport.process(response)
+    '''status, msg, msg_type = RequestReport.process(response)
     if status == 404:
         messages.add_message(request, msg_type, msg)
         response = HttpResponseRedirect(reverse("404"))
     elif status not in {200, 302}:
-        messages.add_message(request, msg_type, msg)
+        messages.add_message(request, msg_type, msg)'''
     return response
 
 
@@ -351,11 +351,11 @@ def gain_access(request, queue_secret, owner_secret):
     msg_type = messages.SUCCESS
     messages.add_message(request, msg_type, msg)
     response = HttpResponseRedirect(reverse("edit_queue", args=[queue.id]))
-    status, msg, msg_type = RequestReport.process(response)
+    '''status, msg, msg_type = RequestReport.process(response)
     if status == 404:
         messages.add_message(request, msg_type, msg)
         response = HttpResponseRedirect(reverse("404"))
     elif status not in {200, 302}:
         messages.add_message(request, msg_type, msg)
-        response = HttpResponseRedirect(reverse("index"))
+        response = HttpResponseRedirect(reverse("index"))'''
     return response
