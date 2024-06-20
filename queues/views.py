@@ -64,6 +64,8 @@ def edit_queue(request, queue_id):
             if recent_search:
                 search_results = yt.search_videos(recent_search)
                 request = yt.save_search(request, queue_id, recent_search, search_results)
+                if recent_search=="None":
+                    recent_search="Search YouTube"
         elif request.method == "GET":
             recent_search, search_results = yt.get_last_search(request, queue_id)
         context = {
@@ -72,7 +74,7 @@ def edit_queue(request, queue_id):
             "search_results": search_results,
             "user": user,
             "is_owner": is_owner,
-        }
+        }    
         print("reset response to edit_queue hit in else block")
         response = render(request, "queues/edit_queue.html", context)
     '''status, msg, msg_type = RequestReport.process(response)
