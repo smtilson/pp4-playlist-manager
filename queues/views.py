@@ -73,7 +73,7 @@ def edit_queue(request, queue_id):
             "user": user,
             "is_owner": is_owner,
         }
-        print("reset response to eqit_queue hit in else block")
+        print("reset response to edit_queue hit in else block")
         response = render(request, "queues/edit_queue.html", context)
     '''status, msg, msg_type = RequestReport.process(response)
     if status == 404:
@@ -336,7 +336,7 @@ def gain_access(request, queue_secret, owner_secret):
         msg_type = messages.ERROR
         messages.add_message(request, msg_type, msg)
         response = HttpResponseRedirect(reverse("account_signup"))
-    elif not user.is_authenticated and not user.is_guest:
+    elif not user.is_authenticated or not user.is_guest:
         response = HttpResponseRedirect(reverse("guest_sign_in"))
     elif user.is_authenticated:
         user.other_queues.add(queue)
