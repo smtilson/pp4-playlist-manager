@@ -87,13 +87,13 @@ def profile(request):
             "youtube_access":youtube_permission_status,
         }
         response = render(request, "profiles/profile.html", context)
-    status, msg, msg_type = RequestReport.process(response)
+    '''status, msg, msg_type = RequestReport.process(response)
     if status == 404:
         messages.add_message(request, msg_type, msg)
         response = HttpResponseRedirect(reverse("404"))
     elif status not in {200, 302}:
         messages.add_message(request, msg_type, msg)
-        response = HttpResponseRedirect(reverse("index"))
+        response = HttpResponseRedirect(reverse("index"))'''
     return response
 
 
