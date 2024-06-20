@@ -150,7 +150,7 @@ body {
 
 /* Input Elements */
 
-#style-override input {
+#style-override input[type='text'], textarea {
     color: white;
     background-color: black;
 }
