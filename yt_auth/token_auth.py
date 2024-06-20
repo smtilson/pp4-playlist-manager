@@ -53,9 +53,7 @@ def revoke_tokens(user):
     # this seems to be working but is returning an invalid service code.
     if not user.has_tokens:
         return f"This app does not currently have authorization for {user.nickname}"
-    else:
-        'https://accounts.google.com/o/oauth2/revoke?token=1//09P7hvjPbmwvxCgYIARAAGAkSNwF-L9Ir7yye9MIzEun9VL_IflUo-F4NZ8ImjkpHu0URu3ZfebcBPiz1yLWj8Q7hJGCCmB9no_0'
-        
+    else:        
         credentials = user.google_credentials
         requests.post('https://oauth2.googleapis.com/revoke',
     params={'token': credentials.token},

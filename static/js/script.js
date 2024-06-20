@@ -2,12 +2,13 @@ $(document).ready(function () {
     console.log("page loaded");
     initSwapInputs();
     initialize();
-    initialize();
     formStyle();
 })
 
-//const DOMAIN = "http://localhost:8000/";
-const DOMAIN = "https://pp4-playlist-manager-67004a99f0e2.herokuapp.com/";
+const sampleDomain = window.location.hostname;
+console.log("The current sample domain is " + sampleDomain);
+const DOMAIN = "http://localhost:8000/";
+//const DOMAIN = "https://pp4-playlist-manager-67004a99f0e2.herokuapp.com/";
 console.log("The current domain is " + DOMAIN);
 function initialize() {
     const moveBtns = $('.move-btn');
@@ -31,22 +32,12 @@ function initSwapInputs() {
     const queueLength = getQueueLength();
     setSwapPlaceHolderText(queueLength);
 }
-async function testFetch() {
-    const response = await fetch(DOMAIN + "test")
-    const data = await response.json();
-    console.log(data);
-}
-
-
-
 
 async function moveEntry(event) {
     // how do I give feedback in this set up?
     const entryId = event.target.getAttribute("data-entry");
     const direction = event.target.getAttribute("data-direction");
-    console.log(entryId);
     const otherPosition = event.target.getAttribute("data-position");
-    console.log("other position" + otherPosition);
     if (otherPosition <= 0 && direction === "+") {
         console.log("out of bounds +");
         return;
@@ -54,23 +45,23 @@ async function moveEntry(event) {
         console.log("out of bounds -");
         return;
     }
-    const address = DOMAIN + `queues/swap/${entryId}/${otherPosition}`;
-    console.log(address);
+    //const address = DOMAIN + `queues/swap/${entryId}/${otherPosition}`;
+    //console.log(address);
     const response = await fetch(DOMAIN + `queues/swap/${entryId}/${otherPosition}`, {
         method: 'GET',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
-          },
+        },
     });
     const data = await response.json();
     const entry1 = data.entry1;
-    console.log(entry1.position);
     const entry2 = data.entry2;
-    console.log(entry2.position);
     console.log("going to write entry data");
     writeEntryData(entry1);
+    console.log("entry 1 written");
     writeEntryData(entry2);
+    console.log("entry 2 written");
 }
 
 async function swapEntries(event) {
@@ -88,7 +79,7 @@ async function swapEntries(event) {
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
-          },
+        },
     });
     const data = await response.json();
     const entry1 = data.entry1;
@@ -99,12 +90,10 @@ async function swapEntries(event) {
 
 function writeEntryData(entryData) {
     position = entryData.position;
-    console.log(entryData.title);
-    console.log(position);
-    positionDiv = $(`#div-position-${position}`);
-    positionSpan = positionDiv.children('span')[0];
-    positionSpan.innerText = entryData.title + " added by " + entryData.user + "(" + entryData.duration + ")";
-    for (let button of positionDiv.find('.position-btn')) {
+    positionDiv = $(`#div-${position}`);
+    positionSpan = positionDiv.find('h4')[0];
+    positionSpan.innerText = entryData.position + ". " + entryData.title + " added by " + entryData.user + "(" + entryData.duration + ")";
+    for (let button of positionDiv.find('.move-btn')) {
         button.setAttribute("data-entry", entryData.id);
         if (button.getAttribute("data-direction") == "+") {
             button.setAttribute("data-position", position - 1);
@@ -152,7 +141,6 @@ function validateSwapInputs(entryId) {
 }
 
 function formStyle() {
-    console.log("input bg hit");
     const inputs = $('input');
     const labels = $('label');
     for (let label of labels) {
@@ -161,5 +149,6 @@ function formStyle() {
     for (let input of inputs) {
         input.classList.add("js-input-background");
         input.classList.add("form-control");
-}
+    }
+    console.log("form style done");
 }

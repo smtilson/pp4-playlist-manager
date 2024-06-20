@@ -3,6 +3,8 @@
 {% url 'account_signup' as signup_url %}
 {% url 'account_logout' as logout_url %}
 {% url 'index' as index_url %}
+{% url 'profile' as profile_url %}
+{% url 'create_queue' as create_queue_url %}
 
 <!DOCTYPE html>
 <html class="h-100" lang="en">
@@ -30,18 +32,19 @@
 
 <body id="style-override" class="d-flex flex-column h-100 main-bg">
     <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-light fixed-top bkg-black">
+    <nav class="navbar navbar-expand-lg navbar-dark bkg-black fixed-top pb-3 pb-md-1 pt-3 pt-md-1 ">
         <div class="container-fluid">
             <span class="
-            row"> <a class="navbar-brand white col-3" href="{% url 'index' %}">YouTube DJ</a>
+            row"> <a class="navbar-brand col-3" href="{% url 'index' %}">YouTube DJ</a>
                 {% if user.is_authenticated %}
                 <div class="container navbar text-end col-3 white div-user-nickname">{{user.nickname}}</div>
                 {% endif %}
             </span>
-            <button class="navbar-toggler border-white" type="button" data-bs-toggle="collapse"
+            <!-- Navbar Toggler -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                 data-bs-target="#navbarText" aria-controls="navbarText" aria-expanded="false"
                 aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
+                <span class="navbar-toggler-icon border-red"></span>
             </button>
             <!-- Mobile Navbar -->
             <div class="collapse navbar-collapse" id="navbarText">
@@ -50,14 +53,18 @@
                         <a class="nav-link {% if request.path == index_url %}active" aria-current="page{% endif %}"
                             href="{% url 'index' %}">Home</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link {% if request.path == about_url %}active" aria-current="page{% endif %}"
-                            href="{% url 'index' %}">About NOT IMPLEMENTED</a>
-                    </li>
                     {% if user.is_authenticated %}
                     <li class="nav-item">
                         <a class="nav-link {% if request.path == logout_url %}active" aria-current="page{% endif %}"
                             href="{% url 'account_logout' %}">Logout</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == profile_url %}active" aria-current="page{% endif %}"
+                            href="{% url 'profile' %}">Profile</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == create_queue_url %}active"
+                            aria-current="page{% endif %}" href="{% url 'create_queue' %}">Create Queue</a>
                     </li>
                     {% else %}
                     <li class="nav-item">
@@ -71,7 +78,7 @@
                     {% endif %}
                 </ul>
                 <!-- Do I want this span at all?-->
-                <span class="navbar-text text-muted">
+                <span class="navbar-text tag-line">
                     YouTube DJ plays YOUR hits!
                 </span>
             </div>
@@ -103,13 +110,22 @@
 
     <!-- Footer -->
     <footer class="footer">
-        {% if user.is_authenticated %}
-        <a href="{% url 'profile' %}">Back to profile page</a>
-        {% else %}
-        <a href="{% url 'account_signup' %}">Sign Up!</a>
-        {% endif %}
+        <div class="container row text-center">
+            {% if user.is_authenticated %}
+            <a href="{% url 'profile' %}">Back to profile page</a>
+            {% else %}
+            <a href="{% url 'account_signup' %}">Sign Up!</a>
+            {% endif %}
+        </div>
+        <div class="container row text-center ml-1 my-button-group btn-grooup" role="group" aria-label="YouTube Buttons">
+            <div class="col-3 offset-2">
+                <a href="https://youtube.com" target="_blank"><button class="btn btn-ytube">YouTube</button></a>
+            </div>
+            <div class="col-3">
+                <a href="https://music.youtube.com" target="_blank"><button class="btn btn-ytube">YTMusic</button></a>
+            </div>
+        </div>
         {% block copyright%}
-        <p>No Copyright Loaded</p>
         {% endblock copyright %}
         <!--Add Scoials?-->
     </footer>

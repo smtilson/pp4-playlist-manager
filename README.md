@@ -1,5 +1,35 @@
-The key idea of this porject is to make an easy UI for making collaborative playlists on youtube music.
+# YouTube DJ
+## YouTube DJ plays all YOUR hits!
 
+The key idea of this project is to make an easy UI for making collaborative playlists on youtube music.
+
+## Table of contents
+Introduction
+Design
+Features
+Deployment
+Testing
+
+Welcome to YouTube DJ, a webapp designed to enable collaborative YouTube playlist management. I was inspired to design this webapp based on an experience I had this past Easter. During the celebration with my wife's immediate family, we listened to music. This was done by passing around a single phone and having family members select one song at a time. It seemed to me that it would be convenient to have a way for us to all add songs independently via our own devices. This app enables that while allowing the "owner" of the queue to maintain control.
+
+
+## Features
+
+### Future Directions
+There are several different avenues for future development.
+
+1. The implementation of 4 character codes used to share queues instead of links.
+2. The easy transition from Guest user to authenticated user. This would mean, in particular, that the queue initial queue that brought the user to the site would be added to their list of collaborative queues automatically.
+3. Queue sharing links updating/expiring. That is to say that the link used to share a queue would expire after a certain amount of time.
+4. Taking location into account as not all YouTube videos are accessible in all locations.
+5. Being able to determine the privacy status of an uploaded playlist. Currently this is set to unlisted.
+6. Enabling other user's to have more control over queues, such as the ability to remove entries or reorder them.
+7. Enabling syncing of queues with published playlists so that a queue will reflect songs added to the playlist through YouTube.
+8. Enable "friends" or "Frequent Collaborators" and browsing features so that you can see what queues other people are working on/have and request permissions to collaborate on them.
+9. Enable better "Share" functionality. Right now, one must copy the link associated to the share button. Instead, it would be nice if for mobile devices it opened the share menu and on desktop it copied the address automatically when you clicked it.
+
+Things I would add in the future would be:
+addressing the number of results that are returned. Right now I am limited by the apy rate limit.
 ## Deployment
 
 ### Setting up APIs
@@ -47,6 +77,5 @@ when adding address for the db remove the quotes.
 external user, enter your email address
 
 
-# the future
-Things I would add in the future would be:
-addressing the number of results that are returned. Right now I am limited by the apy rate limit.
+## Testing
+Do to the extensive mature of testing on this project, there is a separate document that addresses this portion of the readme, it can be found here: Link

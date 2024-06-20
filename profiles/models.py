@@ -66,7 +66,7 @@ class Profile(AbstractBaseUser, PermissionsMixin, DjangoFieldsMixin, ToDictMixin
         blank=True,
         related_name="user",
     )
-    youtube_id = models.CharField(max_length=100, null=True, blank=True, default="")
+    youtube_channel = models.CharField(max_length=100, null=True, blank=True, default="")
     youtube_handle = models.CharField(max_length=100, null=True, blank=True, default="")
     secret = models.CharField(max_length=20, unique=True, default=get_secret)
 
@@ -99,25 +99,7 @@ class Profile(AbstractBaseUser, PermissionsMixin, DjangoFieldsMixin, ToDictMixin
 
     @property
     def info_dict(self):
-        info_dict = self.to_dict()
-        exclude = [
-            "last_login",
-            "credentials",
-            "is_guest",
-            "is_staff",
-            "is_superuser",
-            "is_active",
-            "secret",
-            "password",
-            "id",
-            "youtube_id",
-        ]
-        info_dict["date_joined"] = str(self.date_joined)
-        return {
-            format_field_name(key): value
-            for key, value in info_dict.items()
-            if key not in exclude
-        }
+        return {"Name": self.nickname, "Email": self.email}
 
     # I should only have one of these maybe?
     def serialize(self):
@@ -125,7 +107,7 @@ class Profile(AbstractBaseUser, PermissionsMixin, DjangoFieldsMixin, ToDictMixin
 
     @property
     def has_tokens(self):
-        return self.credentials.has_tokens
+        return getattr(self.credentials, "has_token", False)
 
     def all_queues(self):
         pass
@@ -156,7 +138,7 @@ class Profile(AbstractBaseUser, PermissionsMixin, DjangoFieldsMixin, ToDictMixin
         """
         # attention: why am I not saving here.
         self.credentials.set_credentials(new_credentials)
-        if self.has_tokens and not (self.youtube_handle or self.youtube_id):
+        if self.has_tokens and not (self.youtube_handle or self.youtube_channel):
             self.find_youtube_data()
             msg = f"Successfully connected the youtube account {self.youtube_handle} to your profile."
         else:
@@ -165,14 +147,14 @@ class Profile(AbstractBaseUser, PermissionsMixin, DjangoFieldsMixin, ToDictMixin
 
     def find_youtube_data(self):
         yt = YT(self)
-        self.youtube_id, self.youtube_handle = yt.find_user_youtube_data()
+        self.youtube_channel, self.youtube_handle = yt.find_user_youtube_data()
         self.save()
 
     def revoke_youtube_data(self):
         """
         Removes youtube identification and credentials from system.
         """
-        self.youtube_id = ""
+        self.youtube_channel = ""
         self.youtube_handle = ""
         self.set_credentials()
         # i think this is unnecessary
@@ -206,7 +188,7 @@ class GuestProfile(ToDictMixin):
         self.last_login = ""
         self.date_joined = "not applicable"
         self.credentials = ""
-        self.youtube_id = ""
+        self.youtube_channel = ""
         self.youtube_handle = ""
         self.secret = ""
         self.has_tokens = False
@@ -227,6 +209,10 @@ class GuestProfile(ToDictMixin):
     
     def convert_to_profile(self):
         pass
+    @property
+    def info_dict(self):
+        return {"Name": self.nickname, "Email": self.email}
+
 
 
 def make_user(request) -> Union["Profile", "GuestProfile"]:

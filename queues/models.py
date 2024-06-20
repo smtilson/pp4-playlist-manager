@@ -113,6 +113,19 @@ class Queue(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
         self.save()
         return f"Queue {self.title} successfully added to youtube."
 
+    def test_publish(self):
+        if self.published:
+            msg = f"Queue {self.title} is already uploaded to youtube."
+        else:
+            msg = f"Queue {self.title} successfully added to youtube."
+        self.yt_id="test_publish"
+        for entry in self.all_entries:
+            entry.test_publish()
+        for entry in self.deleted_entries:
+            entry.delete()
+        self.save()
+        return msg, [entry.to_dict() for entry in self.all_entries]
+
     @property
     def url(self):
         if self.published:
@@ -137,6 +150,15 @@ class Queue(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
         self.save()
         print(response)
 
+    def test_unpublish(self) -> None:
+        if not self.published:
+            print("This playlist isn't published yet.")
+            return
+        self.clear_resource_id()
+        for entry in self.entries.all():
+            entry.clear_resource_id()
+        self.save()
+
     def pop(self, index: int = -1):
         entry = self[index]
         e_dict = entry.to_dict()
@@ -144,22 +166,6 @@ class Queue(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
         self.length -= 1
         self.save()
         return e_dict
-
-    def get_published_version(self, yt):
-        if not self.published:
-            print("This queue isn't published yet.")
-            return
-        response = yt.get_published_playlist(self.yt_id)
-        return response
-
-    def prepare_removed_entries(self, yt):
-        current_playlist = self.get_published_version(yt)
-        excess_entries = [
-            yt_entry
-            for yt_entry in current_playlist
-            if yt_entry["position"] >= self.length
-        ]
-        return excess_entries
 
     def remove_excess(self, yt):
         for entry in self.deleted_entries:
@@ -176,7 +182,22 @@ class Queue(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
             elif not entry.synced:
                 entry.sync(yt)
         self.save()
+        
+   
+    def test_remove_excess(self):
+        for entry in self.deleted_entries:
+            entry.delete()
 
+    def test_sync(self):
+        self.remove_excess()
+        self.resort()
+        for entry in self.all_entries:
+            if not entry.published:
+                entry.test_publish()
+            elif not entry.synced:
+                entry.test_sync()
+        self.save()
+    
     def resort(self):
         positions = {entry._position for entry in self.all_entries}
         count = 0
@@ -216,6 +237,12 @@ class Entry(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
 
     def __str__(self):
         return f"{self.position}. {self.title} added by {self.username}"
+    
+    @property
+    def title_abv(self):
+        if len(self.title) > 30:
+            return self.title[:30]+"..."
+        return self.title
     @property
     def username(self):
         if '@' in self.user:
@@ -247,6 +274,18 @@ class Entry(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
         # add an error check here4
         self.set_resource_id(response)
         self.published = True
+        self.synced = True
+        self.save()
+    def test_publish(self):
+        self.kind+='p'
+        self.yt_id+= 'p'
+        self.published = True
+        self.synced = True
+        self.save()
+    
+    def test_sync(self):
+        self.kind+='s'
+        self.yt_id+= 's'
         self.synced = True
         self.save()
 
