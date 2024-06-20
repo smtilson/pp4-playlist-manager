@@ -94,57 +94,59 @@
     </div>
     {% else %}
     <div class="my-container text-center">
-            <form id="searchForm" method="POST">
-                {% csrf_token %}
-                <label class="form-label" for="searchQuery">
-                    <h4>Search for videos or songs to add:</h4>
-                </label>
-                <input type="text" id="searchQuery" name="searchQuery" class="form-control search-bar"
-                    value="{{recent_search}}" placeholder="Search YouTube">
-                <button id="searchButton" type="submit" class="btn mt-3 btn-secondary btn-lg">Search</button>
-            </form>
+        <form id="searchForm" method="POST">
+            {% csrf_token %}
+            <label class="form-label" for="searchQuery">
+                <h4>Search for videos or songs to add:</h4>
+            </label>
+            <input type="text" id="searchQuery" name="searchQuery" class="form-control search-bar"
+                value="{{recent_search}}" placeholder="Search YouTube">
+            <button id="searchButton" type="submit" class="btn mt-3 btn-secondary btn-lg">Search</button>
+        </form>
     </div>
     {% endif %}
 </section>
-<div class="row">
-    <section id="search-results col-12 col-md-6">
-            <div class="logo-div my-container d-flex justify-content-center">
-                <h3><span class="row">Search results:</span><span class="row">{{recent_search}}</span></h3>
-            </div>
-            <div class="my-container">
-                <ul>
-                    {% for result in search_results %}
-                    <li>
-                        <div class="row d-flex align-items-center">
-                            <div class="col-10">
-                                <p>{{result.title}}</p>
-                            </div>
-                            <div class="col-2">
-                                <a href="{% url 'add_entry' queue_id=queue.id video_id=result.id %}"><button
-                                        class="btn btn-sm btn-success">Add</button></a>
-                            </div>
+<div id="search-results-and-queue-entries" class="row">
+    <section id="search-results" class="col-12 col-md-6">
+        <div class="logo-div my-container d-flex justify-content-center">
+            <h3><span class="row">Search results:</span><span class="row">{{recent_search}}</span></h3>
+        </div>
+        <div class="my-container">
+            <ul>
+                {% for result in search_results %}
+                <li>
+                    <div class="row d-flex align-items-center">
+                        <div class="col-8 col-md-10">
+                            <p>{{result.title}}</p>
                         </div>
-                    </li>
-                    {% endfor %}
-                </ul>
-            </div>
+                        <div class="col-3 offset-1 offset-md-0  col-md-2">
+                            <a href="{% url 'add_entry' queue_id=queue.id video_id=result.id %}"><button
+                                    class="btn btn-sm btn-success">Add</button></a>
+                        </div>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
         </div>
     </section>
-    <section id="queue-entries">
-        <div class="row">
-            {% if not queue.all_entries %}
-            <div class="logo-div text-center">
-                <h2 class="logo">No entries yet.</h2>
-                <p>Add some videos to the Queue.</p>
-            </div>
-            {% else %}
+    <section id="queue-entries" class="col-12 col-md-6">
+        <div class="logo-div my-container d-flex justify-content-center">
+            <h3>Queue Entries</h3>
+        </div>
+        {% if not queue.all_entries %}
+        <div class="text-center">
+            <h2 class="logo">No entries yet.</h2>
+            <p>Add some videos to the Queue.</p>
+        </div>
+        {% else %}
+        <div id="queue-entries-list">
             <ul class="my-container">
                 {% for entry in queue.all_entries %}
                 <li>
                     <div id="div-{{entry.position}}" class="mb-3 pl-1 pr-1">
                         <div class="row d-flex align-items-center">
-                            <div class="{% if is_owner %}col-9{% else %}col-12{% endif %} col-md-10">
-                                <h4>{{entry.position}}. {{entry.title_abv}} added by {{entry.username}} </h4>
+                            <div class="{% if is_owner %}col-8{% else %}col-12{% endif %} col-md-9">
+                                <h5>{{entry.position}}. {{entry.title_abv}} added by {{entry.username}} </h5>
                             </div>
                             {%if is_owner %}
                             <div class="col-3 col-md-2">
@@ -201,9 +203,10 @@
                 </li>
                 {% endfor %}
             </ul>
-            {% endif %}
         </div>
-    </section>
+        {% endif %}
+</div>
+</section>
 </div>
 
 
