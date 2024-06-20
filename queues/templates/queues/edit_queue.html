@@ -106,102 +106,108 @@
         </section>
         {% endif %}
     </section>
-    <section id="search-results">
-        <div class="col-md-6">
-            <div class="logo-div my-container">
-                <h3>Search results for {{recent_search}}</h3>
-            </div>
-            <div class="my-container">
-                <ul>
+    <div class="col-12">
+        <section id="search-results">
+            <div class="col-md-6">
+                <div class="logo-div my-container">
+                    <h3>Search results for {{recent_search}}</h3>
+                </div>
+                <div class="my-container">
+                    <ul>
 
-                    {% for result in search_results %}
+                        {% for result in search_results %}
+                        <li>
+                            <div class="row d-flex align-items-center">
+                                <div class="col-10">
+                                    <p>{{result.title}}</p>
+                                </div>
+                                <div class="col-2">
+                                    <a href="{% url 'add_entry' queue_id=queue.id video_id=result.id %}"><button
+                                            class="btn btn-sm btn-success">Add</button></a>
+                                </div>
+                            </div>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </section>
+        <section id="queue-entries">
+            <div class="my-container">
+                {% if not queue.all_entries %}
+                <div class="logo text-center">
+                    <h2 class="logo">No entries yet.</h2>
+                    <p>Add some videos to the Queue.</p>
+                </div>
+                {% else %}
+                <ul class="col-md-6">
+                    {% for entry in queue.all_entries %}
                     <li>
-                        <div class="row d-flex align-items-center">
-                            <div class="col-10">
-                                <p>{{result.title}}</p>
-                            </div>
-                            <div class="col-2">
-                                <a href="{% url 'add_entry' queue_id=queue.id video_id=result.id %}"><button
-                                        class="btn btn-sm btn-success">Add</button></a>
-                            </div>
-                        </div>
-                    </li>
-                    {% endfor %}
-                </ul>
-            </div>
-        </div>
-    </section>
-    <section id="queue-entries">
-        <div class="container my-container col-md-6">
-            {% if not queue.all_entries %}
-            <div class="logo text-center">
-                <h2 class="logo">No entries yet.</h2>
-                <p>Add some videos to the Queue.</p>
-            </div>
-            {% else %}
-            <ul>
-                {% for entry in queue.all_entries %}
-                <li>
-                    <div id="div-{{entry.position}}" class="mb-3 pl-1 pr-1">
-                        <div class="row d-flex align-items-center">
-                            <div class="{% if is_owner %}col-9{% else %}col-12{% endif %}">
-                                <h4>{{entry.position}}. {{entry.title_abv}} added by {{entry.username}} </h4>
-                            </div>
-                            {%if is_owner %}
-                            <div class="col-3">
-                                <!-- Remove Entry Modal Trigger-->
-                                <button type="button" data-bs-toggle="modal" data-bs-target="#removeEntryModal"
-                                    class="btn btn-sm btn-danger">Remove</button>
-                                <!-- Remove Entry Modal-->
-                                <div class="modal fade" id="removeEntryModal" tabindex="-1"
-                                    aria-labelledby="removeEntryModalLabel" aria-hidden="true">
-                                    <div class="modal-dialog">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title" id="removeEntryModalLabel">Remove
-                                                    {{entry.title}}
-                                                </h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                    aria-label="Close"></button>
-                                            </div>
-                                            <div class="modal-body">
-                                                Are you sure you want to remove this video from the Queue?
-                                                I suppose you can always add it back later.
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary"
-                                                    data-bs-dismiss="modal">Close</button>
-                                                <a href="{% url 'delete_entry' queue_id=queue.id entry_id=entry.id %}"><button
-                                                        type="button" class="btn btn-danger">Remove</button></a>
+                        <div id="div-{{entry.position}}" class="mb-3 pl-1 pr-1">
+                            <div class="row d-flex align-items-center">
+                                <div class="{% if is_owner %}col-9{% else %}col-12{% endif %} col-md-4">
+                                    <h4>{{entry.position}}. {{entry.title_abv}} added by {{entry.username}} </h4>
+                                </div>
+                                {%if is_owner %}
+                                <div class="col-3 col-md-2">
+                                    <!-- Remove Entry Modal Trigger-->
+                                    <button type="button" data-bs-toggle="modal" data-bs-target="#removeEntryModal"
+                                        class="btn btn-sm btn-danger">Remove</button>
+                                    <!-- Remove Entry Modal-->
+                                    <div class="modal fade" id="removeEntryModal" tabindex="-1"
+                                        aria-labelledby="removeEntryModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="removeEntryModalLabel">Remove
+                                                        {{entry.title}}
+                                                    </h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                        aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    Are you sure you want to remove this video from the Queue?
+                                                    I suppose you can always add it back later.
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary"
+                                                        data-bs-dismiss="modal">Close</button>
+                                                    <a
+                                                        href="{% url 'delete_entry' queue_id=queue.id entry_id=entry.id %}"><button
+                                                            type="button" class="btn btn-danger">Remove</button></a>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
+                                {% endif %}
+                            </div>
+                            {% if is_owner %}
+                            <div class="btn-group my-btn-border d-md-none offset-3 offset-md-0" role="group"
+                                aria-label="Position Control Buttons">
+                                <!--<div class="position-div">-->
+                                <button type="button" data-queue="{{queue.id}}" data-entry="{{entry.id}}"
+                                    class="move-btn btn btn-sm btn-warning" data-position="{{entry.position|add:-1}}"
+                                    data-direction="+">Up</button>
+                                <button type="button" data-queue="{{queue.id}}" data-entry="{{entry.id}}"
+                                    class="move-btn btn btn-sm btn-warning" data-position="{{entry.position|add:1}}"
+                                    data-direction="-">Down</button>
+                                <input id="new-position-{{entry.id}}" type="number"
+                                    class="swap-input d-none d-md-block form-control">
+                                <button type="button" class="btn btn-sm d-md-block btn-warning swap-button d-none"
+                                    data-queue="{{queue.id}}"><label for="new-position-{{entry.id}}"
+                                        id="label-{{entry.id}}" class="d-md-block js-form-label d-none"
+                                        data-entry="{{entry.id}}">Swap</label></button>
                             </div>
                             {% endif %}
                         </div>
-                        {% if is_owner %}
-                        <div class="btn-group my-btn-border offset-3 offset-md-2" role="group" aria-label="Position Control Buttons">
-                            <!--<div class="position-div">-->
-                            <button type="button" data-queue="{{queue.id}}" data-entry="{{entry.id}}"
-                                class="move-btn btn btn-sm btn-warning" data-position="{{entry.position|add:-1}}"
-                                data-direction="+">Up</button>
-                            <button type="button" data-queue="{{queue.id}}" data-entry="{{entry.id}}"
-                                class="move-btn btn btn-sm btn-warning" data-position="{{entry.position|add:1}}"
-                                data-direction="-">Down</button>
-                            <input id="new-position-{{entry.id}}" type="number" class="swap-input d-none d-md-block form-control">
-                            <button type="button" class="btn btn-sm d-md-block btn-warning swap-button d-none" data-queue="{{queue.id}}"
-                                ><label for="new-position-{{entry.id}}"
-                                    id="label-{{entry.id}}" class="d-md-block js-form-label d-none"data-entry="{{entry.id}}">Swap</label></button>
-                        </div>
-                        {% endif %}
-                    </div>
-                </li>
-                {% endfor %}
-            </ul>
-            {% endif %}
-        </div>
-    </section>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+            </div>
+        </section>
+    </div>
 </div>
 </section>
 </div>

@@ -323,8 +323,9 @@ def gain_access(request, queue_secret, owner_secret):
     user = make_user(request)
     request.session["queue_id"] = queue.id
     request.session["redirect_action"] = {"action": "edit_queue", "args": [queue.id]}
+    msg=""
     if owner_secret != queue.owner.secret:
-        msg = f"This link is no longer valid. Please request a new one from the {queue.owner.nickname}."
+        msg = f"This link is not valid. Please request another one from the {queue.owner.nickname}."
         msg_type = messages.ERROR
         messages.add_message(request, msg_type, msg)
         response = HttpResponseRedirect(reverse("account_signup"))
@@ -338,6 +339,7 @@ def gain_access(request, queue_secret, owner_secret):
     # This means that there is already a guest stored in the session
     elif user.is_guest:
         msg = f"Welcome back {user.nickname}."
+    
     msg += f"{queue.owner.nickname} has given you access to {queue.title}."
     msg_type = messages.SUCCESS
     messages.add_message(request, msg_type, msg)
