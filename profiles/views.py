@@ -23,6 +23,7 @@ def index(request):
     """
     path = request.get_full_path()
     user = make_user(request)
+    print(path)
     if "code" in path:
         # should this be a redirect?
         response = return_from_authorization(request)
@@ -40,16 +41,18 @@ def index(request):
         args = request.session["redirect_action"]["args"]
         response = HttpResponseRedirect(reverse(view_name, args=args))
     elif user.is_authenticated:
+        
         response = HttpResponseRedirect(reverse("profile"))
     else:
+        
         response = render(request, "profiles/index.html", {"user": user})
-    status, msg, msg_type = RequestReport.process(response)
+    '''status, msg, msg_type = RequestReport.process(response)
     if status == 404:
         messages.add_message(request, msg_type, msg)
         response = HttpResponseRedirect(reverse("404"))
     elif status not in {200, 302}:
         messages.add_message(request, msg_type, msg)
-        response = HttpResponseRedirect(reverse("profile"))
+        response = HttpResponseRedirect(reverse("profile"))'''
     return response
 
 
@@ -84,13 +87,13 @@ def profile(request):
             "youtube_access":youtube_permission_status,
         }
         response = render(request, "profiles/profile.html", context)
-    status, msg, msg_type = RequestReport.process(response)
+    '''status, msg, msg_type = RequestReport.process(response)
     if status == 404:
         messages.add_message(request, msg_type, msg)
         response = HttpResponseRedirect(reverse("404"))
     elif status not in {200, 302}:
         messages.add_message(request, msg_type, msg)
-        response = HttpResponseRedirect(reverse("index"))
+        response = HttpResponseRedirect(reverse("index"))'''
     return response
 
 
@@ -111,13 +114,13 @@ def set_name(request):
     msg = f"Name set to {user.name}"
     messages.add_message(request, messages.SUCCESS, msg)
     response = HttpResponseRedirect(reverse("profile"))
-    status, msg, msg_type = RequestReport.process(response)
+    '''status, msg, msg_type = RequestReport.process(response)
     if status == 404:
         messages.add_message(request, msg_type, msg)
         response = HttpResponseRedirect(reverse("404"))
     elif status not in {200, 302}:
         messages.add_message(request, msg_type, msg)
-        response = HttpResponseRedirect(reverse("profile"))
+        response = HttpResponseRedirect(reverse("profile"))'''
     return response
 
 
@@ -135,24 +138,32 @@ def return_from_authorization(request):
         msg = "How did you get here, I am genuinely curious."
         messages.add_message(request, messages.INFO, msg)
         response = HttpResponseRedirect(reverse("account_login"))
-    path = request.get_full_path()
-    if user.has_tokens:
-        msg = f"{user.nickname} is already connected to {user.youtube_handle}. If you would like to change which account is connected, please first revoke the current permissions"
-        msg_type = messages.INFO
     else:
-        tokens = get_tokens(path)
-        msg = user.set_credentials(tokens)
-        msg_type = messages.SUCCESS
-    messages.add_message(request, msg_type, msg)
-    response = HttpResponseRedirect(reverse("profile"))
-    status, msg, msg_type = RequestReport.process(response)
+        path = request.get_full_path()
+        if user.has_tokens:
+            msg = f"{user.nickname} is already connected to {user.youtube_handle}. If you would like to change which account is connected, please first revoke the current permissions"
+            msg_type = messages.INFO
+        else:
+            try:
+                tokens = get_tokens(path)
+            except Exception as e:
+                msg = "An unknown error occurred while fetching your tokens."	
+                msg += str(e)
+                msg_type = messages.ERROR
+            else:
+                msg = user.set_credentials(tokens)
+                msg_type = messages.SUCCESS
+        messages.add_message(request, msg_type, msg)
+        response = HttpResponseRedirect(reverse("profile"))
+    '''status, msg, msg_type = RequestReport.process(response)
     if status == 404:
         messages.add_message(request, msg_type, msg)
         response = HttpResponseRedirect(reverse("404"))
     elif status not in {200, 302}:
         messages.add_message(request, msg_type, msg)
-        response = HttpResponseRedirect(reverse("profile"))
+        response = HttpResponseRedirect(reverse("profile"))'''
     return response
+
 def revoke_authorization(request):
     """
     Invalidates google credentials and clears them from the database. In case
@@ -180,13 +191,13 @@ def revoke_authorization(request):
     # there should be a modal for this
     messages.add_message(request, msg_type, mark_safe(msg))
     response = HttpResponseRedirect(reverse("profile"))
-    status, msg, msg_type = RequestReport.process(response)
+    '''status, msg, msg_type = RequestReport.process(response)
     if status == 404:
         messages.add_message(request, msg_type, msg)
         response = HttpResponseRedirect(reverse("404"))
     elif status not in {200, 302}:
         messages.add_message(request, msg_type, msg)
-        response = HttpResponseRedirect(reverse("profile"))
+        response = HttpResponseRedirect(reverse("profile"))'''
     return response
 
 def guest_sign_in(request):
@@ -226,11 +237,11 @@ def guest_sign_in(request):
         msg = f"Guest account set up for {user.nickname}"
         messages.add_message(request, messages.SUCCESS, msg)
         response = HttpResponseRedirect(reverse("edit_queue", args=[queue.id]))
-    status, msg, msg_type = RequestReport.process(response)
+    '''status, msg, msg_type = RequestReport.process(response)
     if status == 404:
         messages.add_message(request, msg_type, msg)
         response = HttpResponseRedirect(reverse("404"))
     elif status not in {200, 302}:
         messages.add_message(request, msg_type, msg)
-        response = HttpResponseRedirect(reverse("index"))
+        response = HttpResponseRedirect(reverse("index"))'''
     return response

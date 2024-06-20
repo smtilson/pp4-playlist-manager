@@ -2,6 +2,18 @@ from .models import Profile, GuestProfile
 from django.urls import reverse
 from django.test import TestCase
 from queues.models import Queue
+import os
+
+if os.path.isfile("env.py"):
+    import env
+
+LOCAL = eval(os.environ.get("LOCAL"))
+if LOCAL:
+    REDIRECT_URI = "http://localhost:8000/"
+else:
+    REDIRECT_URI = "https://pp4-playlist-manager-67004a99f0e2.herokuapp.com/"
+
+
 
 
 class TestProfileViews(TestCase):
@@ -30,31 +42,49 @@ class TestProfileViews(TestCase):
         self.queue1.save()
         self.queue2.save()
 
-    def test_index(self):
-        pass
-
-    def test_profile(self):
+    def test_profile_view(self):
+        # Not Logged in
         response = self.client.get(reverse("profile"))
         self.assertEqual(response.status_code, 302)
+        # Testing redirect to login
+        response = self.client.get(reverse("profile"), follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Sign In', html=True)
+        # Logged in
         self.client.login(email="Testy@McTestFace.com", password="myPassword")
         response = self.client.get(reverse("profile"))
         self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.queue1.title)
         
-    def test_set_name(self):
-        pass
+    def test_login_view(self):
+        # Not Logged in
+        response = self.client.get(reverse("account_login"))
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b"Sign In", response.content)
+        # Logged in
+        self.client.login(email="Testy@McTestFace.com", password="myPassword")
+        response = self.client.get(reverse("account_login"))
+        self.assertEqual(response.status_code, 302)
+        response = self.client.get(reverse("account_login"), follow=True)
+        last_url, _ = response.redirect_chain[-1]
+        self.assertEqual(last_url,'/profile')
 
-    def test_revoke_authorization(self):
-        pass
+    def test_logout_view(self):
+        self.client.login(email="Testy@McTestFace.com", password="myPassword")
+        response = self.client.get(reverse("account_logout"))
+        path = response.request.get("PATH_INFO")
+        print(path)
+        self.assertEqual(path,'/accounts/logout/')
+        response = self.client.post(reverse("account_logout"), follow=True)
+        path = response.request.get("PATH_INFO")
+        self.assertEqual(path,'/')
 
     def test_return_from_authorization(self):
-        pass
+        sample = '?state=BJn&code=4Eg&scope=https://www.googleapis.com/auth/youtube'
+        response = self.client.get(REDIRECT_URI+sample, follow=True)
+        self.assertRedirects(response, reverse("account_login"), status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
+        self.client.login(email="Testy@McTestFace.com", password="myPassword")
+        response = self.client.get(REDIRECT_URI+sample, follow=True)
+        self.assertRedirects(response, reverse("profile"), status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
 
-    def test_guest_sign_in(self):
-        pass
-    '''def test_render_post_detail_page_with_comment_form(self):
-        response = self.client.get(reverse("post_detail", args=["blog-title"]))
-        self.assertEqual(response.status_code, 200)
-        self.assertIn(b"Blog title", response.content)
-        self.assertIn(b"Blog content", response.content)
-        self.assertIsInstance(response.context["comment_form"], CommentForm)'''
-
+        
