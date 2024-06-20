@@ -3,7 +3,6 @@ $(document).ready(function () {
     initSwapInputs();
     initialize();
     formStyle();
-    console.log("everything loaded");
 })
 
 const sampleDomain = window.location.hostname;
@@ -36,13 +35,9 @@ function initSwapInputs() {
 
 async function moveEntry(event) {
     // how do I give feedback in this set up?
-    console.log("moveEntry hit");
     const entryId = event.target.getAttribute("data-entry");
-    console.log("entryId: " + entryId);
     const direction = event.target.getAttribute("data-direction");
-    console.log("direction: " + direction);
     const otherPosition = event.target.getAttribute("data-position");
-    console.log("other position" + otherPosition);
     if (otherPosition <= 0 && direction === "+") {
         console.log("out of bounds +");
         return;
@@ -50,8 +45,8 @@ async function moveEntry(event) {
         console.log("out of bounds -");
         return;
     }
-    const address = DOMAIN + `queues/swap/${entryId}/${otherPosition}`;
-    console.log(address);
+    //const address = DOMAIN + `queues/swap/${entryId}/${otherPosition}`;
+    //console.log(address);
     const response = await fetch(DOMAIN + `queues/swap/${entryId}/${otherPosition}`, {
         method: 'GET',
         headers: {
@@ -61,12 +56,12 @@ async function moveEntry(event) {
     });
     const data = await response.json();
     const entry1 = data.entry1;
-    console.log(entry1.position);
     const entry2 = data.entry2;
-    console.log(entry2.position);
     console.log("going to write entry data");
     writeEntryData(entry1);
+    console.log("entry 1 written");
     writeEntryData(entry2);
+    console.log("entry 2 written");
 }
 
 async function swapEntries(event) {
@@ -95,12 +90,10 @@ async function swapEntries(event) {
 
 function writeEntryData(entryData) {
     position = entryData.position;
-    console.log(entryData.title);
-    console.log(position);
     positionDiv = $(`#div-${position}`);
-    positionSpan = positionDiv.children('span')[0];
-    positionSpan.innerText = entryData.title + " added by " + entryData.user + "(" + entryData.duration + ")";
-    for (let button of positionDiv.find('.position-btn')) {
+    positionSpan = positionDiv.find('h4')[0];
+    positionSpan.innerText = entryData.position + ". " + entryData.title + " added by " + entryData.user + "(" + entryData.duration + ")";
+    for (let button of positionDiv.find('.move-btn')) {
         button.setAttribute("data-entry", entryData.id);
         if (button.getAttribute("data-direction") == "+") {
             button.setAttribute("data-position", position - 1);
@@ -148,7 +141,6 @@ function validateSwapInputs(entryId) {
 }
 
 function formStyle() {
-    console.log("input bg hit");
     const inputs = $('input');
     const labels = $('label');
     for (let label of labels) {
