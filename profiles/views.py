@@ -41,17 +41,19 @@ def index(request):
         args = request.session["redirect_action"]["args"]
         response = HttpResponseRedirect(reverse(view_name, args=args))
     elif user.is_authenticated:
-        response = HttpResponseRedirect(reverse("profile"))
+        return HttpResponseRedirect(reverse("profile"))
+        #response = HttpResponseRedirect(reverse("profile"))
     else:
-        response = render(request, "profiles/index.html", {"user": user})
+        return HttpResponseRedirect(reverse("profile"))
+        #response = render(request, "profiles/index.html", {"user": user})
     status, msg, msg_type = RequestReport.process(response)
-    if status == 404:
+    '''if status == 404:
         messages.add_message(request, msg_type, msg)
         response = HttpResponseRedirect(reverse("404"))
     elif status not in {200, 302}:
         messages.add_message(request, msg_type, msg)
         response = HttpResponseRedirect(reverse("profile"))
-    return response
+    return response'''
 
 
 def profile(request):
