@@ -1,4 +1,6 @@
-# code inspired by https://medium.com/@ksarthak4ever/django-custom-user-model-allauth-for-oauth-20c84888c318
+# I used code from the following article:
+# https://medium.com/@ksarthak4ever/django-custom-user-model-allauth-for-oauth-20c84888c318
+# Below, when I refer to a link or article, the above is what is meant.
 from django.contrib.auth.models import (
     AbstractBaseUser,
     BaseUserManager,
@@ -21,14 +23,11 @@ TOKEN_URI = "https://oauth2.googleapis.com/token"
 
 
 class ProfileManager(BaseUserManager):
-    # there is an is_staff field that I am leaving out, mayeb this is required somewhere later
+    # This class and the accompanying methods were taken from the above link.
     def _create_profile(self, email, password, is_staff, is_superuser, **kwargs):
-        # will this not be caught by form submission?
         if not email:
             raise ValueError("An email is necessary to create a profile.")
-        # is this necessary
         now = timezone.now()
-        # what does this do?
         email = self.normalize_email(email)
         profile = self.model(
             email=email,
@@ -51,9 +50,10 @@ class ProfileManager(BaseUserManager):
 
 
 class Profile(AbstractBaseUser, PermissionsMixin, DjangoFieldsMixin, ToDictMixin):
+    # The basis of this class was taken from the article.
+    # The methods and many of the fields are original work and not taken from the article..
     name = models.CharField(max_length=50, null=True, blank=True)
     email = models.EmailField(max_length=100, unique=True)
-    # can these three be replaced by properties?
     is_superuser = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
@@ -70,10 +70,12 @@ class Profile(AbstractBaseUser, PermissionsMixin, DjangoFieldsMixin, ToDictMixin
     youtube_handle = models.CharField(max_length=100, null=True, blank=True, default="")
     secret = models.CharField(max_length=20, unique=True, default=get_secret)
 
+    # These three variables are taken from the article.
     USERNAME_FIELD = "email"
     EMAIL_FIELD = "email"
     REQUIRED_FIELDS = []
 
+    # This variable is taken from the article.
     objects = ProfileManager()
 
     @property
