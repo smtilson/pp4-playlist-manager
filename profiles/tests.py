@@ -2,6 +2,17 @@ from .models import Profile, GuestProfile
 from django.urls import reverse
 from django.test import TestCase
 from queues.models import Queue
+import os
+
+if os.path.isfile("env.py"):
+    import env
+
+LOCAL = eval(os.environ.get("LOCAL"))
+if LOCAL:
+    REDIRECT_URI = "http://localhost:8000/"
+else:
+    REDIRECT_URI = "https://pp4-playlist-manager-67004a99f0e2.herokuapp.com/"
+
 
 
 
@@ -67,4 +78,13 @@ class TestProfileViews(TestCase):
         response = self.client.post(reverse("account_logout"), follow=True)
         path = response.request.get("PATH_INFO")
         self.assertEqual(path,'/')
+
+    def test_return_from_authorization(self):
+        sample = '?state=BJn&code=4Eg&scope=https://www.googleapis.com/auth/youtube'
+        response = self.client.get(REDIRECT_URI+sample, follow=True)
+        self.assertRedirects(response, reverse("account_login"), status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
+        self.client.login(email="Testy@McTestFace.com", password="myPassword")
+        response = self.client.get(REDIRECT_URI+sample, follow=True)
+        self.assertRedirects(response, reverse("profile"), status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
+
         

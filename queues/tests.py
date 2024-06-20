@@ -123,17 +123,17 @@ class TestQueueViews(TestCase):
                 self.mock_add_entry(queue,queue.owner,_)
         
     
-    def _test_has_authorization(self):
+    def test_has_authorization(self):
         self.assertFalse(has_authorization(self.guest, self.queue1.id))
         self.assertTrue(has_authorization(self.user1, self.queue1.id))
         self.assertFalse(has_authorization(self.user1, self.queue2.id))
         self.guest.queue_id = self.queue1.id
         self.assertTrue(has_authorization(self.guest, self.queue1.id))
         
-    def _test_create_queue(self):
+    def test_create_queue(self):
         # Not logged in redirects to Login page
         response = self.client.get(reverse("create_queue"), follow=True)
-        assertRedirects(response, reverse('account_login'), status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
+        self.assertRedirects(response, reverse('account_login'), status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
         # Logged in
         self.client.login(email="Testy1@McTestFace.com", password="myPassword")
         response = self.client.get(reverse("create_queue"))
@@ -161,7 +161,7 @@ class TestQueueViews(TestCase):
         response = self.client.get(reverse("edit_queue", args=[self.queue1.id]), follow=True)
         self.assertEqual(response.status_code, 200)
 
-    def _test_edit_queue_search(self):
+    def test_edit_queue_search(self):
         pass
 
     def test_edit_queue_guest(self):
@@ -169,10 +169,10 @@ class TestQueueViews(TestCase):
          pass
          
 
-    def _test_publish(self):
+    def test_publish(self):
         pass
 
-    def _test_sync(self):
+    def test_sync(self):
         # Not Owner
         response = self.client.get(reverse("sync", args=[self.queue1.id]))
         self.assertEqual(response.status_code, 302)
@@ -194,12 +194,12 @@ class TestQueueViews(TestCase):
         # Sync
         response = self.client.get(reverse("sync", args=[self.queue2.id]))
 
-    def _test_gain_access(self):
+    def test_gain_access(self):
 
         pass
 
-    def _test_delete_queue(self):
+    def test_delete_queue(self):
         pass
 
-    def _test_delete_entry(self):
+    def test_delete_entry(self):
         pass

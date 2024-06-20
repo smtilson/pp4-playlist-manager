@@ -23,6 +23,7 @@ def index(request):
     """
     path = request.get_full_path()
     user = make_user(request)
+    print(path)
     if "code" in path:
         # should this be a redirect?
         response = return_from_authorization(request)
@@ -135,16 +136,23 @@ def return_from_authorization(request):
         msg = "How did you get here, I am genuinely curious."
         messages.add_message(request, messages.INFO, msg)
         response = HttpResponseRedirect(reverse("account_login"))
-    path = request.get_full_path()
-    if user.has_tokens:
-        msg = f"{user.nickname} is already connected to {user.youtube_handle}. If you would like to change which account is connected, please first revoke the current permissions"
-        msg_type = messages.INFO
     else:
-        tokens = get_tokens(path)
-        msg = user.set_credentials(tokens)
-        msg_type = messages.SUCCESS
-    messages.add_message(request, msg_type, msg)
-    response = HttpResponseRedirect(reverse("profile"))
+        path = request.get_full_path()
+        if user.has_tokens:
+            msg = f"{user.nickname} is already connected to {user.youtube_handle}. If you would like to change which account is connected, please first revoke the current permissions"
+            msg_type = messages.INFO
+        else:
+            try:
+                tokens = get_tokens(path)
+            except Exception as e:
+                msg = "An unknown error occurred while fetching your tokens."	
+                msg += str(e)
+                msg_type = messages.ERROR
+            else:
+                msg = user.set_credentials(tokens)
+                msg_type = messages.SUCCESS
+        messages.add_message(request, msg_type, msg)
+        response = HttpResponseRedirect(reverse("profile"))
     status, msg, msg_type = RequestReport.process(response)
     if status == 404:
         messages.add_message(request, msg_type, msg)
