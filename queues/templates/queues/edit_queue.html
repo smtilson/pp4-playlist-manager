@@ -1,17 +1,18 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<section id="queue-info">
-    <div class="logo-div my-container text-center">
-        <h2 class="logo">Edit {{queue.title}}</h2>
-    </div>
-    <div class="queue-data my-container container row">
+<section id="queue-info" class="container">
+    <div class="rawa">
+        <h2 class="col-8 offset-2 edit-logo my-container text-center">Edit {{queue.title}}</h2>
+    
+    <div class="queue-data my-container container rawa col-8 offset-2">
         <div class="col">
             <h4>Owned by {{queue.owner.nickname}}</h4>
             <p>Created on {{queue.created_at}}</p>
             <h5>Description:</h5>
             <p>{{queue.description}}</p>
-            <p><span id="queueLength">{{queue.length}}</span> entr{% if queue.length != 1%}ies{% else %}y{% endif %}</p>
+            <p><span id="queueLength">{{queue.length}}</span> entr{% if queue.length != 1%}ies{% else %}y{% endif %}
+            </p>
             {% if queue.published %}
             <div class="text-center">
                 <a href="{{queue.url}}" target="_blank"><button class="btn btn-success">Play on YouTube</button></a>
@@ -19,7 +20,7 @@
             {% endif %}
         </div>
     </div>
-    <div class="my-container text-center">
+    <div class="my-container col-8 offset-2 text-center">
         <h3>Control Panel</h3>
         <div class="btn-group" role="group" aria-label="Control Queue Buttons 1">
             <a href="{% url 'edit_queue' queue.id %}"><button type="button" class="btn btn-success">Refresh</button></a>
@@ -85,23 +86,24 @@
             {% endif %}
         </div>
     </div>
+</div>
 </section>
-<section id="search-youtube">
+<section id="search-youtube" class>
     {% if queue.full %}
-    <div class="logo my-container text-center">
+    <div class="logo my-container text-center col-8 offset-2 ">
         <h3 class="logo">The queue is full.</h3>
         <p>Remove some tracks if you would like to add more.</p>
     </div>
     {% else %}
-    <div class="my-container text-center">
-        <form id="searchForm" method="POST">
+    <div class="my-container text-center col-8 offset-2">
+        <form id="searchForm" method="POST" class="container d-flex-col justify-content-center text-center">
             {% csrf_token %}
-            <label class="form-label" for="searchQuery">
-                <h4>Search for videos or songs to add:</h4>
+            <label class="form-label row" for="searchQuery">
+                <h4 class="col">Search for videos or songs to add:</h4>
             </label>
-            <input type="text" id="searchQuery" name="searchQuery" class="form-control search-bar"
+            <input type="text" id="searchQuery" name="searchQuery" class="search-bar row"
                 value="{{recent_search}}" placeholder="Search YouTube">
-            <button id="searchButton" type="submit" class="btn mt-3 btn-secondary btn-lg">Search</button>
+            <button id="searchButton" type="submit" class="btn mt-3 btn-secondary btn-lg row">Search</button>
         </form>
     </div>
     {% endif %}
@@ -109,17 +111,17 @@
 <div id="search-results-and-queue-entries" class="row">
     <section id="search-results" class="col-12 col-md-6">
         <div class="logo-div my-container d-flex justify-content-center">
-            <h3><span class="row">Search results:</span><span class="row">{{recent_search}}</span></h3>
+            <h3><span class="rawa">Search results:</span><span class="rawa">{{recent_search}}</span></h3>
         </div>
         <div class="my-container">
             <ul>
                 {% for result in search_results %}
                 <li>
-                    <div class="row d-flex align-items-center">
-                        <div class="col-8 col-md-10">
+                    <div class="rawa d-flex align-items-center">
+                        <div class="col-8 col-md-9">
                             <p>{{result.title}}</p>
                         </div>
-                        <div class="col-3 offset-1 offset-md-0  col-md-2">
+                        <div class="col-3 offset-1 offset-md-1  col-md-2">
                             <a href="{% url 'add_entry' queue_id=queue.id video_id=result.id %}"><button
                                     class="btn btn-sm btn-success">Add</button></a>
                         </div>
@@ -143,13 +145,13 @@
             <ul class="my-container">
                 {% for entry in queue.all_entries %}
                 <li>
-                    <div id="div-{{entry.position}}" class="mb-3 pl-1 pr-1">
-                        <div class="row d-flex align-items-center">
-                            <div class="{% if is_owner %}col-8{% else %}col-12{% endif %} col-md-9">
+                    <div id="div-{{entry.position}}" class="queue-entries">
+                        <div class="rawa d-flex align-items-center">
+                            <div class="{% if is_owner %}col-8{% else %}col-12{% endif %} col-md-8">
                                 <h5>{{entry.position}}. {{entry.title_abv}} added by {{entry.username}} </h5>
                             </div>
                             {%if is_owner %}
-                            <div class="col-3 col-md-2">
+                            <div class="col-3 col-md-2 offset-md-1">
                                 <!-- Remove Entry Modal Trigger-->
                                 <button type="button" data-bs-toggle="modal" data-bs-target="#removeEntryModal"
                                     class="btn btn-sm btn-danger">Remove</button>
@@ -182,7 +184,7 @@
                             {% endif %}
                         </div>
                         {% if is_owner %}
-                        <div class="btn-group my-btn-border d-md-block offset-3 offset-md-0" role="group"
+                        <div class="btn-group my-btn-border offset-3 offset-md-0" role="group"
                             aria-label="Position Control Buttons">
                             <!--<div class="position-div">-->
                             <button type="button" data-queue="{{queue.id}}" data-entry="{{entry.id}}"
@@ -192,7 +194,7 @@
                                 class="move-btn btn btn-sm btn-warning" data-position="{{entry.position|add:1}}"
                                 data-direction="-">Down</button>
                             <input id="new-position-{{entry.id}}" type="number"
-                                class="swap-input d-none d-md-block form-control">
+                                class="swap-input d-none d-md-inline form-control">
                             <button type="button" class="btn btn-sm d-md-block btn-warning swap-button d-none"
                                 data-queue="{{queue.id}}"><label for="new-position-{{entry.id}}" id="label-{{entry.id}}"
                                     class="d-md-block js-form-label d-none"
@@ -205,8 +207,7 @@
             </ul>
         </div>
         {% endif %}
-</div>
-</section>
+    </section>
 </div>
 
 

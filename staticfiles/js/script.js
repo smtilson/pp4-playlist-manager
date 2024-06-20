@@ -148,7 +148,9 @@ function formStyle() {
     }
     for (let input of inputs) {
         input.classList.add("js-input-background");
-        input.classList.add("form-control");
+        if (input.id !== searchQuery) {
+            input.classList.add("form-control");
+        }
+        console.log("form style done");
     }
-    console.log("form style done");
 }

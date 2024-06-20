@@ -9,14 +9,13 @@ border color from dark reader 877D6F
 */
 
 
-
-
-
 /* Base Styles */
 body {
     background-color: #272727;
     color: white;
 }
+
+
 
 #style-override ul li {
     list-style-type: none;
@@ -160,7 +159,6 @@ body {
     background-color: black;
 }
 
-
 #style-override .swap-input {
     width: 70px;
 }
@@ -186,4 +184,23 @@ body {
     font-weight: 600;
     margin: 5px;
     border-radius: 10px;
+}
+
+@media screen and (min-width: 768px) {
+
+    #style-override #searchQuery {
+        width: 26em;
+        margin-left: 6em
+    }
+
+    /* Addresses bootstrap whitespace on the right*/
+    body {
+        margin-left: 35px;
+    }
+
+    #style-override #search-results-and-queue-entries {
+        margin-left: -19px;
+    }
+    #style-override .edit-logo {
+    margin-left:15px}
 }

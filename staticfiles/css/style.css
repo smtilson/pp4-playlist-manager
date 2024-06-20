@@ -9,9 +9,6 @@ border color from dark reader 877D6F
 */
 
 
-
-
-
 /* Base Styles */
 body {
     background-color: #272727;
@@ -160,6 +157,9 @@ body {
     background-color: black;
 }
 
+#style-override #searechQuery {
+    width: 1em;
+}
 
 #style-override .swap-input {
     width: 70px;
