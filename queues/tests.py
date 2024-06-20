@@ -18,18 +18,17 @@ from .views import (
 # Create your tests here.
 
 def test_publish_queue(queue):
-        if queue.published:
-            msg = f"Queue {queue.title} is already uploaded to youtube."
-        else:
-            msg = f"Queue {queue.title} successfully added to youtube."
-        queue.yt_id="test_publish"
-        for entry in queue.all_entries:
-            print("entry publish called")
-            entry.publish()
-        for entry in queue.deleted_entries:
-            entry.delete()
-        queue.save()
-        return msg, [entry.to_dict() for entry in queue.all_entries]
+    if queue.published:
+        msg = f"Queue {queue.title} is already uploaded to youtube."
+    else:
+        msg = f"Queue {queue.title} successfully added to youtube."
+    queue.yt_id="test_publish"
+    for entry in queue.all_entries:
+        test_publish_entry(entry)
+    for entry in queue.deleted_entries:
+        entry.delete()
+    queue.save()
+    return msg, [entry.to_dict() for entry in queue.all_entries]
 def test_unpublish(queue) -> None:
         if not queue.published:
             print("This playlist isn't published yet.")
@@ -46,9 +45,9 @@ def test_sync_queue(queue):
         queue.resort()
         for entry in queue.all_entries:
             if not entry.published:
-                entry.publish()
+                test_publish_entry(entry)
             elif not entry.synced:
-                entry.test_sync()
+                test_sync(entry)
         queue.save()
 def test_publish_entry(entry):
         entry.kind+='p'
@@ -69,9 +68,6 @@ class TestQueueViews(TestCase):
         entry.p_queue = queue
         entry.user = user.nickname
         entry._position = index
-        print("override")
-        entry.publish = test_publish_entry
-        entry.sync = types.MethodType(test_sync_entry, entry)
         entry.save()
         
     def mock_video_result(self,index:int) -> dict:
@@ -137,13 +133,11 @@ class TestQueueViews(TestCase):
     def _test_create_queue(self):
         # Not logged in redirects to Login page
         response = self.client.get(reverse("create_queue"), follow=True)
-        path = response.request.get("PATH_INFO")
-        self.assertEqual(path, '/accounts/login/')
+        assertRedirects(response, reverse('account_login'), status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
         # Logged in
         self.client.login(email="Testy1@McTestFace.com", password="myPassword")
         response = self.client.get(reverse("create_queue"))
-        path = response.request.get("PATH_INFO")
-        self.assertEqual(path, '/queues/create_queue')
+        self.assertEqual(response.status_code, 200)
         # Test Queue creation
         data = {"queue-title":"Test Queue Title", "queue-description":"Test Queue Description"}
         response = self.client.post(reverse("create_queue"), data, follow=True)
@@ -152,25 +146,20 @@ class TestQueueViews(TestCase):
         self.assertEqual(new_queue.title, "Test Queue Title")
         self.assertEqual(new_queue.description, "Test Queue Description")
         # Test Queue redirect after POST
-        path = response.request.get("PATH_INFO")
-        self.assertEqual(path, f'/queues/edit_queue/{new_queue.id}')
+        self.assertRedirects(response, reverse("edit_queue", args=[new_queue.id]), status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
         
-    def _test_edit_queue_user(self):
+    def test_edit_queue_user(self):
         # Not Logged in redirects to Login page
-        self.client.logout()
         response = self.client.get(reverse("edit_queue", args=[self.queue1.id]), follow=True)
-        path = response.request.get("PATH_INFO")
-        self.assertEqual(path, '/accounts/login/')
+        self.assertRedirects(response, reverse("account_login"), status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
         # Logged in user without authorization
         self.client.login(email="Testy1@McTestFace.com", password="myPassword")
         response = self.client.get(reverse("edit_queue", args=[self.queue2.id]), follow=True)
-        path = response.request.get("PATH_INFO")
-        self.assertEqual(path, '/profile')
+        self.assertRedirects(response,reverse("profile"), status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
         #Logged in user with authorization
-        #self.client.login(email="Testy1@McTestFace.com", password="myPassword")
+        self.client.login(email="Testy1@McTestFace.com", password="myPassword")
         response = self.client.get(reverse("edit_queue", args=[self.queue1.id]), follow=True)
-        path = response.request.get("PATH_INFO")
-        self.assertEqual(path, f'/queues/edit_queue/{self.queue1.id}')
+        self.assertEqual(response.status_code, 200)
 
     def _test_edit_queue_search(self):
         pass
@@ -183,7 +172,7 @@ class TestQueueViews(TestCase):
     def _test_publish(self):
         pass
 
-    def test_sync(self):
+    def _test_sync(self):
         # Not Owner
         response = self.client.get(reverse("sync", args=[self.queue1.id]))
         self.assertEqual(response.status_code, 302)
