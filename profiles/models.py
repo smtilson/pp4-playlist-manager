@@ -220,7 +220,7 @@ def make_user(request) -> Union["Profile", "GuestProfile"]:
     user = request.user
     # a dict or none
     guest = request.session.get("guest_user")
-    if guest:
+    if guest and not user.is_authenticated:
         user = GuestProfile(**guest)
     elif not user.is_authenticated:
         user = GuestProfile()

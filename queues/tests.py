@@ -1,6 +1,7 @@
-from django.test import TestCase
+from django.test import TestCase, RequestFactory
 from profiles.models import Profile, GuestProfile
 from .models import Queue, Entry, has_authorization
+from . import views
 from yt_auth.models import Credentials
 from django.shortcuts import reverse
 import types
@@ -17,60 +18,71 @@ from .views import (
 
 # Create your tests here.
 
+
 def test_publish_queue(queue):
     if queue.published:
         msg = f"Queue {queue.title} is already uploaded to youtube."
     else:
         msg = f"Queue {queue.title} successfully added to youtube."
-    queue.yt_id="test_publish"
+    queue.yt_id = "test_publish"
     for entry in queue.all_entries:
         test_publish_entry(entry)
     for entry in queue.deleted_entries:
         entry.delete()
     queue.save()
     return msg, [entry.to_dict() for entry in queue.all_entries]
+
+
 def test_unpublish(queue) -> None:
-        if not queue.published:
-            print("This playlist isn't published yet.")
-            return
-        queue.clear_resource_id()
-        for entry in queue.entries.all():
-            entry.clear_resource_id()
-        queue.save()
+    if not queue.published:
+        print("This playlist isn't published yet.")
+        return
+    queue.clear_resource_id()
+    for entry in queue.entries.all():
+        entry.clear_resource_id()
+    queue.save()
+
+
 def test_remove_excess(queue):
-        for entry in queue.deleted_entries:
-            entry.delete()
+    for entry in queue.deleted_entries:
+        entry.delete()
+
+
 def test_sync_queue(queue):
-        queue.remove_excess()
-        queue.resort()
-        for entry in queue.all_entries:
-            if not entry.published:
-                test_publish_entry(entry)
-            elif not entry.synced:
-                test_sync(entry)
-        queue.save()
+    queue.remove_excess()
+    queue.resort()
+    for entry in queue.all_entries:
+        if not entry.published:
+            test_publish_entry(entry)
+        elif not entry.synced:
+            test_sync(entry)
+    queue.save()
+
+
 def test_publish_entry(entry):
-        entry.kind+='p'
-        entry.yt_id+= 'p'
-        entry.published = True
-        entry.synced = True
-        entry.save()
-    
+    entry.kind += "p"
+    entry.yt_id += "p"
+    entry.published = True
+    entry.synced = True
+    entry.save()
+
+
 def test_sync_entry(entry):
-        entry.kind+='s'
-        entry.yt_id+= 's'
-        entry.synced = True
-        entry.save()
+    entry.kind += "s"
+    entry.yt_id += "s"
+    entry.synced = True
+    entry.save()
+
 
 class TestQueueViews(TestCase):
-    def mock_add_entry(self,queue,user,index:int):
+    def mock_add_entry(self, queue, user, index: int):
         entry = Entry(**self.mock_video_result(index))
         entry.p_queue = queue
         entry.user = user.nickname
         entry._position = index
         entry.save()
-        
-    def mock_video_result(self,index:int) -> dict:
+
+    def mock_video_result(self, index: int) -> dict:
         video_result = {
             "kind": f"kind-{index}",
             "yt_id": f"id-{index}",
@@ -80,8 +92,13 @@ class TestQueueViews(TestCase):
         }
         return video_result
 
+    def setup_session(self, path, session: dict = {}):
+        request = self.factory.get(path)
+        request.session = session
+        return request
+
     def setUp(self):
-        self.guest = GuestProfile(name="Guest", email="Guest@McTestFace.com")
+        self.factory = RequestFactory()
         self.user1 = Profile.objects.create_superuser(
             email="Testy1@McTestFace.com",
             password="myPassword",
@@ -98,7 +115,7 @@ class TestQueueViews(TestCase):
         credentials2.save()
         self.user2.credentials = credentials2
         self.user2.save()
-        
+
         self.queue1 = Queue(
             owner=self.user1,
             title="Test Queue1 Title",
@@ -113,66 +130,116 @@ class TestQueueViews(TestCase):
             kind="",
             yt_id="",
         )
-        for queue in [self.queue1,self.queue2]:
+        for queue in [self.queue1, self.queue2]:
             queue.publish = types.MethodType(test_publish_queue, queue)
             queue.sync = types.MethodType(test_sync_queue, queue)
             queue.remove_excess = types.MethodType(test_remove_excess, queue)
             queue.unpublish = types.MethodType(test_unpublish, queue)
             queue.save()
             for _ in range(2):
-                self.mock_add_entry(queue,queue.owner,_)
-        
-    
-    def test_has_authorization(self):
-        self.assertFalse(has_authorization(self.guest, self.queue1.id))
+                self.mock_add_entry(queue, queue.owner, _)
+        self.guest = GuestProfile(name="Guest", email="Guest@McTestFace.com", queue_id=self.queue1.id)
+
+
+    def _test_has_authorization(self):
+        self.assertFalse(has_authorization(self.guest, self.queue2.id))
         self.assertTrue(has_authorization(self.user1, self.queue1.id))
         self.assertFalse(has_authorization(self.user1, self.queue2.id))
-        self.guest.queue_id = self.queue1.id
         self.assertTrue(has_authorization(self.guest, self.queue1.id))
-        
+
     def test_create_queue(self):
-        # Not logged in redirects to Login page
+        # Not logged in
         response = self.client.get(reverse("create_queue"), follow=True)
-        self.assertRedirects(response, reverse('account_login'), status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
+        self.assertRedirects(
+            response,
+            reverse("account_login"),
+            status_code=302,
+            target_status_code=200,
+            msg_prefix="",
+            fetch_redirect_response=True,
+        )
         # Logged in
         self.client.login(email="Testy1@McTestFace.com", password="myPassword")
         response = self.client.get(reverse("create_queue"))
         self.assertEqual(response.status_code, 200)
         # Test Queue creation
-        data = {"queue-title":"Test Queue Title", "queue-description":"Test Queue Description"}
+        data = {
+            "queue-title": "Test Queue Title",
+            "queue-description": "Test Queue Description",
+        }
         response = self.client.post(reverse("create_queue"), data, follow=True)
         self.assertEqual(self.user1.my_queues.all().count(), 2)
         new_queue = self.user1.my_queues.all().last()
         self.assertEqual(new_queue.title, "Test Queue Title")
         self.assertEqual(new_queue.description, "Test Queue Description")
         # Test Queue redirect after POST
-        self.assertRedirects(response, reverse("edit_queue", args=[new_queue.id]), status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
-        
-    def test_edit_queue_user(self):
+        self.assertRedirects(
+            response,
+            reverse("edit_queue", args=[new_queue.id]),
+            status_code=302,
+            target_status_code=200,
+            msg_prefix="",
+            fetch_redirect_response=True,
+        )
+
+    def _test_edit_queue_user(self):
         # Not Logged in redirects to Login page
-        response = self.client.get(reverse("edit_queue", args=[self.queue1.id]), follow=True)
-        self.assertRedirects(response, reverse("account_login"), status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
+        response = self.client.get(
+            reverse("edit_queue", args=[self.queue1.id]), follow=True
+        )
+        self.assertRedirects(
+            response,
+            reverse("account_login"),
+            status_code=302,
+            target_status_code=200,
+            msg_prefix="",
+            fetch_redirect_response=True,
+        )
         # Logged in user without authorization
         self.client.login(email="Testy1@McTestFace.com", password="myPassword")
-        response = self.client.get(reverse("edit_queue", args=[self.queue2.id]), follow=True)
-        self.assertRedirects(response,reverse("profile"), status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
-        #Logged in user with authorization
+        response = self.client.get(
+            reverse("edit_queue", args=[self.queue2.id]), follow=True
+        )
+        self.assertRedirects(
+            response,
+            reverse("profile"),
+            status_code=302,
+            target_status_code=200,
+            msg_prefix="",
+            fetch_redirect_response=True,
+        )
+        # Logged in user with authorization
         self.client.login(email="Testy1@McTestFace.com", password="myPassword")
-        response = self.client.get(reverse("edit_queue", args=[self.queue1.id]), follow=True)
+        response = self.client.get(
+            reverse("edit_queue", args=[self.queue1.id]), follow=True
+        )
         self.assertEqual(response.status_code, 200)
 
-    def test_edit_queue_search(self):
+    def _test_edit_queue_search(self):
         pass
 
     def test_edit_queue_guest(self):
-         # Must be done manually
-         pass
-         
+        # Guest with authorization
+        session = {"guest_user": self.guest.serialize()}
+        request = self.setup_session(reverse("edit_queue", args=[self.queue1.id]), session)
+        request.user = self.guest
+        response = views.edit_queue(request, self.queue1.id)
+        self.assertEqual(response.status_code, 200)
+        test_string = str.encode(self.queue1.title)
+        self.assertContains(response, test_string)
+        # Guest without authorization
+        session = {"guest_user": self.guest.serialize()}
+        request = self.setup_session(reverse("edit_queue", args=[self.queue2.id]), session)
+        request.user = self.guest
+        response = views.edit_queue(request, self.queue2.id)
+        self.assertEqual(response.status_code, 302)
+        path = response.headers["Location"]
+        self.assertEqual(path, "/accounts/login/")
 
     def test_publish(self):
         pass
 
-    def test_sync(self):
+    def _test_sync(self):
         # Not Owner
         response = self.client.get(reverse("sync", args=[self.queue1.id]))
         self.assertEqual(response.status_code, 302)

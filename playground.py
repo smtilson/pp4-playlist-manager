@@ -1,10 +1,14 @@
-from profiles.models import Profile
+from profiles.models import Profile, make_user, GuestProfile
 from yt_auth.models import Credentials
 from yt_auth.token_auth import revoke_tokens
-from queues.models import Queue, Entry
+from queues.models import Queue, Entry, has_authorization
 from yt_query.yt_api_utils import YT, process_response
 from utils import get_secret
+from django.shortcuts import reverse
+from queues.tests import TestQueueViews
 
+
+guest = GuestProfile(name="Guest", email="Guest@McTestFace.com", queue_id=1)
 me = Profile.objects.all().first()
 
 all_queues = Queue.objects.all()

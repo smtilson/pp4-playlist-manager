@@ -57,5 +57,10 @@ def produce_url_code(**kwargs) -> str:
     return url_code
 
 
+def check_valid_redirect_action(request) -> bool:
+    redirect_action = request.session.get("redirect_action",{})
+    valid_actions = {"edit_queue"}
+    return redirect_action.get('action','None') in valid_actions
+
 
 
