@@ -121,7 +121,7 @@ async function swapEntries(event) {
 function writeEntryData(entryData) {
     position = entryData.position;
     positionDiv = $(`#div-${position}`);
-    positionSpan = positionDiv.find('h5')[0];
+    positionSpan = positionDiv.find('.entry-display')[0];
     positionSpan.innerText = entryData.position + ". " + entryData.title + " added by " + entryData.user + "(" + entryData.duration + ")";
     for (let button of positionDiv.find('.move-btn')) {
         button.setAttribute("data-entry", entryData.id);
@@ -161,6 +161,11 @@ function formStyle() {
     }
     for (let input of inputs) {
         input.classList.add("js-input-background");
-        input.classList.add("form-control");
+        if (input.id !== "id_remember") {
+            input.classList.add("form-control");
+        } else {
+            input.classList.add("form-check-input");
+        }
     }
 }
+

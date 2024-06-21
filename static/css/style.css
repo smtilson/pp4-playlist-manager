@@ -11,7 +11,8 @@ border color from dark reader 877D6F
 
 /* Base Styles */
 body {
-    background-color: #272727;
+    /*background-color: #272727;*/
+    background-color: black;
     color: white;
 }
 
@@ -158,6 +159,12 @@ body {
     margin-left: .1em;
 }
 
+#style-override .form-check-input {
+    border-color: white;
+    border-width: 1px;
+    margin-top: 5px;
+}
+
 /* Button Styles */
 
 #style-override .my-button-group {
@@ -196,13 +203,17 @@ body {
     margin: 1px;
 }
 
+/* Footer Styles */
 
+#style-override .footer {
+    padding-top: 0.4em;
+}
 
 /* Specific Styles */
 
 #style-override .my-brand {
     color: white;
-    background-color:  #e71a1acb;
+    background-color: #e71a1acb;
 }
 
 #style-override #queue-length {
@@ -210,14 +221,74 @@ body {
 }
 
 #style-override .btn-ytube {
-    background-color:  #e71a1acb;;
+    background-color: #e71a1acb;
+    ;
     color: white;
     font-weight: 600;
     margin: 5px;
     border-radius: 10px;
 }
 
+#style-override #logout {
+    width: 80%;
+    margin-left: 8%;
+}
+
+#style-override .blurb {
+    margin-top: 1.3em;
+}
+
+
+
+
+
+#style-override #last {
+    margin-bottom: 35%;
+}
+
+@media screen and (min-width: 425px) {
+    #style-override #login {
+        width: 92%;
+        margin-left: 4.5%;
+    }
+
+    #style-override #logout {
+        margin-left: 9.5%;
+    }
+
+    #style-override #index {
+        width: 90%;
+        margin-left: 5%;
+    }
+
+    #style-override #index .logo-div {
+        width: 80%;
+        margin-left: 10%;
+    }
+
+}
+
 @media screen and (min-width: 768px) {
+
+    #style-override #login {
+        width: 70%;
+        margin-left: 16.3%;
+        margin-top: 5%;
+    }
+
+    #style-override #logout {
+        width: 66%;
+        margin-top: 10%;
+        margin-left: 17%;
+    }
+
+    #style-override #last {
+        margin-bottom: 20%;
+    }
+
+    #style-override .footer {
+        padding-top: 0.8em;
+    }
 
     #style-override .my-button-group {
         gap: 150px;
@@ -227,6 +298,15 @@ body {
     #style-override #searchQuery {
         width: 26em;
         margin-left: 5.8em;
+    }
+    #style-override #index {
+        width: 90%;
+        margin-left: 5%;
+    }
+
+    #style-override #index .logo-div {
+        width: 69%;
+        margin-left: 12.5%;
     }
 
     /* Addresses bootstrap whitespace on the right*/
@@ -243,9 +323,31 @@ body {
     }
 }
 
-@media screen and (min-width: 768px) {
+@media screen and (min-width: 1024px) {
     #style-override #searchQuery {
         margin-left: 20.5%;
         width: 60%;
+    }
+
+    #style-override #login {
+        width: 61%;
+        margin-left: 21.3%;
+        margin-top: 5%;
+        margin-bottom: 3%;
+    }
+
+    #style-override #logout {
+        width: 57%;
+        margin-left: 21.5%;
+    }
+#style-override #index {
+    margin-left: 6.5%;
+}
+    #style-override .footer {
+        padding-top: 0.8em;
+    }
+
+    #style-override #logout-button-container {
+        margin-top: 13%;
     }
 }

@@ -150,7 +150,7 @@
                     <div id="div-{{entry.position}}" class="queue-entries">
                         <div class="rawa d-flex align-items-center">
                             <div class="{% if is_owner %}col-8{% else %}col-12{% endif %} col-md-8">
-                                <h5><span>{{entry.position}}. {{entry.title_abv}} added by </span><span class="no-wrap">{{entry.username}} </span></h5>
+                                <h5 class="entry-display"><span>{{entry.position}}. {{entry.title_abv}} added by </span><span class="no-wrap">{{entry.username}} </span></h5>
                             </div>
                             {%if is_owner %}
                             <div class="col-3 col-md-2 offset-md-1">
