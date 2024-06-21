@@ -225,10 +225,19 @@ body {
     border-radius: 10px;
 }
 
-@media screen and (max-width: 425px) {
+#style-override #logout {
+    width: 80%;
+    margin-left: 8%;
+}
+
+@media screen and (min-width: 425px) {
     #style-override #login {
         width: 92%;
         margin-left: 4.5%;
+    }
+
+    #style-override #logout {
+        margin-left: 9.5%;
     }
 }
 
@@ -239,6 +248,13 @@ body {
         margin-left: 16.3%;
         margin-top: 5%;
     }
+
+    #style-override #logout {
+        width: 66%;
+        margin-top: 10%;
+        margin-left: 15%;
+    }
+
     #style-override .my-button-group {
         gap: 150px;
         display: inline-block;
@@ -263,15 +279,16 @@ body {
     }
 }
 
-@media screen and (min-width: 768px) {
+@media screen and (min-width: 1024px) {
     #style-override #searchQuery {
         margin-left: 20.5%;
         width: 60%;
     }
+
     #style-override #login {
-    width: 61%;
-    margin-left: 21.3%;
-    margin-top: 5%;
-    margin-bottom: 3%;
+        width: 61%;
+        margin-left: 21.3%;
+        margin-top: 5%;
+        margin-bottom: 3%;
     }
 }
