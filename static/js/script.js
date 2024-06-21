@@ -1,13 +1,9 @@
 $(document).ready(function () {
     console.log("page loaded");
     addListenersNModifyForms();
-    
-    const DOMAIN = setDomain();
-    console.log("DOMAIN set to:" + DOMAIN);
-
 })
-
-
+const DOMAIN = setDomain();
+console.log("DOMAIN set to:" + DOMAIN);
 function addListenersNModifyForms() {
     const rawHTML = $('html').html();
     if (rawHTML.includes("swap-input")) {
@@ -125,7 +121,7 @@ async function swapEntries(event) {
 function writeEntryData(entryData) {
     position = entryData.position;
     positionDiv = $(`#div-${position}`);
-    positionSpan = positionDiv.find('h4')[0];
+    positionSpan = positionDiv.find('h5')[0];
     positionSpan.innerText = entryData.position + ". " + entryData.title + " added by " + entryData.user + "(" + entryData.duration + ")";
     for (let button of positionDiv.find('.move-btn')) {
         button.setAttribute("data-entry", entryData.id);
@@ -143,8 +139,12 @@ function writeEntryData(entryData) {
     label.setAttribute("id", `label-${entryData.id}`);
 }
 
-function setSwapPlaceHolderText() {
+function getQueueLength() {
     const queueLength = $('#queueLength').text();
+    return parseInt(queueLength);
+}
+function setSwapPlaceHolderText() {
+    const queueLength = getQueueLength();
     const placeholderText = `1-${queueLength}`;
     swapInputs = $('.swap-input');
     for (let input of swapInputs) {

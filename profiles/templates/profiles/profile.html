@@ -23,7 +23,7 @@
         <div class="col container">
         <div id="user-buttons-div" class="row" role="group" aria-label="User Buttons">
             {% if not user.has_tokens %}
-            <a href="{{authorization_url}}" target="_blank"><button type="button" class="btn btn-success">Give Youtube
+            <a href="{{authorization_url}}"><button type="button" class="btn btn-success">Give Youtube
                     DJ permissions</button></a>
             {% else %}
             <a href="{% url 'revoke_authorization' %}"><button type="button" class="btn btn-danger">Revoke

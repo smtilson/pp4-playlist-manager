@@ -290,8 +290,6 @@ def swap(request, entry_id, other_entry_position):
     """
     entry = get_object_or_404(Entry, id=entry_id)
     entry, other_entry = entry.swap_entry_positions(other_entry_position)
-    msg = f"Entries in positions {entry.position} and {other_entry_position} have been swapped."
-    messages.add_message(request, messages.INFO, msg)
     entry_data = {
         "id": entry.id,
         "title": entry.title,

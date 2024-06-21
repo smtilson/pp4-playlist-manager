@@ -15,8 +15,6 @@ body {
     color: white;
 }
 
-
-
 #style-override ul li {
     list-style-type: none;
 }
@@ -95,17 +93,6 @@ body {
     border-radius: 10px;
 }
 
-#style-override .tag-line {
-    color: black;
-    background-color: #f91f1fcb;
-    padding-left: 10px;
-    padding-right: 10px;
-    border-radius: 5px;
-    padding-top: 5px;
-    padding-bottom: 5px;
-    font-weight: 700;
-}
-
 #style-override .modal-body,
 #style-override .modal-header,
 #style-override .modal-footer {
@@ -175,7 +162,20 @@ body {
 
 #style-override .my-button-group {
     gap: 5px;
+
 }
+
+#style-override .tag-line {
+
+    padding-left: 10px;
+    padding-right: 10px;
+    border-radius: 5px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    font-weight: 700;
+}
+
+
 
 #style-override .my-btn-border button {
     border-color: black;
@@ -187,17 +187,35 @@ body {
     border-width: 1px;
 }
 
-#style-override .btn-ytube {
-    background-color: #f91f1fcb;
-    font-weight: 600;
-    margin: 5px;
-    border-radius: 10px;
+#style-override .btn:focus {
+    outline: none;
+    box-shadow: none;
 }
+
+#style-override .btn {
+    border-radius: 10px;
+    margin: 1px;
+}
+
+
 
 /* Specific Styles */
 
+#style-override .my-brand {
+    color: white;
+    background-color:  #e71a1acb;
+}
+
 #style-override #queue-length {
     margin-left: 40%;
+}
+
+#style-override .btn-ytube {
+    background-color:  #e71a1acb;;
+    color: white;
+    font-weight: 600;
+    margin: 5px;
+    border-radius: 10px;
 }
 
 @media screen and (min-width: 768px) {
