@@ -234,6 +234,18 @@ body {
     margin-left: 8%;
 }
 
+#style-override .blurb {
+    margin-top: 1.3em;
+}
+
+
+
+
+
+#style-override #last {
+    margin-bottom: 35%;
+}
+
 @media screen and (min-width: 425px) {
     #style-override #login {
         width: 92%;
@@ -243,7 +255,17 @@ body {
     #style-override #logout {
         margin-left: 9.5%;
     }
-   
+
+    #style-override #index {
+        width: 90%;
+        margin-left: 5%;
+    }
+
+    #style-override #index .logo-div {
+        width: 80%;
+        margin-left: 10%;
+    }
+
 }
 
 @media screen and (min-width: 768px) {
@@ -259,6 +281,11 @@ body {
         margin-top: 10%;
         margin-left: 17%;
     }
+
+    #style-override #last {
+        margin-bottom: 20%;
+    }
+
     #style-override .footer {
         padding-top: 0.8em;
     }
@@ -271,6 +298,15 @@ body {
     #style-override #searchQuery {
         width: 26em;
         margin-left: 5.8em;
+    }
+    #style-override #index {
+        width: 90%;
+        margin-left: 5%;
+    }
+
+    #style-override #index .logo-div {
+        width: 69%;
+        margin-left: 12.5%;
     }
 
     /* Addresses bootstrap whitespace on the right*/
@@ -299,16 +335,19 @@ body {
         margin-top: 5%;
         margin-bottom: 3%;
     }
+
     #style-override #logout {
-        width:57%;
+        width: 57%;
         margin-left: 21.5%;
     }
-
+#style-override #index {
+    margin-left: 6.5%;
+}
     #style-override .footer {
         padding-top: 0.8em;
     }
 
     #style-override #logout-button-container {
-    margin-top:13%;
+        margin-top: 13%;
     }
 }
