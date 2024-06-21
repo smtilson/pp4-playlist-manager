@@ -203,7 +203,11 @@ body {
     margin: 1px;
 }
 
+/* Footer Styles */
 
+#style-override .footer {
+    padding-top: 0.4em;
+}
 
 /* Specific Styles */
 
@@ -239,6 +243,7 @@ body {
     #style-override #logout {
         margin-left: 9.5%;
     }
+   
 }
 
 @media screen and (min-width: 768px) {
@@ -252,7 +257,10 @@ body {
     #style-override #logout {
         width: 66%;
         margin-top: 10%;
-        margin-left: 15%;
+        margin-left: 17%;
+    }
+    #style-override .footer {
+        padding-top: 0.8em;
     }
 
     #style-override .my-button-group {
@@ -290,5 +298,17 @@ body {
         margin-left: 21.3%;
         margin-top: 5%;
         margin-bottom: 3%;
+    }
+    #style-override #logout {
+        width:57%;
+        margin-left: 21.5%;
+    }
+
+    #style-override .footer {
+        padding-top: 0.8em;
+    }
+
+    #style-override #logout-button-container {
+    margin-top:13%;
     }
 }

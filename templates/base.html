@@ -111,15 +111,7 @@
     </main>
 
     <!-- Footer -->
-    <footer class="footer fixed-bottom">
-        <div class="container text-center d-none d-lg-block">
-            <!-- are these buttons elsewhere? -->
-            {% if user.is_authenticated %}
-            <a href="{% url 'profile' %}">Back to profile page</a>
-            {% else %}
-            <a href="{% url 'account_signup' %}">Sign Up!</a>
-            {% endif %}
-        </div>
+    <footer class="footer fixed-bottom bkg-black">
         <div class="container text-center btn-grooup" role="group" aria-label="YouTube Buttons">
             <a href="https://youtube.com" target="_blank"><button class="btn btn-ytube white"
                     type="button">YouTube</button></a>
