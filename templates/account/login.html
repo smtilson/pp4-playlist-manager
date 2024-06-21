@@ -15,7 +15,7 @@
 </div>
 
 <div class="text-center my-container">
-<form class="login" method="POST" action="{% url 'account_login' %}">
+<form class="login" id="login-form" method="POST" action="{% url 'account_login' %}">
   {% csrf_token %}
   {{ form.as_p }}
   {% if redirect_field_value %}
