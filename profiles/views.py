@@ -60,7 +60,6 @@ def profile(request):
         otherwise renders the appropriate "profile" page.
     """
     user = make_user(request)
-    print(f"{user.is_authenticated=}")
     if not user.is_authenticated:
         msg = "You must be logged in to view your profile."
         #messages.add_message(request, messages.INFO, msg)

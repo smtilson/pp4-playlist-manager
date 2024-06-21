@@ -261,12 +261,42 @@ class TestQueueViews(TestCase):
         # Sync
         response = self.client.get(reverse("sync", args=[self.queue2.id]))
 
-    def test_gain_access(self):
+    def _test_gain_access(self):
 
         pass
 
     def test_delete_queue(self):
-        pass
+        # Not logged in
+        response = self.client.get(reverse("delete_queue", args=[self.queue1.id]),follow=True)
+        self.assertRedirects(
+            response,
+            reverse("account_login"),
+            status_code=302,
+            target_status_code=200,
+            msg_prefix="",
+            fetch_redirect_response=True,
+        )
+        # Logged in user without authorization
+        self.client.login(email="Testy1@McTestFace.com", password="myPassword")
+        response = self.client.get(
+            reverse("delete_queue", args=[self.queue2.id]), follow=True
+        )
+        self.assertRedirects(
+            response,
+            reverse("profile"),
+            status_code=302,
+            target_status_code=200,
+            msg_prefix="",
+            fetch_redirect_response=True,
+        )
+        # Logged in user with authorization
+        self.client.login(email="Testy1@McTestFace.com", password="myPassword")
+        old_num = len(self.user1.all_queues)
+        response = self.client.get(
+            reverse("delete_queue", args=[self.queue1.id]), follow=True
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(self.user1.all_queues), old_num-1)
 
     def test_delete_entry(self):
         pass

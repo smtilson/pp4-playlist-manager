@@ -109,8 +109,9 @@ class Profile(AbstractBaseUser, PermissionsMixin, DjangoFieldsMixin, ToDictMixin
     def has_tokens(self):
         return getattr(self.credentials, "has_tokens", False)
 
+    @property
     def all_queues(self):
-        pass
+        return list(self.my_queues.all())+list(self.other_queues.all())
 
     def initialize(self):
         self.credentials = Credentials()

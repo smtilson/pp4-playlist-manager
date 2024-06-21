@@ -89,6 +89,7 @@ def edit_queue(request, queue_id):
     return response
 
 def delete_queue(request, queue_id):
+    # finished testing
     """
     Checks for authorization and then deletes the queue. Deletion of playlists
     on YouTube is temporarily disabled due to API rate limits.
@@ -100,17 +101,14 @@ def delete_queue(request, queue_id):
     user = make_user(request)
     # there should be a modal to double check on the front end
     if queue.owner == user:
-        try:
-            # commented out due to rate limit issues.
-            # msg = queue.unpublish()
-            queue.delete()
-            msg = f"{queue.title} has been deleted. If the queue was published"
-            msg += " on YouTube, it will remain there. Deletion of playlists"
-            msg += " on YouTube is temporarily disabled due to API rate limits."
-            msg_type = messages.SUCCESS
-        except HTTPError as e:
-            msg = "An error occurred.\n" + e
-            msg_type = messages.ERROR
+        # commented out due to rate limit issues.
+        # msg = queue.unpublish()
+        # add in try except block if unpublish is added back in for HttpError
+        queue.delete()
+        msg = f"{queue.title} has been deleted. If the queue was published"
+        msg += " on YouTube, it will remain there. Deletion of playlists"
+        msg += " on YouTube is temporarily disabled due to API rate limits."            
+        msg_type = messages.SUCCESS
     else:
         msg = "You do not have permission to delete this queue."
         msg_type = messages.ERROR
