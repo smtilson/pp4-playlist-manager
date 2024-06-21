@@ -220,8 +220,10 @@ body {
 @media screen and (min-width: 768px) {
 
     #style-override .my-button-group {
-        gap: 15px;
+        gap: 150px;
+        display: inline-block;
     }
+
     #style-override #searchQuery {
         width: 26em;
         margin-left: 5.8em;
