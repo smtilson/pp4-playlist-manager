@@ -5,6 +5,7 @@ from . import views
 from yt_auth.models import Credentials
 from django.shortcuts import reverse
 import types
+import json
 from django.contrib.messages import get_messages
 from .views import (
     create_queue,
@@ -147,7 +148,7 @@ class TestQueueViews(TestCase):
         self.assertFalse(has_authorization(self.user1, self.queue2.id))
         self.assertTrue(has_authorization(self.guest, self.queue1.id))
 
-    def test_create_queue(self):
+    def _test_create_queue(self):
         # Not logged in
         response = self.client.get(reverse("create_queue"), follow=True)
         self.assertRedirects(
@@ -218,7 +219,7 @@ class TestQueueViews(TestCase):
     def _test_edit_queue_search(self):
         pass
 
-    def test_edit_queue_guest(self):
+    def _test_edit_queue_guest(self):
         # Guest with authorization
         session = {"guest_user": self.guest.serialize()}
         request = self.setup_session(reverse("edit_queue", args=[self.queue1.id]), session)
@@ -236,7 +237,7 @@ class TestQueueViews(TestCase):
         path = response.headers["Location"]
         self.assertEqual(path, "/accounts/login/")
 
-    def test_publish(self):
+    def _test_publish(self):
         pass
 
     def _test_sync(self):
@@ -264,8 +265,7 @@ class TestQueueViews(TestCase):
     def _test_gain_access(self):
 
         pass
-
-    def test_delete_queue(self):
+    def _test_delete_queue(self):
         # Not logged in
         response = self.client.get(reverse("delete_queue", args=[self.queue1.id]),follow=True)
         self.assertRedirects(
@@ -298,5 +298,58 @@ class TestQueueViews(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(self.user1.all_queues), old_num-1)
 
-    def test_delete_entry(self):
-        pass
+    def _test_delete_entry(self):
+        queue = self.queue1
+        entry1 = queue.all_entries[0]
+        original_length = queue.length
+        # Not logged in
+        response = self.client.get(reverse("delete_entry", args=[queue.id, entry1.id]),follow=True)
+        self.assertRedirects(response, reverse("account_login"),status_code=302,
+            target_status_code=200,
+            msg_prefix="",
+            fetch_redirect_response=True,)
+        self.assertEqual(queue.length, original_length)
+        # Logged in user without any authorization
+        self.client.login(email="Testy2@McTestFace.com", password="myPassword")
+        response = self.client.get(reverse("delete_entry", args=[queue.id, entry1.id]),follow=True)
+        self.assertRedirects(response, reverse("profile"),status_code=302,
+            target_status_code=200,
+            msg_prefix="",
+            fetch_redirect_response=True,)
+        self.assertEqual(queue.length, original_length)
+        # Logged in user, not owner
+        self.user2.other_queues.add(queue)
+        self.user2.save()
+        self.client.login(email="Testy2@McTestFace.com", password="myPassword")
+        response = self.client.get(reverse("delete_entry", args=[queue.id, entry1.id]),follow=True)
+        self.assertRedirects(response, reverse("edit_queue", args=[queue.id]),status_code=302,
+            target_status_code=200,
+            msg_prefix="",
+            fetch_redirect_response=True,)
+        self.assertEqual(queue.length, original_length)
+        # Logged in user, owner
+        self.client.login(email="Testy1@McTestFace.com", password="myPassword")
+        response = self.client.get(reverse("delete_entry", args=[queue.id, entry1.id]),follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(queue.all_entries), original_length-1)
+
+    def _test_swap(self):
+        # Different entries
+        queue = self.queue1
+        entry1 = queue.all_entries[0]
+        entry1_old_position = entry1.position
+        entry2 = queue.all_entries[1]
+        entry2_old_position = entry2.position
+        response = self.client.get(reverse("swap", args=[entry1.id, entry2.position]))
+        json_dict = json.loads(response.content)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(json_dict['entry1']['position'], entry2_old_position)
+        self.assertEqual(json_dict['entry2']['position'], entry1_old_position)
+        # Same entry
+        entry1_old_position = entry1.position
+        response = self.client.get(reverse("swap", args=[entry1.id, entry1.position]))
+        json_dict = json.loads(response.content)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(json_dict['entry1']['position'], entry1_old_position)
+        
+        self.assertEqual

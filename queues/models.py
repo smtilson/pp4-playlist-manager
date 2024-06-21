@@ -272,7 +272,7 @@ class Entry(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
         other_entry = self.p_queue.all_entries[other_position - 1]
         self._position, other_entry._position = other_entry._position, self._position
         self.synced = False
-        other_entry.synced = False
+        other_entry.synced = False        
         self.save()
         other_entry.save()
         return self, other_entry

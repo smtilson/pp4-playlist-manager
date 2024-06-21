@@ -245,6 +245,7 @@ def add_entry(request, queue_id, video_id):
 
 
 def delete_entry(request, queue_id, entry_id):
+    # finished testing
     """
     Checks for authorization and then deletes an entry from a queue.
     Args: request (HttpRequest)
@@ -283,13 +284,17 @@ def swap(request, entry_id, other_entry_position):
     Returns: JSON response containing the swapped entry data.
     """
     entry = get_object_or_404(Entry, id=entry_id)
-    entry, other_entry = entry.swap_entry_positions(other_entry_position)
+    print("inside swap function")
+    new_entry, other_entry = entry.swap_entry_positions(other_entry_position)
+    if not other_entry:
+        other_entry = entry
+        new_entry = entry
     entry_data = {
-        "id": entry.id,
-        "title": entry.title,
-        "position": entry.position,
-        "addedBy": entry.username,
-        "duration": entry.duration,
+        "id": new_entry.id,
+        "title": new_entry.title,
+        "position": new_entry.position,
+        "addedBy": new_entry.username,
+        "duration": new_entry.duration,
     }
     other_entry_data = {
         "id": other_entry.id,
@@ -300,11 +305,9 @@ def swap(request, entry_id, other_entry_position):
     }
     response_dict = {
         "entry1": entry_data,
-        "entry2": other_entry_data,
-        "msg": msg,
-        "level": "messages.INFO",
-        "level2": messages.ERROR,
+        "entry2": other_entry_data
     }
+    print("swap done")
     return JsonResponse(response_dict)
 
 
