@@ -162,7 +162,6 @@ body {
 
 #style-override .my-button-group {
     gap: 5px;
-
 }
 
 #style-override .tag-line {
@@ -220,6 +219,9 @@ body {
 
 @media screen and (min-width: 768px) {
 
+    #style-override .my-button-group {
+        gap: 15px;
+    }
     #style-override #searchQuery {
         width: 26em;
         margin-left: 5.8em;

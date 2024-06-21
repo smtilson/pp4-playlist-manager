@@ -112,22 +112,18 @@
 
         <!-- Footer -->
         <footer class="footer">
-            <div class="container row text-center">
+            <div class="container text-center">
                 {% if user.is_authenticated %}
                 <a href="{% url 'profile' %}">Back to profile page</a>
                 {% else %}
                 <a href="{% url 'account_signup' %}">Sign Up!</a>
                 {% endif %}
             </div>
-            <div class="container row text-center ml-1 my-button-group btn-grooup" role="group"
+            <div class="container text-center my-button-group btn-grooup" role="group"
                 aria-label="YouTube Buttons">
-                <div class="col-3 offset-2">
-                    <a href="https://youtube.com" target="_blank"><button class="btn btn-ytube white">YouTube</button></a>
-                </div>
-                <div class="col-3">
+                    <a href="https://youtube.com" target="_blank"><button class="btn btn-ytube white" type="button">YouTube</button></a>
                     <a href="https://music.youtube.com" target="_blank"><button
-                            class="btn btn-ytube white">YTMusic</button></a>
-                </div>
+                            class="btn btn-ytube white" type="button">YTMusic</button></a>
             </div>
             {% block copyright%}
             {% endblock copyright %}
