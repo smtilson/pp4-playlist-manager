@@ -25,6 +25,10 @@ body {
     padding: 0;
 }
 
+#style-override .no-wrap {
+    white-space: nowrap;
+}
+
 #style-override a {
     color: white;
 }
@@ -163,6 +167,10 @@ body {
     width: 70px;
 }
 
+#style-override #searchQuery {
+    margin-left: .1em;
+}
+
 /* Button Styles */
 
 #style-override .my-button-group {
@@ -186,11 +194,17 @@ body {
     border-radius: 10px;
 }
 
+/* Specific Styles */
+
+#style-override #queue-length {
+    margin-left: 40%;
+}
+
 @media screen and (min-width: 768px) {
 
     #style-override #searchQuery {
         width: 26em;
-        margin-left: 6em
+        margin-left: 5.8em;
     }
 
     /* Addresses bootstrap whitespace on the right*/
@@ -201,6 +215,15 @@ body {
     #style-override #search-results-and-queue-entries {
         margin-left: -19px;
     }
+
     #style-override .edit-logo {
-    margin-left:15px}
+        margin-left: 15px
+    }
+}
+
+@media screen and (min-width: 768px) {
+    #style-override #searchQuery {
+        margin-left: 20.5%;
+        width: 60%;
+    }
 }

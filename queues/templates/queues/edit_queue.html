@@ -6,13 +6,15 @@
         <h2 class="col-8 offset-2 edit-logo my-container text-center">Edit {{queue.title}}</h2>
     
     <div class="queue-data my-container container rawa col-8 offset-2">
-        <div class="col">
+        <div class="col d-flex-column align-items-center">
             <h4>Owned by {{queue.owner.nickname}}</h4>
             <p>Created on {{queue.created_at}}</p>
             <h5>Description:</h5>
             <p>{{queue.description}}</p>
-            <p><span id="queueLength">{{queue.length}}</span> entr{% if queue.length != 1%}ies{% else %}y{% endif %}
+            <span class="row">
+            <p class="col-4 offset-4 no-wrap"><span id="queueLength">{{queue.length}}</span> entr{% if queue.length != 1%}ies{% else %}y{% endif %}
             </p>
+        </span>
             {% if queue.published %}
             <div class="text-center">
                 <a href="{{queue.url}}" target="_blank"><button class="btn btn-success">Play on YouTube</button></a>
@@ -111,7 +113,7 @@
 <div id="search-results-and-queue-entries" class="row">
     <section id="search-results" class="col-12 col-md-6">
         <div class="logo-div my-container d-flex justify-content-center">
-            <h3><span class="rawa">Search results:</span><span class="rawa">{{recent_search}}</span></h3>
+            <h3><span class="no-wrap row">Search results:</span><span class="row">{{recent_search}}</span></h3>
         </div>
         <div class="my-container">
             <ul>

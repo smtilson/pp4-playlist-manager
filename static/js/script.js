@@ -1,40 +1,74 @@
 $(document).ready(function () {
     console.log("page loaded");
-    initSwapInputs();
-    initialize();
-    formStyle();
+    addListenersNModifyForms();
+    
+    const DOMAIN = setDomain();
+    console.log("DOMAIN set to:" + DOMAIN);
+
 })
 
-const sampleDomain = window.location.hostname;
-console.log("The current sample domain is " + sampleDomain);
-//const DOMAIN = "http://localhost:8000/";
-const DOMAIN = "https://pp4-playlist-manager-67004a99f0e2.herokuapp.com/";
-console.log("The current domain is " + DOMAIN);
-function initialize() {
-    const moveBtns = $('.move-btn');
-    for (let btn of moveBtns) {
-        btn.addEventListener('click', moveEntry);
+
+function addListenersNModifyForms() {
+    const rawHTML = $('html').html();
+    if (rawHTML.includes("swap-input")) {
+        setSwapPlaceHolderText();
+        addSwapListeners();
+        console.log("swap-input class present. Listeners added.");
     }
+    if (rawHTML.includes("move-btn")) {
+        addMoveListeners();
+        console.log("move-btn class present. Listeners added.");
+    }
+    if (rawHTML.includes("<form")) {
+        formStyle();
+        console.log("Classes added to form elements.");
+    }
+
+}
+
+function addSwapListeners() {
     const swapBtns = $('.swap-button');
-    console.log("adding listeners to swap buttons");
     for (let btn of swapBtns) {
         btn.addEventListener('click', swapEntries);
     }
 }
-
-function getQueueLength() {
-    const length = $('#queueLength').text();
-    return length;
+function checkPage() {
+    const location = window.location.pathname;
+    console.log(location);
+    if (location.includes("edit_queue")) {
+        console.log("edit_queue in location");
+    }
+    const rawHTML = $('html').html();
+    if (rawHTML.includes("swap-input")) {
+        console.log("swap-input in rawHTML");
+    }
+    if (rawHTML.includes("move-btn")) {
+        console.log("move-btn in rawHTML");
+    }
+    if (rawHTML.includes("<form")) {
+        console.log("form in rawHTML");
+    }
+    console.log("page checked");
 }
 
-function initSwapInputs() {
-    console.log("initializing swap inputs");
-    const queueLength = getQueueLength();
-    setSwapPlaceHolderText(queueLength);
+function setDomain() {
+    const hostname = window.location.hostname;
+    if (hostname === "localhost") {
+        return "http://localhost:8000/";
+    } else {
+        return "https://pp4-playlist-manager-67004a99f0e2.herokuapp.com/";
+    }
+}
+
+function addMoveListeners() {
+    const moveBtns = $('.move-btn');
+    for (let btn of moveBtns) {
+        btn.addEventListener('click', moveEntry);
+    }
 }
 
 async function moveEntry(event) {
-    // how do I give feedback in this set up?
+    // I could remove the first and last move button to make sure.
     const entryId = event.target.getAttribute("data-entry");
     const direction = event.target.getAttribute("data-direction");
     const otherPosition = event.target.getAttribute("data-position");
@@ -109,35 +143,14 @@ function writeEntryData(entryData) {
     label.setAttribute("id", `label-${entryData.id}`);
 }
 
-function setSwapPlaceHolderText(queueLength) {
+function setSwapPlaceHolderText() {
+    const queueLength = $('#queueLength').text();
     const placeholderText = `1-${queueLength}`;
     swapInputs = $('.swap-input');
     for (let input of swapInputs) {
-        console.log("setting value");
+        console.log("Setting placeholder text.");
         input.setAttribute('placeholder', placeholderText);
     }
-}
-
-function addSwapListeners() {
-    swapInputs = $('.swap-input');
-    for (let input of swapInputs) {
-        input.addEventListener('input', validateSwapInputs);
-    }
-}
-
-function initSwapForms() {
-    forms = $(".swapForm");
-    for (let form of forms) {
-        form.addEventListener('submit', validateSwapInputs);
-    }
-}
-
-function validateSwapInputs(entryId) {
-    // get input for that particular entry
-    // check if input is valid
-    // if not valid, display error
-    // if valid, display button
-    console.log("validate triggered");
 }
 
 function formStyle() {
@@ -149,6 +162,5 @@ function formStyle() {
     for (let input of inputs) {
         input.classList.add("js-input-background");
         input.classList.add("form-control");
-        console.log("form style done");
     }
 }
