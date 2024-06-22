@@ -270,9 +270,7 @@ class TestQueueViews(TestCase):
         # Sync
         response = self.client.get(reverse("sync", args=[self.queue2.id]))
 
-    def _test_gain_access(self):
 
-        pass
     def _test_delete_queue(self):
         # Not logged in
         response = self.client.get(reverse("delete_queue", args=[self.queue1.id]),follow=True)
@@ -361,7 +359,7 @@ class TestQueueViews(TestCase):
         self.assertEqual(json_dict['entry1']['position'], entry1_old_position)
         self.assertEqual(json_dict['entry2']['position'], entry2_old_position)
 
-    def _test_gain_access_matching_data(self):
+    def test_gain_access_matching_data(self):
         # Secrets don't match
         response = self.client.get(reverse("gain_access", args=[self.queue1.secret, self.user2.secret]), follow=True)
         self.assertRedirects(response, reverse("index"),status_code=302,

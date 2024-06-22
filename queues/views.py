@@ -7,6 +7,7 @@ from django.contrib import messages
 from yt_query.yt_api_utils import YT
 from urllib.error import HTTPError
 from collections import defaultdict
+from errors.views import error_handler
 
 
 # Create your views here.
@@ -36,13 +37,7 @@ def create_queue(request):
         response = HttpResponseRedirect(reverse("edit_queue", args=[queue.id]))
     else:
         response = render(request, "queues/create_queue.html")
-    """status, msg, msg_type = RequestReport.process(response)
-    if status == 404:
-        messages.add_message(request, msg_type, msg)
-        response = HttpResponseRedirect(reverse("404"))
-    elif status not in {200, 302}:
-        messages.add_message(request, msg_type, msg)
-        response = HttpResponseRedirect(reverse("profile"))"""
+    response = error_handler(request, response)
     return response
 
 
@@ -75,18 +70,7 @@ def edit_queue(request, queue_id):
             "is_owner": is_owner,
         }
         response = render(request, "queues/edit_queue.html", context)
-    """status, msg, msg_type = RequestReport.process(response)
-    if status == 404:
-        messages.add_message(request, msg_type, msg)
-        response = HttpResponseRedirect(reverse("404"))
-    elif status not in {200, 302}:
-        messages.add_message(request, msg_type, msg)
-        print("not 200 or not 302 in edit view hit")
-        response = HttpResponseRedirect(reverse("profile"))
-    else:
-        print("else status in edit view hit")
-        print(status)
-    print(response.status_code)"""
+    response = error_handler(request, response)
     return response
 
 
@@ -116,13 +100,7 @@ def delete_queue(request, queue_id):
         msg_type = messages.ERROR
     messages.add_message(request, msg_type, msg)
     response = HttpResponseRedirect(reverse("profile"))
-    """status, msg, msg_type = RequestReport.process(response)
-    if status == 404:
-        messages.add_message(request, msg_type, msg)
-        response = HttpResponseRedirect(reverse("404"))
-    elif status not in {200, 302}:
-        messages.add_message(request, msg_type, msg)
-        response = HttpResponseRedirect(reverse("edit_queue", args=[queue_id]))"""
+    response = error_handler(request, response)
     return response
 
 
@@ -237,6 +215,7 @@ def add_entry(request, queue_id, video_id):
             msg_type = messages.ERROR
     messages.add_message(request, msg_type, msg)
     response = HttpResponseRedirect(reverse("edit_queue", args=[queue_id]))
+    
     return response
 
 
@@ -261,12 +240,7 @@ def delete_entry(request, queue_id, entry_id):
         msg_type = messages.ERROR
     messages.add_message(request, msg_type, msg)
     response = HttpResponseRedirect(reverse("edit_queue", args=[queue_id]))
-    """status, msg, msg_type = RequestReport.process(response)
-    if status == 404:
-        messages.add_message(request, msg_type, msg)
-        response = HttpResponseRedirect(reverse("404"))
-    elif status not in {200, 302}:
-        messages.add_message(request, msg_type, msg)"""
+    response = error_handler(request, response)
     return response
 
 
@@ -348,11 +322,5 @@ def gain_access(request, queue_secret, owner_secret):
             else:
                 msg = f"{queue.title} is already in your list of queues."
     messages.add_message(request, msg_type, msg)
-    """status, msg, msg_type = RequestReport.process(response)
-    if status == 404:
-        messages.add_message(request, msg_type, msg)
-        response = HttpResponseRedirect(reverse("404"))
-    elif status not in {200, 302}:
-        messages.add_message(request, msg_type, msg)
-        response = HttpResponseRedirect(reverse("index"))"""
+    response = error_handler(request, response)
     return response
