@@ -4,6 +4,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import reverse
 from django.contrib import messages
 from .models import RequestReport
+from .utils import process_path
 
 # Create your views here.
 
@@ -21,3 +22,11 @@ def error_handler(request, response):
         return HttpResponseRedirect(reverse("profile"))
     else:
         return HttpResponseRedirect(reverse("index"))
+    
+def error_in_path(request):
+    path = request.get_full_path()
+    if "error" in path:
+        error_msg = process_path(path)
+        messages.add_message(request, messages.ERROR, error_msg)
+    return request
+    
