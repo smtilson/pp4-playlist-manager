@@ -2,6 +2,7 @@ from .models import Profile, GuestProfile, make_user
 from . import views
 from yt_auth.models import Credentials
 from django.contrib.auth.models import AnonymousUser
+from django.contrib.messages.storage.fallback import FallbackStorage
 from unittest.mock import patch
 from django.contrib.sessions.backends import db
 from django.urls import reverse
@@ -60,27 +61,30 @@ class TestProfileViews(TestCase):
         self.guest = GuestProfile(name="Guesty", email="Guesty@McTestFace.com")
         self.guest.queue_id = self.queue1.id
 
-    def setup_session(self, path, session: dict = {}):
-        request = self.factory.get(path)
-        request.session = session
+    
+    def make_get_request(self, path):
+        request = RequestFactory().get(path)
+        setattr(request, 'session', 'session')
+        messages = FallbackStorage(request)
+        setattr(request, '_messages', messages)
+        request.user = AnonymousUser()
         return request
 
     def _test_make_user(self):
         # Anonymous User
-        request = self.setup_session("/")
-        request.user = AnonymousUser()
+        request = self.make_get_request("/")
         user = make_user(request)
         self.assertFalse(user.is_authenticated)
         self.assertFalse(user.is_guest)
         # Guest User
         session = {"guest_user": self.guest.serialize()}
-        request = self.setup_session("/", session)
-        request.user = AnonymousUser()
+        request = self.make_get_request("/")
+        request.session = session
         user = make_user(request)
         self.assertFalse(user.is_authenticated)
         self.assertTrue(user.is_guest)
         # Logged in User
-        request = self.setup_session("/")
+        request = self.make_get_request("/")
         request.user = self.user1
         user = make_user(request)
         self.assertTrue(user.is_authenticated)
@@ -103,8 +107,8 @@ class TestProfileViews(TestCase):
                     "args": [self.queue2.id]
                     }
                 }
-        request = self.setup_session("/", session)
-        request.user = AnonymousUser()
+        request = self.make_get_request("/")
+        request.session = session
         response = views.index(request)
         print(response.status_code)
         self.assertEqual(response.status_code,302)
@@ -118,8 +122,8 @@ class TestProfileViews(TestCase):
                     "args": [self.queue1.id]
                     }
                 }
-        request = self.setup_session("/", session)
-        request.user = AnonymousUser()
+        request = self.make_get_request("/")
+        request.session = session
         response = views.index(request)
         print(response.status_code)
         self.assertEqual(response.status_code,302)

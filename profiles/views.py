@@ -28,7 +28,7 @@ def index(request):
     valid_redirect = check_valid_redirect_action(request)
     if "error" in path:
             error_msg = process_path(path)
-            #messages.add_message(request, messages.ERROR, error_msg)
+            messages.add_message(request, messages.ERROR, error_msg)
             response = HttpResponseRedirect(reverse("profile"))    
     if user.is_authenticated:
         if all(word in path for word in keywords):
@@ -44,10 +44,10 @@ def index(request):
         response = render(request, "profiles/index.html")
     """status, msg, msg_type = RequestReport.process(response)
     if status == 404:
-        #messages.add_message(request, msg_type, msg)
+        messages.add_message(request, msg_type, msg)
         response = HttpResponseRedirect(reverse("404"))
     elif status not in {200, 302}:
-        #messages.add_message(request, msg_type, msg)
+        messages.add_message(request, msg_type, msg)
         response = HttpResponseRedirect(reverse("profile"))"""
     return response
 
@@ -62,7 +62,7 @@ def profile(request):
     user = make_user(request)
     if not user.is_authenticated:
         msg = "You must be logged in to view your profile."
-        #messages.add_message(request, messages.INFO, msg)
+        messages.add_message(request, messages.INFO, msg)
         response = HttpResponseRedirect(reverse("account_login"))
     else:
         if not user.credentials:
@@ -86,10 +86,10 @@ def profile(request):
         response = render(request, "profiles/profile.html", context)
     """status, msg, msg_type = RequestReport.process(response)
     if status == 404:
-        #messages.add_message(request, msg_type, msg)
+        messages.add_message(request, msg_type, msg)
         response = HttpResponseRedirect(reverse("404"))
     elif status not in {200, 302}:
-        #messages.add_message(request, msg_type, msg)
+        messages.add_message(request, msg_type, msg)
         response = HttpResponseRedirect(reverse("index"))"""
     return response
 
@@ -104,19 +104,19 @@ def set_name(request):
     user = make_user(request)
     if not user.is_authenticated:
         msg = "You must be logged in to set your name."
-        #messages.add_message(request, messages.INFO, msg)
+        messages.add_message(request, messages.INFO, msg)
         response = HttpResponseRedirect(reverse("account_login"))
     user.name = request.POST["name"]
     user.save()
     msg = f"Name set to {user.name}"
-    #messages.add_message(request, messages.SUCCESS, msg)
+    messages.add_message(request, messages.SUCCESS, msg)
     response = HttpResponseRedirect(reverse("profile"))
     """status, msg, msg_type = RequestReport.process(response)
     if status == 404:
-        #messages.add_message(request, msg_type, msg)
+        messages.add_message(request, msg_type, msg)
         response = HttpResponseRedirect(reverse("404"))
     elif status not in {200, 302}:
-        #messages.add_message(request, msg_type, msg)
+        messages.add_message(request, msg_type, msg)
         response = HttpResponseRedirect(reverse("profile"))"""
     return response
 
@@ -132,7 +132,7 @@ def return_from_authorization(request):
     user = make_user(request)
     if not user.is_authenticated:
         msg = "How did you get here, I am genuinely curious."
-        #messages.add_message(request, messages.INFO, msg)
+        messages.add_message(request, messages.INFO, msg)
         response = HttpResponseRedirect(reverse("account_login"))
     else:
         path = request.get_full_path()
@@ -149,14 +149,14 @@ def return_from_authorization(request):
             else:
                 msg = user.set_credentials(tokens)
                 msg_type = messages.SUCCESS
-        #messages.add_message(request, msg_type, msg)
+        messages.add_message(request, msg_type, msg)
         response = HttpResponseRedirect(reverse("profile"))
     """status, msg, msg_type = RequestReport.process(response)
     if status == 404:
-        #messages.add_message(request, msg_type, msg)
+        messages.add_message(request, msg_type, msg)
         response = HttpResponseRedirect(reverse("404"))
     elif status not in {200, 302}:
-        #messages.add_message(request, msg_type, msg)
+        messages.add_message(request, msg_type, msg)
         response = HttpResponseRedirect(reverse("profile"))"""
     return response
 
@@ -171,7 +171,7 @@ def revoke_authorization(request):
     user = make_user(request)
     if not user.is_authenticated:
         msg = "You must be logged in to revoke your authorization."
-        #messages.add_message(request, messages.INFO, msg)
+        messages.add_message(request, messages.INFO, msg)
         response = HttpResponseRedirect(reverse("account_login"))
     status_code = revoke_tokens(user)
     if status_code == 200:
@@ -186,14 +186,14 @@ def revoke_authorization(request):
         msg_type = messages.ERROR
     user.revoke_youtube_data()
     # there should be a modal for this
-    #messages.add_message(request, msg_type, mark_safe(msg))
+    messages.add_message(request, msg_type, mark_safe(msg))
     response = HttpResponseRedirect(reverse("profile"))
     """status, msg, msg_type = RequestReport.process(response)
     if status == 404:
-        #messages.add_message(request, msg_type, msg)
+        messages.add_message(request, msg_type, msg)
         response = HttpResponseRedirect(reverse("404"))
     elif status not in {200, 302}:
-        #messages.add_message(request, msg_type, msg)
+        messages.add_message(request, msg_type, msg)
         response = HttpResponseRedirect(reverse("profile"))"""
     return response
 
@@ -211,7 +211,7 @@ def guest_sign_in(request):
     if user.is_authenticated:
         msg = "You are already logged in."
         msg_type = messages.INFO
-        #messages.add_message(request, msg_type, msg)
+        messages.add_message(request, msg_type, msg)
         if "redirect_action" in request.session:
             # The only usage of redirect_action is edit_queue.
             view_name = request.session["redirect_action"]["action"]
@@ -234,13 +234,13 @@ def guest_sign_in(request):
         )
         request.session["guest_user"] = user.serialize()
         msg = f"Guest account set up for {user.nickname}"
-        #messages.add_message(request, messages.SUCCESS, msg)
+        messages.add_message(request, messages.SUCCESS, msg)
         response = HttpResponseRedirect(reverse("edit_queue", args=[queue.id]))
     """status, msg, msg_type = RequestReport.process(response)
     if status == 404:
-        #messages.add_message(request, msg_type, msg)
+        messages.add_message(request, msg_type, msg)
         response = HttpResponseRedirect(reverse("404"))
     elif status not in {200, 302}:
-        #messages.add_message(request, msg_type, msg)
+        messages.add_message(request, msg_type, msg)
         response = HttpResponseRedirect(reverse("index"))"""
     return response
