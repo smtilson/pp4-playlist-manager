@@ -2,7 +2,7 @@ from django.shortcuts import render, reverse, get_object_or_404
 from django.http import HttpResponseRedirect, JsonResponse
 from .models import Profile, GuestProfile, make_user
 from utils import check_valid_redirect_action
-from queues.models import Queue
+from queues.models import Queue, has_authorization
 from django.contrib import messages
 from errors.models import RequestReport
 from django.utils.safestring import mark_safe
@@ -27,18 +27,24 @@ def index(request):
     keywords = {"?state=", "&code=", "&scope=https://www.googleapis.com/auth/youtube"}
     valid_redirect = check_valid_redirect_action(request)
     request = error_in_path(request)
-    if user.is_authenticated:
-        if all(word in path for word in keywords):
+    if not valid_redirect:
+        if not user.is_authenticated:
+            response = render(request, "profiles/index.html")
+        elif all(word in path for word in keywords):
             # should this be a redirect?
             response = return_from_authorization(request)
         else:
             response = HttpResponseRedirect(reverse("profile"))
-    elif user.is_guest and valid_redirect:
+    else:
         view_name = request.session["redirect_action"]["action"]
         args = request.session["redirect_action"]["args"]
-        response = HttpResponseRedirect(reverse(view_name, args=args))
-    else:
-        response = render(request, "profiles/index.html")
+        if has_authorization(user, args[0]) and len(args)==1:
+            response = HttpResponseRedirect(reverse(view_name, args=args))
+        else:
+            msg = "Invalid redirect action encountered."
+            messages.add_message(request, messages.INFO, msg)
+            request.session["redirect_action"] = None
+            response = HttpResponseRedirect(reverse("index"))
     response = error_handler(request, response)
     return response
 
