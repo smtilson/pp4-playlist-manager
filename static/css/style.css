@@ -211,6 +211,26 @@ body {
 
 /* Specific Styles */
 
+#style-override #queue-buttons-div {
+    margin-left: 9.5%;
+    width: 80%;    
+}
+
+#style-override #set-name-form-label {
+    margin-left: 2%
+}
+
+#style-override #set-name-form-button {
+    margin-left: 31%;
+    margin-top: 8%;
+    margin-bottom: -2%;
+}
+
+#style-override #my-queue-div .logo-div, 
+#style-override #friends-queue-div .logo-div{
+        margin-left: 11%;
+}
+
 #style-override .my-brand {
     color: white;
     background-color: #e71a1acb;
@@ -238,13 +258,15 @@ body {
     margin-top: 1.3em;
 }
 
-
-
-
-
 #style-override #last {
-    margin-bottom: 35%;
+    /* it was 35%, but changed it because of the profiel page. */
+    margin-bottom: 43%;
 }
+
+#style-override .boost-mb-5 {
+    margin-bottom: 5%;
+}
+
 
 @media screen and (min-width: 425px) {
     #style-override #login {

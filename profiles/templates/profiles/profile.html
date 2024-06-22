@@ -18,44 +18,50 @@
                         <li class="row my-list-item">{{youtube_access}}</li>
                     </ul>
                 </div>
+                <div id="user-buttons-div" class="row text-center" role="group" aria-label="User Buttons">
+                    {% if not user.has_tokens %}
+                    <a href="{{authorization_url}}"><button type="button" class="btn btn-success">Give Youtube
+                            DJ permissions</button></a>
+                    {% else %}
+                    <a href="{% url 'revoke_authorization' %}"><button type="button" class="btn btn-danger">Revoke
+                            Credentials</button></a>
+                    {% endif %}
+                    <a href="{% url 'create_queue' %}"><button type="button" class="btn btn-success">Create New
+                            Queue</button></a>
+                </div>
             </div>
         </div>
         <div class="col container">
-        <div id="user-buttons-div" class="row" role="group" aria-label="User Buttons">
-            {% if not user.has_tokens %}
-            <a href="{{authorization_url}}"><button type="button" class="btn btn-success">Give Youtube
-                    DJ permissions</button></a>
-            {% else %}
-            <a href="{% url 'revoke_authorization' %}"><button type="button" class="btn btn-danger">Revoke
-                    Credentials</button></a>
-            {% endif %}
-            <a href="{% url 'create_queue' %}"><button type="button" class="btn btn-success">Create New
-                    Queue</button></a>
-        </div>
-        <div id="name-form-div" class="row my-container">
-            {% if not user.name %}
-            Please add a name so that your friends know who made the queue or added the videos. (Maybe they will
-            even move
-            it up
-            in the queue!)
-            {% else %}
-            Care to update your name? (This change will be reflected in all queues.)
-            {% endif %}
-            <form action="{% url 'set_name' %}" method="POST">
-                {% csrf_token %}
-                {% if user.name %}
-                <label for="name">New Name:</label><input type="text" name="name" id="name" placeholder="{{user.name}}"
-                    required>
+            
+            <div class="btn-group" id="queue-buttons-div" role="group" aria-label="Queue Buttons">
+                <a href="#my-queue-div"><button type="button" class="btn btn-secondary">My Queues</button></a>
+                <a href="#friends-queue-div"><button type="button" class="btn btn-secondary">Friends
+                        Queues</button></a>
+            </div>
+            <div id="name-form-div" class="row my-container">
+                {% if not user.name %}
+                Please add a name so that your friends know who made the queue or added the videos. (Maybe they will
+                even move
+                it up
+                in the queue!)
                 {% else %}
-                <label for="name">Name:</label><input type="text" name="name" id="name" required>
+                Care to update your name? (This change will be reflected in all queues.)
                 {% endif %}
-                <button type="submit">Submit</button>
-            </form>
+                <form action="{% url 'set_name' %}" method="POST">
+                    {% csrf_token %}
+                    {% if user.name %}
+                    <label for="name" id="set-name-form-label">New Name:</label><input type="text" name="name" id="name"
+                        placeholder="{{user.name}}" required>
+                    {% else %}
+                    <label for="name" id="set-name-form-label">Name:</label><input type="text" name="name" id="name" required>
+                    {% endif %}
+                    <button type="submit" class="btn btn-secondary" id="set-name-form-button">Submit</button>
+                </form>
+            </div>
         </div>
-    </div>
     </div>
     <div class="d-flex-column d-flex-md-row">
-        <div class="col-md-6 d-flex-column align-items-center container" style="display: flex; flex-direction: column;">
+        <div id="my-queue-div" class="col-md-6 d-flex-column align-items-center container">
             <div class="logo-div text-center row">
                 <h2>My Queues</h2>
             </div>
@@ -77,12 +83,12 @@
             {% endfor %}
         </div>
         <div class="d-flex-column d-flex-md-row">
-            <div class="col-md-6 d-flex-column align-items-center container">
+            <div id="friends-queue-div" class="col-md-6 d-flex-column align-items-center container">
                 <div class="logo-div text-center row">
                     <h2>My Friends' Queues</h2>
                 </div>
                 {% for queue in other_queues %}
-                <div class="my-container text-center row">
+                <div class="my-container text-center row" {% if forloop.last %}id="last"{% endif %}>
                     <h4 class="row"><a href="{% url 'edit_queue' queue.id %}">{{queue.title}}</a></h4>
                     <h5 class="row offset-6">
                         {% if queue.length != 1 %}
