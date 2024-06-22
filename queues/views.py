@@ -58,8 +58,17 @@ def edit_queue(request, queue_id):
         if request.method == "GET":
             recent_search, search_results = yt.get_last_search(request, queue_id)
         elif request.method == "POST" and recent_search:
-            search_results = yt.search_videos(recent_search)
-            request = yt.save_search(request, queue_id, recent_search, search_results)
+            try:
+                search_results = yt.search_videos(recent_search)
+            except Exception as e:
+                msg = f"The following error occurred: {e}"
+                msg_type = messages.ERROR
+                search_results = []
+                messages.add_message(request, msg_type, msg)
+            else:
+                request = yt.save_search(
+                    request, queue_id, recent_search, search_results
+                )
         if recent_search == "None":
             recent_search = "Search YouTube"
         context = {
@@ -69,6 +78,7 @@ def edit_queue(request, queue_id):
             "user": user,
             "is_owner": is_owner,
         }
+
         response = render(request, "queues/edit_queue.html", context)
     response = error_handler(request, response)
     return response
@@ -92,9 +102,37 @@ def delete_queue(request, queue_id):
         # add in try except block if unpublish is added back in for HttpError
         queue.delete()
         msg = f"{queue.title} has been deleted. If the queue was published"
-        msg += " on YouTube, it will remain there. Deletion of playlists"
-        msg += " on YouTube is temporarily disabled due to API rate limits."
+        msg += " on YouTube, it will remain there. To remove the playlist from"
+        msg += " YouTube, click the Unpublish button."
         msg_type = messages.SUCCESS
+    else:
+        msg = "You do not have permission to delete this queue."
+        msg_type = messages.ERROR
+    messages.add_message(request, msg_type, msg)
+    response = HttpResponseRedirect(reverse("profile"))
+    response = error_handler(request, response)
+    return response
+
+
+def unpublish(request, queue_id):
+    """
+    Checks for authorization and then unpublishes the queue. Temporarily disabled.
+    Args: request (HttpRequest)
+          queue_id (int)
+    Returns: Redirects to the eqit_queue page.
+    """
+    queue = get_object_or_404(Queue, id=queue_id)
+    user = make_user(request)
+    if queue.owner == user:
+        try:
+            queue.unpublish()
+        except Exception as e:
+            msg = f"The following error occurred: {e}"
+            msg_type = messages.ERROR
+        else:
+            msg = f"{queue.title} has been removed from YouTube. To delete the"
+            msg += "playlist from YouTube DJ, click the Delete button."
+            msg_type = messages.SUCCESS
     else:
         msg = "You do not have permission to delete this queue."
         msg_type = messages.ERROR
@@ -110,7 +148,6 @@ def publish(request, queue_id):
     if not queue.owner.youtube_channel:
         msg = "There is no channel associated with this queue. It can not be published. Please connect your account to a valid YouTube account in order."
         msg_type = messages.ERROR
-        messages.add_message(request, msg_type, msg)
         response = HttpResponseRedirect(reverse("edit_queue", args=[queue_id]))
     elif user == queue.owner:
         try:
@@ -118,19 +155,17 @@ def publish(request, queue_id):
         except HTTPError as e:
             print("HTTPError hit on publish")
             msg = e
-        messages.add_message(request, messages.SUCCESS, msg)
+            msg_type = messages.ERROR
+        else:
+            msg_type = messages.SUCCESS
+        response = HttpResponseRedirect(reverse("edit_queue", args=[queue_id]))
     else:
         msg = "Only the queue owner can publish the queue."
-        messages.add_message(request, messages.ERROR, msg)
+        msg_type = messages.ERROR
+        response = HttpResponseRedirect(reverse("edit_queue", args=[queue_id]))
     # does that work with a redirect response.
-    response = HttpResponseRedirect(reverse("edit_queue", args=[queue_id]))
-    """status, msg, msg_type = RequestReport.process(response)
-    if status == 404:
-        messages.add_message(request, msg_type, msg)
-        response = HttpResponseRedirect(reverse("404"))
-    elif status not in {200, 302}:
-        messages.add_message(request, msg_type, msg)
-        response = HttpResponseRedirect(reverse("edit_queue", args=[queue_id]))"""
+    messages.add_message(request, msg_type, msg)
+    response = error_handler(request, response)
     return response
 
 
@@ -156,24 +191,19 @@ def sync(request, queue_id):
     else:
         try:
             msg = queue.sync()
-            msg_type = messages.SUCCESS
-        except HTTPError as e:
-            msg = e
+        except Exception as e:
+            msg = f"The following error occurred: {e}"
             msg_type = messages.ERROR
+        else:
+            msg = f"{queue.title} has been synced with YouTube."
+            msg_type = messages.SUCCESS
     messages.add_message(request, msg_type, msg)
     response = HttpResponseRedirect(reverse("edit_queue", args=[queue_id]))
-    """status, msg, msg_type = RequestReport.process(response)
-    if status == 404:
-        messages.add_message(request, msg_type, msg)
-        response = HttpResponseRedirect(reverse("404"))
-    elif status not in {200, 302}:
-        messages.add_message(request, msg_type, msg)
-        response = HttpResponseRedirect(reverse("edit_queue", args=[queue_id]))"""
+    response = error_handler(request, response)
     return response
 
 
 def add_entry(request, queue_id, video_id):
-    
     """
     Adds an entry/video to the queue.
     Args: request (HttpRequest)
@@ -198,24 +228,29 @@ def add_entry(request, queue_id, video_id):
         msg_type = messages.ERROR
 
     else:
-        video_data = YT(user).find_video_by_id(video_id)
-        if video_data["status"] != "private":
-            del video_data["status"]
-            entry = Entry(**video_data)
-            entry.p_queue = queue
-            # adds entry to end of list
-            entry._position = queue.length
-            entry.user = user.nickname
-            queue.save()
-            entry.save()
-            msg = f"{entry.title} has been added to the queue."
-            msg_type = messages.SUCCESS
-        else:
-            msg = "This video is private. It cannot be added to the queue."
+        try:
+            video_data = YT(user).find_video_by_id(video_id)
+        except Exception as e:
+            msg = f"The following error occurred: {e}"
             msg_type = messages.ERROR
+        else:
+            if video_data["status"] != "private":
+                del video_data["status"]
+                entry = Entry(**video_data)
+                entry.p_queue = queue
+                # adds entry to end of list
+                entry._position = queue.length
+                entry.user = user.nickname
+                queue.save()
+                entry.save()
+                msg = f"{entry.title} has been added to the queue."
+                msg_type = messages.SUCCESS
+            else:
+                msg = "This video is private. It cannot be added to the queue."
+                msg_type = messages.ERROR
     messages.add_message(request, msg_type, msg)
     response = HttpResponseRedirect(reverse("edit_queue", args=[queue_id]))
-    
+    response = error_handler(request, response)
     return response
 
 
@@ -300,9 +335,14 @@ def gain_access(request, queue_secret, owner_secret):
         response = HttpResponseRedirect(reverse("index"))
     else:
         request.session["queue_id"] = queue.id
-        request.session["redirect_action"] = {"action": "edit_queue", "args": [queue.id]}
+        request.session["redirect_action"] = {
+            "action": "edit_queue",
+            "args": [queue.id],
+        }
         if not user.is_authenticated and not user.is_guest:
-            msg = "Please sign in or create a guest account to gain access to this queue."
+            msg = (
+                "Please sign in or create a guest account to gain access to this queue."
+            )
             msg_type = messages.INFO
             response = HttpResponseRedirect(reverse("guest_sign_in"))
         else:
