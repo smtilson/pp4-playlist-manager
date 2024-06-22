@@ -195,6 +195,7 @@ def sync(request, queue_id):
 
 
 def add_entry(request, queue_id, video_id):
+    
     """
     Adds an entry/video to the queue.
     Args: request (HttpRequest)
@@ -236,13 +237,6 @@ def add_entry(request, queue_id, video_id):
             msg_type = messages.ERROR
     messages.add_message(request, msg_type, msg)
     response = HttpResponseRedirect(reverse("edit_queue", args=[queue_id]))
-    """status, msg, msg_type = RequestReport.process(response)
-    if status == 404:
-        messages.add_message(request, msg_type, msg)
-        response = HttpResponseRedirect(reverse("404"))
-    elif status not in {200, 302}:
-        messages.add_message(request, msg_type, msg)
-        response = HttpResponseRedirect(reverse("profile"))"""
     return response
 
 
