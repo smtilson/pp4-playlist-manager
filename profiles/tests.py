@@ -20,9 +20,10 @@ if LOCAL:
 else:
     REDIRECT_URI = "https://pp4-playlist-manager-67004a99f0e2.herokuapp.com/"
 
+sample = "?state=BJn&code=4Eg&scope=https://www.googleapis.com/auth/youtube"
 
 class TestProfileViews(TestCase):
-
+    
     def setup_users(self):
         self.user1 = Profile.objects.create_superuser(
             email="Testy1@McTestFace.com",
@@ -67,16 +68,16 @@ class TestProfileViews(TestCase):
         self.guest = GuestProfile(name="Guesty", email="Guesty@McTestFace.com")
         #self.guest.queue_id = self.queue1.id
 
-    
     def make_get_request(self, path):
         request = RequestFactory().get(path)
         setattr(request, 'session', 'session')
         messages = FallbackStorage(request)
         setattr(request, '_messages', messages)
         request.user = AnonymousUser()
+        request.session = {}
         return request
 
-    def _test_make_user(self):
+    def test_make_user(self):
         # Anonymous User
         request = self.make_get_request("/")
         user = make_user(request)
@@ -96,15 +97,30 @@ class TestProfileViews(TestCase):
         self.assertTrue(user.is_authenticated)
         self.assertFalse(user.is_guest)
 
-    def test_index_not_logged_in(self):
-        # Base Case
+    def _test_index_no_code_no_redirect(self):
+        # Anonymous User
         response = self.client.get(reverse("index"))
         self.assertEqual(response.status_code, 200)
+        # Guest with no redirect action
+        session = {"guest_user": self.guest.serialize()}
+        request = self.make_get_request("/")
+        request.session = session
+        response = views.index(request)
+        self.assertEqual(response.status_code, 200)
+        # Logged in
+        self.client.login(email="Testy1@McTestFace.com", password="myPassword")
+        response = self.client.get(reverse("index"), follow=True)
+        self.assertRedirects(
+            response,
+            reverse("profile"),
+            status_code=302,
+            target_status_code=200,
+            msg_prefix="",
+            fetch_redirect_response=True,
+        )
         
 
-
-
-    def _test_index_not_logged_in_redirect_action(self):
+    def _test_index_redirect_action(self):
         # Guest with good session data
         self.guest.queue_id = self.queue2.id
         session = {
@@ -134,11 +150,57 @@ class TestProfileViews(TestCase):
         self.assertEqual(response.status_code,302)
         path = response.headers["Location"]
         self.assertEqual(path, '/')
-
-    def _test_index_logged_in(self):
-        # Logged in
-        self.client.login(email="Testy@McTestFace.com", password="myPassword")
-        response = self.client.get(reverse("index"), follow=True)
+        # Logged in with access
+        session = {
+                "redirect_action": {
+                    "action": "edit_queue", 
+                    "args": [self.queue1.id]
+                    }
+                }
+        request = self.make_get_request("/")
+        request.session = session
+        request.user = self.user1
+        response = views.index(request)
+        self.assertEqual(response.status_code,302)
+        path = response.headers["Location"]
+        self.assertEqual(path, '/queues/edit_queue/1')
+        # Logged in without access
+        session = {
+                "redirect_action": {
+                    "action": "edit_queue", 
+                    "args": [self.queue2.id]
+                    }
+                }
+        request = self.make_get_request("/")
+        request.session = session
+        request.user = self.user1
+        response = views.index(request)
+        self.assertEqual(response.status_code,302)
+        path = response.headers["Location"]
+        self.assertEqual(path, '/profile')
+        
+    def test_index_has_code(self):
+        # I believe this inadvertently tests return from authorization as well.
+        # Not logged in
+        response = self.client.get(sample, follow=True)
+        self.assertRedirects(
+            response,
+            reverse("index"),
+            status_code=302,
+            target_status_code=200,
+            msg_prefix="",
+            fetch_redirect_response=True,
+        )
+        '''for user in [self.user1, self.guest, AnonymousUser()]:
+            request = self.make_get_request(sample)
+            request.user = user
+            response = views.index(request)
+            self.assertEqual(response.status_code, 302)
+            path = response.headers["Location"]
+            print
+        # Logged in'''
+        self.client.login(email="Testy1@McTestFace.com", password="myPassword")
+        response = self.client.get(sample, follow=True)
         self.assertRedirects(
             response,
             reverse("profile"),
@@ -190,7 +252,7 @@ class TestProfileViews(TestCase):
         self.assertEqual(path, "/")
 
     def _test_return_from_authorization(self):
-        sample = "?state=BJn&code=4Eg&scope=https://www.googleapis.com/auth/youtube"
+        
         response = self.client.get(REDIRECT_URI + sample, follow=True)
         self.assertRedirects(
             response,

@@ -27,12 +27,12 @@ def index(request):
     keywords = {"?state=", "&code=", "&scope=https://www.googleapis.com/auth/youtube"}
     valid_redirect = check_valid_redirect_action(request)
     request = error_in_path(request)
-    if not valid_redirect:
-        if not user.is_authenticated:
-            response = render(request, "profiles/index.html")
-        elif all(word in path for word in keywords):
+    if all(word in path for word in keywords):
             # should this be a redirect?
             response = return_from_authorization(request)
+    elif not valid_redirect:
+        if not user.is_authenticated:
+            response = render(request, "profiles/index.html")
         else:
             response = HttpResponseRedirect(reverse("profile"))
     else:
@@ -40,11 +40,16 @@ def index(request):
         args = request.session["redirect_action"]["args"]
         if has_authorization(user, args[0]) and len(args)==1:
             response = HttpResponseRedirect(reverse(view_name, args=args))
-        else:
+        elif user.is_guest:
             msg = "Invalid redirect action encountered."
             messages.add_message(request, messages.INFO, msg)
             request.session["redirect_action"] = None
             response = HttpResponseRedirect(reverse("index"))
+        else:
+            msg = "Invalid redirect action encountered."
+            messages.add_message(request, messages.INFO, msg)
+            request.session["redirect_action"] = None
+            response = HttpResponseRedirect(reverse("profile"))
     response = error_handler(request, response)
     return response
 
@@ -130,31 +135,21 @@ def return_from_authorization(request):
     if not user.is_authenticated:
         msg = "How did you get here, I am genuinely curious."
         messages.add_message(request, messages.INFO, msg)
-        response = HttpResponseRedirect(reverse("account_login"))
+        response = HttpResponseRedirect(reverse("index"))
     else:
         path = request.get_full_path()
-        if user.has_tokens:
-            msg = f"{user.nickname} is already connected to {user.youtube_handle}. If you would like to change which account is connected, please first revoke the current permissions"
-            msg_type = messages.INFO
+        try:
+            tokens = get_tokens(path)
+        except Exception as e:
+            msg = "An unknown error occurred while fetching your tokens."
+            msg += str(e)
+            msg_type = messages.ERROR
         else:
-            try:
-                tokens = get_tokens(path)
-            except Exception as e:
-                msg = "An unknown error occurred while fetching your tokens."
-                msg += str(e)
-                msg_type = messages.ERROR
-            else:
-                msg = user.set_credentials(tokens)
-                msg_type = messages.SUCCESS
+            msg = user.set_credentials(tokens)
+            msg_type = messages.SUCCESS
         messages.add_message(request, msg_type, msg)
         response = HttpResponseRedirect(reverse("profile"))
-    """status, msg, msg_type = RequestReport.process(response)
-    if status == 404:
-        messages.add_message(request, msg_type, msg)
-        response = HttpResponseRedirect(reverse("404"))
-    elif status not in {200, 302}:
-        messages.add_message(request, msg_type, msg)
-        response = HttpResponseRedirect(reverse("profile"))"""
+    response = error_handler(request, response)
     return response
 
 
