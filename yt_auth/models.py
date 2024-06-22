@@ -56,7 +56,9 @@ class Credentials(models.Model, DjangoFieldsMixin, ToDictMixin):
             new_credentials = Credentials().to_dict()
         else:
             has_tokens = True
+            print(new_credentials.to_json())
             new_credentials = json_to_dict(new_credentials.to_json())
+            print(new_credentials)
         for field_name in CREDENTIALS_FIELDS:
             if field_name == "has_tokens":
                 setattr(self, field_name, has_tokens)

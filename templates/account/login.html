@@ -15,7 +15,7 @@
 <a href="{{ signup_url }}">sign up</a> first.{% endblocktrans %}</p>
 </div>
 
-<div class="text-center my-container">
+<div class="text-center my-container" id="last">
 <form class="login" id="login-form" method="POST" action="{% url 'account_login' %}">
   {% csrf_token %}
   {{ form.as_p }}

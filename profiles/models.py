@@ -123,14 +123,7 @@ class Profile(AbstractBaseUser, PermissionsMixin, DjangoFieldsMixin, ToDictMixin
         my_queue_ids = {queue.id for queue in self.my_queues.all()}
         other_queue_ids = {queue.id for queue in self.other_queues.all()}
         return my_queue_ids.union(other_queue_ids)
-    @property
-    # is this used?
-    # this needs to be properly addressed
-    def valid_credentials(self):
-        if self.credentials.expiry == "":
-            return False
-        return self.google_credentials.valid
-
+    
     def set_credentials(self, new_credentials=None):
         """
         new_credentials is a google Credentials object. Updates credentials to
@@ -193,7 +186,6 @@ class GuestProfile(ToDictMixin):
         self.youtube_handle = ""
         self.secret = ""
         self.has_tokens = False
-        self.valid_credentials = False
 
     @property
     def nickname(self):

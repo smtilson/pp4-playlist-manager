@@ -17,12 +17,14 @@ from yt_auth.token_auth import (
 
 
 def index(request):
+    # finished testing I believe.
     """
     Handles the index view for the app.
     Args: request (HttpRequest)
     Returns:
     """
     path = request.get_full_path()
+    print(path)
     user = make_user(request)
     keywords = {"?state=", "&code=", "&scope=https://www.googleapis.com/auth/youtube"}
     valid_redirect = check_valid_redirect_action(request)
@@ -55,6 +57,7 @@ def index(request):
 
 
 def profile(request):
+    # finished testing
     """
     Renders the profile page for a user.
     Args: request (HttpRequest)
@@ -69,30 +72,22 @@ def profile(request):
     else:
         if not user.credentials:
             user.initialize()
-        if not user.has_tokens:
-            youtube_permission_status = "Profile has no associated youtube account."
-        else:
+        if user.youtube_handle:
             youtube_permission_status = (
                 f"Youtube DJ has access to {user.youtube_handle}."
             )
-        info_dict = user.info_dict
+        else:
+            youtube_permission_status = "Profile has no associated youtube account."
         context = {
             "user": user,
-            "view_name": "profile",
             "authorization_url": get_authorization_url(),
-            "info_dict": info_dict,
+            "info_dict": user.info_dict,
             "my_queues": user.my_queues.all(),
             "other_queues": user.other_queues.all(),
             "youtube_access": youtube_permission_status,
         }
         response = render(request, "profiles/profile.html", context)
-    """status, msg, msg_type = RequestReport.process(response)
-    if status == 404:
-        messages.add_message(request, msg_type, msg)
-        response = HttpResponseRedirect(reverse("404"))
-    elif status not in {200, 302}:
-        messages.add_message(request, msg_type, msg)
-        response = HttpResponseRedirect(reverse("index"))"""
+    response = error_handler(request, response)
     return response
 
 
@@ -131,6 +126,7 @@ def return_from_authorization(request):
     Oauth2 authorization process.
     """
     # do I need to check here that they don't have credentials since it is checked on the front end
+    # no, but I do need to overwrite the credentials they do have since requesting new ones invalidates the current ones, I believe.
     user = make_user(request)
     if not user.is_authenticated:
         msg = "How did you get here, I am genuinely curious."

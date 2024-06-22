@@ -20,4 +20,4 @@ yt = YT(me)
 #sample_video_id1 = entry.video_id
 #sample_playlist_id = queue.yt_id
 
-bad_video = yt.find_video_by_id("12333333333333kasddlmksdfkjasfdnnkwqerrfnksadfknlasdfnlkqwefekjlqwfsdf")
+#bad_video = yt.find_video_by_id("12333333333333kasddlmksdfkjasfdnnkwqerrfnksadfknlasdfnlkqwefekjlqwfsdf")
