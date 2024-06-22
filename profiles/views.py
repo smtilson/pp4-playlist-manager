@@ -6,7 +6,7 @@ from queues.models import Queue
 from django.contrib import messages
 from errors.models import RequestReport
 from django.utils.safestring import mark_safe
-from error_processing import process_path
+from errors.views import error_handler, error_in_path
 from yt_auth.token_auth import (
     get_authorization_url,
     get_tokens,
@@ -26,10 +26,7 @@ def index(request):
     user = make_user(request)
     keywords = {"?state=", "&code=", "&scope=https://www.googleapis.com/auth/youtube"}
     valid_redirect = check_valid_redirect_action(request)
-    if "error" in path:
-            error_msg = process_path(path)
-            messages.add_message(request, messages.ERROR, error_msg)
-            response = HttpResponseRedirect(reverse("profile"))    
+    request = error_in_path(request)
     if user.is_authenticated:
         if all(word in path for word in keywords):
             # should this be a redirect?
@@ -42,13 +39,7 @@ def index(request):
         response = HttpResponseRedirect(reverse(view_name, args=args))
     else:
         response = render(request, "profiles/index.html")
-    """status, msg, msg_type = RequestReport.process(response)
-    if status == 404:
-        messages.add_message(request, msg_type, msg)
-        response = HttpResponseRedirect(reverse("404"))
-    elif status not in {200, 302}:
-        messages.add_message(request, msg_type, msg)
-        response = HttpResponseRedirect(reverse("profile"))"""
+    response = error_handler(request, response)
     return response
 
 

@@ -5,9 +5,9 @@ from .models import Queue, Entry, has_authorization
 from profiles.models import make_user
 from django.contrib import messages
 from yt_query.yt_api_utils import YT
-from urllib.error import HTTPError
+from requests.exceptions import HTTPError
 from collections import defaultdict
-from errors.views import error_handler
+from errors.views import error_handler, error_in_path
 
 
 # Create your views here.
@@ -21,6 +21,7 @@ def debug_template(request):
 def create_queue(request):
     # finished testing
     user = make_user(request)
+    request = error_in_path(request)
     if not user.is_authenticated:
         msg = "You must be logged in to create a queue."
         messages.add_message(request, messages.INFO, msg)
@@ -44,6 +45,7 @@ def create_queue(request):
 def edit_queue(request, queue_id):
     # tested
     user = make_user(request)
+    request = error_in_path(request)
     queue = get_object_or_404(Queue, id=queue_id)
     is_owner = user == queue.owner
     recent_search = request.POST.get("searchQuery", None)
@@ -60,7 +62,7 @@ def edit_queue(request, queue_id):
         elif request.method == "POST" and recent_search:
             try:
                 search_results = yt.search_videos(recent_search)
-            except Exception as e:
+            except HTTPError as e:
                 msg = f"The following error occurred: {e}"
                 msg_type = messages.ERROR
                 search_results = []
@@ -95,6 +97,7 @@ def delete_queue(request, queue_id):
     """
     queue = get_object_or_404(Queue, id=queue_id)
     user = make_user(request)
+    request = error_in_path(request)
     # there should be a modal to double check on the front end
     if queue.owner == user:
         # commented out due to rate limit issues.
@@ -123,10 +126,11 @@ def unpublish(request, queue_id):
     """
     queue = get_object_or_404(Queue, id=queue_id)
     user = make_user(request)
+    request = error_in_path(request)
     if queue.owner == user:
         try:
             queue.unpublish()
-        except Exception as e:
+        except HTTPError as e:
             msg = f"The following error occurred: {e}"
             msg_type = messages.ERROR
         else:
@@ -144,6 +148,7 @@ def unpublish(request, queue_id):
 
 def publish(request, queue_id):
     user = make_user(request)
+    request = error_in_path(request)
     queue = get_object_or_404(Queue, id=queue_id)
     if not queue.owner.youtube_channel:
         msg = "There is no channel associated with this queue. It can not be published. Please connect your account to a valid YouTube account in order."
@@ -178,6 +183,7 @@ def sync(request, queue_id):
     """
     queue = get_object_or_404(Queue, id=queue_id)
     user = make_user(request)
+    request = error_in_path(request)
     if not user == queue.owner:
         msg = "You must be the owner of the queue in order to sync it with YouTube."
         msg_type = messages.ERROR
@@ -191,7 +197,7 @@ def sync(request, queue_id):
     else:
         try:
             msg = queue.sync()
-        except Exception as e:
+        except HTTPError as e:
             msg = f"The following error occurred: {e}"
             msg_type = messages.ERROR
         else:
@@ -213,6 +219,7 @@ def add_entry(request, queue_id, video_id):
     """
     queue = get_object_or_404(Queue, id=queue_id)
     user = make_user(request)
+    request = error_in_path(request)
     msg_type = messages.ERROR
     if not has_authorization(user, queue):
         msg = "You do not have authorization to add entries to this queue."
@@ -226,12 +233,15 @@ def add_entry(request, queue_id, video_id):
         else:
             msg += "Ask the owner to remove some entries so you can add more."
         msg_type = messages.ERROR
-
     else:
         try:
             video_data = YT(user).find_video_by_id(video_id)
-        except Exception as e:
+        except HTTPError as e:
             msg = f"The following error occurred: {e}"
+            msg_type = messages.ERROR
+        except ValueError as e:
+            msg = f"There were too many videos associated with that ID. Try"
+            msg += "adding a different video."
             msg_type = messages.ERROR
         else:
             if video_data["status"] != "private":
@@ -263,6 +273,7 @@ def delete_entry(request, queue_id, entry_id):
           entry_id (int)
     Returns: Redirects to the "edit_queue" page of the relevant queue.
     """
+    request = error_in_path(request)
     queue = get_object_or_404(Queue, id=queue_id)
     user = make_user(request)
     entry = get_object_or_404(Entry, id=entry_id)
@@ -326,8 +337,10 @@ def gain_access(request, queue_secret, owner_secret):
              in, it adds the queue to their list of collaborative queues.
     """
     queue = get_object_or_404(Queue, secret=queue_secret)
+    
     # I am not sure if this particular change from request.user to make_user(request)) was relevant/necessary
     user = make_user(request)
+    request = error_in_path(request)
     msg = ""
     if owner_secret != queue.owner.secret:
         msg = f"This link is not valid. Please request another one from the {queue.owner.nickname}."
