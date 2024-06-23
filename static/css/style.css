@@ -8,6 +8,11 @@ lighter grey from darkreader: 303436
 border color from dark reader 877D6F
 */
 
+Html, body 
+{
+    max-width: 100%;
+    overflow-x: hidden;
+ }
 
 /* Base Styles */
 body {
@@ -17,7 +22,10 @@ body {
     color: white;
 }
 
+
+
 main {
+    /* Gotten from */
     background: rgb(15, 15, 15);
     background: linear-gradient(0deg, rgba(15, 15, 15, 1) 0%, rgba(39, 39, 39, 1) 50%, rgba(15, 15, 15, 1) 100%);
 }
@@ -165,12 +173,12 @@ main {
 
 #style-override input {
     color: white;
-    background-color: black;
+    background-color: #0f0f0f;
 }
 
 #style-override form .js-input-background {
     color: white;
-    background-color: black;
+    background-color: #0f0f0f;
 }
 
 #style-override .swap-input {
@@ -204,12 +212,12 @@ main {
 }
 
 #style-override .my-btn-border button {
-    border-color: black;
+    border-color: #0f0f0f;
     border-width: 1px;
 }
 
 #style-override .my-button-group .btn {
-    border-color: black;
+    border-color: #0f0f0f;
     border-width: 1px;
 }
 
