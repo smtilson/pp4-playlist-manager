@@ -57,5 +57,9 @@ def produce_url_code(**kwargs) -> str:
     return url_code
 
 
-
+def abbreviate(string: str, cutoff:int) -> str:
+    if len(string) > cutoff:
+        return string[:cutoff]+"..."
+    return string
+    
 

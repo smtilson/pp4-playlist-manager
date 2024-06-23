@@ -36,6 +36,8 @@ class Queue(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
 
     @property
     def synced(self):
+        if not self.published:
+            return True
         for entry in self.entries.all():
             if not entry.synced:
                 return False

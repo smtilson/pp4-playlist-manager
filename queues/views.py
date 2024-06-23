@@ -7,6 +7,7 @@ from django.contrib import messages
 from yt_query.yt_api_utils import YT
 from urllib.error import HTTPError
 from collections import defaultdict
+from utils import abbreviate
 
 
 # Create your views here.
@@ -14,7 +15,7 @@ def debug_template(request):
     context = {}
     context["queue"] = Queue.objects.first()
     context["is_owner"] = True
-    return render(request, "queues/owner_buttons_from_scratch.html", context)
+    return render(request, "queues/control_panel.html", context)
 
 
 def create_queue(request):
@@ -68,12 +69,19 @@ def edit_queue(request, queue_id):
                     recent_search="Search YouTube"
         elif request.method == "GET":
             recent_search, search_results = yt.get_last_search(request, queue_id)
+        if queue.length == 1:
+            num_entries = "1 entry"
+        else:
+            num_entries = f"{queue.length} entries"
+        for result in search_results:
+            result['title'] = abbreviate(result['title'], 30)
         context = {
             "queue": queue,
             "recent_search": recent_search,
             "search_results": search_results,
             "user": user,
             "is_owner": is_owner,
+            "num_entries": num_entries
         }    
         print("reset response to edit_queue hit in else block")
         response = render(request, "queues/edit_queue.html", context)
