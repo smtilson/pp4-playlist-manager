@@ -92,8 +92,8 @@ body {
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%255, 0, 0, 0.55%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
     border-width: 3px;
     border-radius: 10px;
-    position: fixed;
-    right: 3%;
+    /*position: absolute;
+    right: 3%;*/
 }
 
 #style-override .modal-body,
@@ -213,7 +213,7 @@ body {
 /* Specific Styles */
 
 #style-override #profile {
-    left: 1%;
+    left: 2.5%;
     position: relative;
 }
 
@@ -298,12 +298,12 @@ body {
     }
 
     #style-override #profile {
-        left: 3.5%;
+        left: 5.5%;
     }
 
-    #style-override .navbar-toggler {
+    /*#style-override .navbar-toggler {
         right: 5%;
-    }
+    }*/
 
     #style-override .queue-buttons-div {
         left: 16%;
@@ -351,14 +351,14 @@ body {
     }
 
     #style-override #profile {
-        left: -2.5%;
+        left: -3.5%;
         
     }
 
     /* This needs to be checked on other pages */
-    #style-override .navbar-toggler {
+    /*#style-override .navbar-toggler {
         right: 2%;
-    }
+    }*/
 
     #style-override #both-queues-div .min-height-row {
         min-height: 10em;
@@ -460,7 +460,7 @@ body {
     }
 
     #style-override #profile {
-        left:0;
+        left:-.5%;
     }
 
     #style-override .tag-line {
