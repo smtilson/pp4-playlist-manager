@@ -92,8 +92,6 @@ body {
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%255, 0, 0, 0.55%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
     border-width: 3px;
     border-radius: 10px;
-    /*position: absolute;
-    right: 3%;*/
 }
 
 #style-override .modal-body,
@@ -228,6 +226,17 @@ body {
     margin-bottom: -2%;
 }
 
+#style-override #create-queue .my-container {
+    width: 70%;
+    margin-left: 15%;
+}
+
+#style-override #create-queue button {
+    margin-top: 4%;
+    margin-left: 26%;
+}
+
+
 #style-override #my-queue-div .logo-div,
 #style-override #friends-queue-div .logo-div {
     left: 7.5%;
@@ -301,9 +310,9 @@ body {
         left: 5.5%;
     }
 
-    /*#style-override .navbar-toggler {
-        right: 5%;
-    }*/
+    #style-override #create-queue button {
+        margin-left: 29.5%;
+    }
 
     #style-override .queue-buttons-div {
         left: 16%;
@@ -352,13 +361,8 @@ body {
 
     #style-override #profile {
         left: -3.5%;
-        
-    }
 
-    /* This needs to be checked on other pages */
-    /*#style-override .navbar-toggler {
-        right: 2%;
-    }*/
+    }
 
     #style-override #both-queues-div .min-height-row {
         min-height: 10em;
@@ -374,6 +378,15 @@ body {
         width: 160%;
     }
 
+    #style-override #create-queue .my-container {
+        width: 50%;
+        margin-left: 22.5%;
+    }
+
+    #style-override #create-queue button {
+        margin-top: 3%;
+        margin-left: 34%;
+    }
 
     #style-override #both-queues-div .logo-div {
         min-height: 114px;
@@ -460,17 +473,18 @@ body {
     }
 
     #style-override #profile {
-        left:-.5%;
+        left: -.5%;
     }
 
     #style-override .tag-line {
         position: fixed;
-        right:4%;
+        right: 4%;
     }
 
     #style-override #set-name-form-button {
         left: 38%;
     }
+
     #style-override #both-queues-div .logo-div {
         min-height: 8em;
     }
@@ -479,9 +493,21 @@ body {
         min-height: 10em;
     }
 
+    #style-override #create-queue .my-container {
+        width: 45%;
+        margin-left: 25%;
+        margin-top:3%;
+    }
+
+    #style-override #create-queue button {
+        margin-top: 2%;
+        margin-left: 35%;
+    }
+
     #style-override .last {
         margin-bottom: 25%;
     }
+
     #style-override .footer {
         padding-top: 0.8em;
     }
