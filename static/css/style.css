@@ -92,6 +92,8 @@ body {
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%255, 0, 0, 0.55%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
     border-width: 3px;
     border-radius: 10px;
+    position: fixed;
+    right: 3%;
 }
 
 #style-override .modal-body,
@@ -110,7 +112,7 @@ body {
 /* My Containers */
 
 #style-override .my-list-item {
-    margin-left: 20px;
+    margin-left: 2%;
 }
 
 #style-override .logo-div {
@@ -124,6 +126,7 @@ body {
     border-width: 3px;
     justify-content: center;
     background-color: #303436;
+    text-align: center;
 }
 
 #style-override .my-container {
@@ -181,8 +184,6 @@ body {
     font-weight: 700;
 }
 
-
-
 #style-override .my-btn-border button {
     border-color: black;
     border-width: 1px;
@@ -211,9 +212,9 @@ body {
 
 /* Specific Styles */
 
-#style-override #queue-buttons-div {
-    margin-left: 9.5%;
-    width: 80%;    
+#style-override #profile {
+    left: 1%;
+    position: relative;
 }
 
 #style-override #set-name-form-label {
@@ -221,14 +222,21 @@ body {
 }
 
 #style-override #set-name-form-button {
-    margin-left: 31%;
+    left: 31%;
+    position: relative;
     margin-top: 8%;
     margin-bottom: -2%;
 }
 
-#style-override #my-queue-div .logo-div, 
-#style-override #friends-queue-div .logo-div{
-        margin-left: 11%;
+#style-override #my-queue-div .logo-div,
+#style-override #friends-queue-div .logo-div {
+    left: 7.5%;
+    width: 75%;
+    position: relative;
+}
+
+#style-override #both-queues-div {
+    margin-left: -3%;
 }
 
 #style-override .my-brand {
@@ -242,11 +250,26 @@ body {
 
 #style-override .btn-ytube {
     background-color: #e71a1acb;
-    ;
     color: white;
     font-weight: 600;
     margin: 5px;
     border-radius: 10px;
+}
+
+#style-override .btn-ytube-profile {
+    background-color: #e71a1acb;
+    color: white;
+    font-weight: 600;
+}
+
+#style-override .queue-buttons-div {
+    left: 15%;
+    gap: 12%;
+    width: 80%;
+}
+
+#style-override .queue-buttons-div button {
+    width: 120%;
 }
 
 #style-override #logout {
@@ -258,7 +281,7 @@ body {
     margin-top: 1.3em;
 }
 
-#style-override #last {
+#style-override .last {
     /* it was 35%, but changed it because of the profiel page. */
     margin-bottom: 43%;
 }
@@ -274,6 +297,23 @@ body {
         margin-left: 4.5%;
     }
 
+    #style-override #profile {
+        left: 3.5%;
+    }
+
+    #style-override .navbar-toggler {
+        right: 5%;
+    }
+
+    #style-override .queue-buttons-div {
+        left: 16%;
+        gap: 20%;
+    }
+
+    #style-override .queue-buttons-div button {
+        width: 143%;
+    }
+
     #style-override #logout {
         margin-left: 9.5%;
     }
@@ -286,6 +326,12 @@ body {
     #style-override #index .logo-div {
         width: 80%;
         margin-left: 10%;
+    }
+
+    #style-override #my-queue-div .logo-div,
+    #style-override #friends-queue-div .logo-div {
+        width: 65%;
+        left: 12%;
     }
 
 }
@@ -304,7 +350,43 @@ body {
         margin-left: 17%;
     }
 
-    #style-override #last {
+    #style-override #profile {
+        left: -2.5%;
+        
+    }
+
+    /* This needs to be checked on other pages */
+    #style-override .navbar-toggler {
+        right: 2%;
+    }
+
+    #style-override #both-queues-div .min-height-row {
+        min-height: 10em;
+    }
+
+    #style-override .queue-buttons-div {
+        left: 27.5%;
+        width: 60%;
+        gap: 25%;
+    }
+
+    #style-override .queue-buttons-div button {
+        width: 160%;
+    }
+
+
+    #style-override #both-queues-div .logo-div {
+        min-height: 114px;
+    }
+
+    #style-override #both-queues-div .logo {
+        position: relative;
+        align-self: center;
+        left: -9%;
+    }
+
+
+    #style-override .last {
         margin-bottom: 20%;
     }
 
@@ -317,10 +399,20 @@ body {
         display: inline-block;
     }
 
+    #style-override .min-height-row .profile-top {
+        min-height: 240px;
+        min-width: 310px
+    }
+
+    #style-override #user-info-div {
+        padding-bottom: 6.5%;
+    }
+
     #style-override #searchQuery {
         width: 26em;
         margin-left: 5.8em;
     }
+
     #style-override #index {
         width: 90%;
         margin-left: 5%;
@@ -362,9 +454,34 @@ body {
         width: 57%;
         margin-left: 21.5%;
     }
-#style-override #index {
-    margin-left: 6.5%;
-}
+
+    #style-override #index {
+        margin-left: 6.5%;
+    }
+
+    #style-override #profile {
+        left:0;
+    }
+
+    #style-override .tag-line {
+        position: fixed;
+        right:4%;
+    }
+
+    #style-override #set-name-form-button {
+        left: 38%;
+    }
+    #style-override #both-queues-div .logo-div {
+        min-height: 8em;
+    }
+
+    #style-override #both-queues-div .min-height-row {
+        min-height: 10em;
+    }
+
+    #style-override .last {
+        margin-bottom: 25%;
+    }
     #style-override .footer {
         padding-top: 0.8em;
     }

@@ -10,7 +10,7 @@
 <h1 class="logo">{% trans "Sign In" %}</h1>
 </div>
 
-<div class="text-center my-container" id="last">
+<div class="text-center my-container last">
 <p>{% blocktrans %}If you have not created an account yet, then please
 <a href="{{ signup_url }}">sign up</a> first.{% endblocktrans %}</p>
 <form class="login" id="login-form" method="POST" action="{% url 'account_login' %}">

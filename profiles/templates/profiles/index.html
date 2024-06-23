@@ -32,7 +32,7 @@
             href="https://myaccount.google.com/connections">Third Party apps and Services</a> to invalidate the
         permissions on Google's end.</p>
 </div>
-<div id="last" class="text-center text-container container my-container m-50">
+<div class="last text-center text-container container my-container m-50">
     {% if not user.is_authenticated %}
     <p class="mb-1">Have an account already, please <a href="{% url 'account_login' %}">login</a>.</p>
     {% else %}
