@@ -1,5 +1,5 @@
 from django.shortcuts import render, reverse, get_object_or_404
-from django.http import HttpResponseRedirect, JsonResponse
+from django.http import HttpResponseRedirect, JsonResponse, Http404
 from .models import Profile, GuestProfile, make_user
 from utils import check_valid_redirect_action
 from queues.models import Queue, has_authorization
@@ -152,28 +152,25 @@ def revoke_authorization(request):
         msg = "You must be logged in to revoke your authorization."
         messages.add_message(request, messages.INFO, msg)
         response = HttpResponseRedirect(reverse("account_login"))
-    status_code = revoke_tokens(user)
-    if status_code == 200:
-        msg = "Credentials successfully revoked for " + user.youtube_handle
-        msg_type = messages.SUCCESS
     else:
-        address = '<a href="https://myaccount.google.com/permissions">Third party apps and services</a>'
-        msg = "An error occurred. Your credentials have been wiped from our "
-        msg += f"system. To be on the safe side, please visit {address}"
-        msg += "to revoke your permissions. Look for 'pp4-playlist-manager' in"
-        msg += "the list of third party apps."
-        msg_type = messages.ERROR
-    user.revoke_youtube_data()
-    # there should be a modal for this
-    messages.add_message(request, msg_type, mark_safe(msg))
-    response = HttpResponseRedirect(reverse("profile"))
-    """status, msg, msg_type = RequestReport.process(response)
-    if status == 404:
-        messages.add_message(request, msg_type, msg)
-        response = HttpResponseRedirect(reverse("404"))
-    elif status not in {200, 302}:
-        messages.add_message(request, msg_type, msg)
-        response = HttpResponseRedirect(reverse("profile"))"""
+        # This error code is never 200, but sometimes the credentials are
+        # invalidated on Google's end as well.
+        status_code = revoke_tokens(user)
+        user.revoke_youtube_data()
+        if status_code == 200:
+            msg = "Credentials successfully revoked for " + user.youtube_handle
+            msg_type = messages.SUCCESS
+        else:
+            address = '<a href="https://myaccount.google.com/permissions">Third party apps and services</a>'
+            msg = "An error occurred. Your credentials have been wiped from our "
+            msg += f"system. To be on the safe side, please visit {address}"
+            msg += "to revoke your permissions. Look for 'pp4-playlist-manager' in"
+            msg += "the list of third party apps."
+            msg_type = messages.ERROR
+        # there should be a modal for this
+        messages.add_message(request, msg_type, mark_safe(msg))
+        response = HttpResponseRedirect(reverse("profile"))
+    response = error_handler(request, response)
     return response
 
 
@@ -184,42 +181,40 @@ def guest_sign_in(request):
     Args: request (HttpRequest)
     Returns:
     """
-    queue = get_object_or_404(Queue, id=request.session["queue_id"])
     user = make_user(request)
-    # are these ever hit? This seems maybe overly defensive.
-    if user.is_authenticated:
-        msg = "You are already logged in."
-        msg_type = messages.INFO
-        messages.add_message(request, msg_type, msg)
-        if "redirect_action" in request.session:
-            # The only usage of redirect_action is edit_queue.
-            view_name = request.session["redirect_action"]["action"]
-            args = request.session["redirect_action"]["args"]
-            response = HttpResponseRedirect(reverse(view_name, args=args))
-        else:
-            response = HttpResponseRedirect(reverse("profile"))
-    if request.method == "GET":
-        context = {"queue": queue}
-        return render(request, "profiles/guest_sign_in.html", context)
-    elif request.method == "POST":
-        name = request.POST["guest_name"]
-        email = request.POST.get("guest_email")
-        user = GuestProfile(
-            name=name,
-            email=email,
-            queue_id=queue.id,
-            queue_secret=queue.secret,
-            owner_secret=queue.owner.secret,
-        )
-        request.session["guest_user"] = user.serialize()
-        msg = f"Guest account set up for {user.nickname}"
-        messages.add_message(request, messages.SUCCESS, msg)
-        response = HttpResponseRedirect(reverse("edit_queue", args=[queue.id]))
-    """status, msg, msg_type = RequestReport.process(response)
-    if status == 404:
-        messages.add_message(request, msg_type, msg)
-        response = HttpResponseRedirect(reverse("404"))
-    elif status not in {200, 302}:
-        messages.add_message(request, msg_type, msg)
-        response = HttpResponseRedirect(reverse("index"))"""
+    try:
+        queue = get_object_or_404(Queue, id=request.session["queue_id"])
+    except (KeyError, Http404) as e:
+        msg = "An error occurred."
+        msg += str(e)
+        msg_type = messages.ERROR
+        response = HttpResponseRedirect(reverse("index"))
+    else:
+        if user.is_authenticated:
+            print("hit user authenticated")
+            msg = "You are already logged in."
+            msg_type = messages.INFO
+            messages.add_message(request, msg_type, msg)
+            if "redirect_action" in request.session:
+                response = HttpResponseRedirect(reverse("index"))
+            else:
+                response = HttpResponseRedirect(reverse("profile"))
+        elif request.method == "GET":
+            context = {"queue": queue}
+            response = render(request, "profiles/guest_sign_in.html", context)
+        elif request.method == "POST":
+            name = request.POST["guest_name"]
+            email = request.POST.get("guest_email")
+            user = GuestProfile(
+                name=name,
+                email=email,
+                queue_id=queue.id,
+                queue_secret=queue.secret,
+                owner_secret=queue.owner.secret,
+            )
+            request.session["guest_user"] = user.serialize()
+            msg = f"Guest account set up for {user.nickname}"
+            messages.add_message(request, messages.SUCCESS, msg)
+            response = HttpResponseRedirect(reverse("edit_queue", args=[queue.id]))
+    response = error_handler(request, response)
     return response
