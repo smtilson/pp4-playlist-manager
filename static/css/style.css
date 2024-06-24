@@ -12,7 +12,7 @@ html,
 body {
     max-width: 100%;
     overflow-x: hidden;
-    min-width:fit-content
+    min-width: fit-content
 }
 
 /* Base Styles */
@@ -65,9 +65,10 @@ main {
 
 #style-override .navbar {
     background-color: #0F0F0F;
-    width:100%;
-    color:white;
+    width: 100%;
+    color: white;
 }
+
 #style-override .navbar-toggler {
     border-color: #877D6F;
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%255, 0, 0, 0.55%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
@@ -107,9 +108,9 @@ main {
     border-width: 3px;
     justify-content: center;
     margin: 16px 0;
-    background: rgb(53, 52, 53);
-    background: linear-gradient(90deg, rgba(53, 52, 53, 1) 0%, rgba(53, 58, 60, 1) 49%, rgba(53, 52, 54, 1) 100%);
-    box-shadow: 0 0 5px rgba(231, 26, 26, .2), 2px 2px 5px rgba(231, 26, 26, 0.4);
+    background: rgb(15, 15, 15);
+    background: radial-gradient(circle, rgba(39, 39, 39, 1) 0%, rgba(53, 52, 53, 1) 67%);
+    box-shadow: 0 0 5px rgba(231, 26, 26, .2), 2px 2px 5px rgba(203, 199, 199, 0.4);
 }
 
 #style-override .my-container {
@@ -124,11 +125,10 @@ main {
     justify-content: center;
     background-color: #303436;
     margin: 16px 0;
-    background: rgb(53, 52, 53);
-    background: linear-gradient(90deg, rgba(53, 52, 53, 1) 0%, rgba(53, 58, 60, 1) 49%, rgba(53, 52, 54, 1) 100%);
-    /* background: rgb(53, 58, 60);
-    background: linear-gradient(135deg, rgba(53, 58, 60, 1) 0%, rgba(48, 52, 54, 1) 83%, rgba(53, 41, 42, 1) 100%);*/
-    box-shadow: 0 0 5px #e71a1a33, 2px 2px 5px rgba(231, 26, 26, 0.4);
+    background: rgb(15, 15, 15);
+    background: radial-gradient(circle, rgba(39, 39, 39, 1) 0%, rgba(53, 52, 53, 1) 67%);
+    
+    box-shadow: 0 0 5px #e71a1a33, 2px 2px 5px rgba(203, 199, 199, 0.4);
 }
 
 /* Input Elements */
@@ -280,7 +280,7 @@ main {
     border-radius: 10px;
 }
 
-#style-override #profile{
+#style-override #profile {
     left: 5%;
     position: relative;
 }
@@ -294,8 +294,6 @@ main {
 
 
 #style-override #profile #welcome {
-    position: relative;
-    /* check left */
     left: -4.5%;
 }
 
@@ -393,6 +391,9 @@ main {
         left: 12%;
     }
 
+    #style-override #profile #welcome {
+        left: -5%;
+    }
 }
 
 @media screen and (min-width: 768px) {
@@ -412,9 +413,17 @@ main {
     }
 
     #style-override #profile {
-        /* check left */
-        left: 2.5%;
+        left: 2%;
 
+    }
+
+    #style-override .queue-display-divs {
+        position: relative;
+        left: 1%;
+    }
+
+    #style-override #profile #welcome {
+        left: -3%;
     }
 
     #style-override #both-queues-div .min-height-row {
@@ -553,10 +562,14 @@ main {
         margin-left: 6.5%;
     }
 
+    #style-override #profile {
+        left: 2.5%;
+
+    }
+
     #style-override #profile .queue-display-divs {
         width: 43%;
-        /* check margin-left */
-        margin-left: 4.5%;
+        left: 0%;
     }
 
     #style-override .tag-line {
