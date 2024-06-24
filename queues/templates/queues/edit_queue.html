@@ -204,10 +204,10 @@
         </div>
         {% endif %}
     </section>
-    <section id="search-results-and-queue-entries" class="row">
+    <section id="results-and-entries" class="row">
         {% if search_results %}
         <section id="search-results" class="col-12 col-md-6">
-            <div class="logo-div my-container d-flex justify-content-center min-height-row">
+            <div class="logo-div my-container d-flex justify-content-center">
                 <h3><span class="no-wrap row">Search results:</span><span class="row">{{recent_search}}</span></h3>
             </div>
             <div class="my-container">
@@ -230,7 +230,7 @@
         </section>
         {% endif %}
         {% if queue.length != 0 %}
-        <section id="queue-entries" class="col-12 col-md-6 .min-height-row">
+        <section id="queue-entries" class="col-12 col-md-6">
             <div class="logo-div my-container d-flex justify-content-center ">
                 <h3>Queue Entries</h3>
             </div>
@@ -248,8 +248,27 @@
                             <div class="row d-flex align-items-center">
                                 <div class="{% if is_owner %}col-9{% else %}col-12{% endif %} col-md-8">
                                     <h5 class="entry-display">{{entry.position}}. {{entry.title_abv}} </h5>
-                                    <div class="nickname">
+                                    <div class="nickname-buttons">
                                         <h5 class="no-wrap">{{entry.username}} </h5>
+                                        {% if is_owner %}
+                                        <div class="btn-group my-btn-border" role="group"
+                                            aria-label="Position Control Buttons">
+                                            <!--<div class="position-div">-->
+                                            <button type="button" data-queue="{{queue.id}}" data-entry="{{entry.id}}"
+                                                class="move-btn btn btn-sm btn-warning" data-position="{{entry.position|add:-1}}"
+                                                data-direction="+">Up</button>
+                                            <button type="button" data-queue="{{queue.id}}" data-entry="{{entry.id}}"
+                                                class="move-btn btn btn-sm btn-warning" data-position="{{entry.position|add:1}}"
+                                                data-direction="-">Down</button>
+                                            <input id="new-position-{{entry.id}}" type="number"
+                                                class="swap-input d-none d-md-inline form-control">
+                                            <button type="button" class="btn btn-sm d-md-block btn-warning swap-button d-none"
+                                                data-queue="{{queue.id}}"><label for="new-position-{{entry.id}}"
+                                                    id="label-{{entry.id}}" class="d-md-block js-form-label d-none"
+                                                    data-entry="{{entry.id}}">Swap</label></button>
+                                        </div>
+                                        {% endif %}
+            
                                     </div>
                                 </div>
                                 {%if is_owner %}
@@ -286,24 +305,6 @@
                                 </div>
                                 {% endif %}
                             </div>
-                            {% if is_owner %}
-                            <div class="btn-group my-btn-border offset-3 offset-md-0" role="group"
-                                aria-label="Position Control Buttons">
-                                <!--<div class="position-div">-->
-                                <button type="button" data-queue="{{queue.id}}" data-entry="{{entry.id}}"
-                                    class="move-btn btn btn-sm btn-warning" data-position="{{entry.position|add:-1}}"
-                                    data-direction="+">Up</button>
-                                <button type="button" data-queue="{{queue.id}}" data-entry="{{entry.id}}"
-                                    class="move-btn btn btn-sm btn-warning" data-position="{{entry.position|add:1}}"
-                                    data-direction="-">Down</button>
-                                <input id="new-position-{{entry.id}}" type="number"
-                                    class="swap-input d-none d-md-inline form-control">
-                                <button type="button" class="btn btn-sm d-md-block btn-warning swap-button d-none"
-                                    data-queue="{{queue.id}}"><label for="new-position-{{entry.id}}"
-                                        id="label-{{entry.id}}" class="d-md-block js-form-label d-none"
-                                        data-entry="{{entry.id}}">Swap</label></button>
-                            </div>
-                            {% endif %}
                         </div>
                     </li>
                     {% endfor %}
