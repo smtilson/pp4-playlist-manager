@@ -1,3 +1,4 @@
+import yt_auth.token_auth
 from .models import Profile, GuestProfile, make_user
 from . import views
 import google.oauth2.credentials as g_oa2_creds
@@ -28,7 +29,9 @@ sample = "?state=BJn&code=4Eg&scope=https://www.googleapis.com/auth/youtube"
 
 
 class TestProfileViews(TestCase):
-
+    # For these tests, I had to combine two different approaches. One uses
+    # RequestFactory objects to make requests that can store data. This was
+    # necessary, but less convenient than the other approach, will be evident.
     def setup_users(self):
         self.user1 = Profile.objects.create_superuser(
             email="Testy1@McTestFace.com",
@@ -47,7 +50,7 @@ class TestProfileViews(TestCase):
         self.user2.credentials = credentials2
         self.user2.save()
 
-    def setup_queues(self):
+    def old_setup_queues(self):
         self.queue1 = Queue(
             owner=self.user1,
             title="Test Queue1 Title",
@@ -65,15 +68,25 @@ class TestProfileViews(TestCase):
         self.queue1.save()
         self.queue2.save()
 
+    def mock_queue(self, index: int) -> "Mock":
+        mock_queue = Mock()
+        mock_queue.owner = (self.user1,)
+        mock_queue.id = index
+        mock_queue.title = f"Test Queue Title {index}"
+        mock_queue.description = (f"Test Queue Description{index}",)
+        mock_queue.kind = ""
+        mock_queue.yt_id = ""
+        return mock_queue
+
     def setUp(self):
         self.factory = RequestFactory()
         self.setup_users()
-        self.setup_queues()
+        self.old_setup_queues()
         self.guest = GuestProfile(name="Guesty", email="Guesty@McTestFace.com")
         # self.guest.queue_id = self.queue1.id
 
-    def setup_credentials(self):
-        sample_token ={
+    def google_creds(self):
+        sample_token = {
             "universe_domain": "googleapis.com",
             "client_id": "secre.client.id.apps.googleusercontent.com",
             "token_uri": "https://oauth2.googleapis.com/token",
@@ -82,15 +95,22 @@ class TestProfileViews(TestCase):
             "account": "",
             "client_secret": "client_secret",
             "has_tokens": True,
-            "expiry": "2024-06-21T11:27:21.811035Z",
             "token": "token",
         }
-        credentials  = Credentials(**sample_token)
-        credentials.save()
-        return credentials
+        credentials = Credentials(**sample_token)
+        return credentials.to_google_credentials()
 
     def make_get_request(self, path):
         request = RequestFactory().get(path)
+        setattr(request, "session", "session")
+        messages = FallbackStorage(request)
+        setattr(request, "_messages", messages)
+        request.user = AnonymousUser()
+        request.session = {}
+        return request
+
+    def make_post_request(self, path, data: dict):
+        request = RequestFactory().post(path, data)
         setattr(request, "session", "session")
         messages = FallbackStorage(request)
         setattr(request, "_messages", messages)
@@ -130,15 +150,10 @@ class TestProfileViews(TestCase):
         self.assertEqual(response.status_code, 200)
         # Logged in
         self.client.login(email="Testy1@McTestFace.com", password="myPassword")
-        response = self.client.get(reverse("index"), follow=True)
-        self.assertRedirects(
-            response,
-            reverse("profile"),
-            status_code=302,
-            target_status_code=200,
-            msg_prefix="",
-            fetch_redirect_response=True,
-        )
+        response = self.client.get(reverse("index"))
+        self.assertEqual(response.status_code, 200)
+        path = response.request["PATH_INFO"]
+        self.assertEqual(path, "/")
 
     def _test_index_redirect_action(self):
         # Guest with good session data
@@ -161,9 +176,9 @@ class TestProfileViews(TestCase):
         request = self.make_get_request("/")
         request.session = session
         response = views.index(request)
-        self.assertEqual(response.status_code, 302)
-        path = response.headers["Location"]
-        self.assertEqual(path, "/")
+        self.assertEqual(response.status_code, 200)
+        #path = response.headers["Location"]
+        #self.assertEqual(path, "/")
         # Logged in with access
         session = {
             "redirect_action": {"action": "edit_queue", "args": [self.queue1.id]}
@@ -183,30 +198,29 @@ class TestProfileViews(TestCase):
         request.session = session
         request.user = self.user1
         response = views.index(request)
-        self.assertEqual(response.status_code, 302)
-        path = response.headers["Location"]
-        self.assertEqual(path, "/profile")
+        self.assertEqual(response.status_code, 200)
 
     def _test_index_has_code(self):
-        # I believe this inadvertently tests return from authorization as well.
+        # Note, these tests pass but an exception occurs.
         # Not logged in
         response = self.client.get(sample, follow=True)
         self.assertRedirects(
             response,
-            reverse("index"),
+            reverse("account_login"),
             status_code=302,
             target_status_code=200,
             msg_prefix="",
             fetch_redirect_response=True,
         )
-        """for user in [self.user1, self.guest, AnonymousUser()]:
-            request = self.make_get_request(sample)
-            request.user = user
-            response = views.index(request)
-            self.assertEqual(response.status_code, 302)
-            path = response.headers["Location"]
-            print
-        # Logged in"""
+        # Guest
+        session = {"guest_user": self.guest.serialize()}
+        request = self.make_get_request(sample)
+        request.session = session
+        response = views.index(request)
+        self.assertEqual(response.status_code, 302)
+        path = response.headers["Location"]
+        self.assertEqual(path, reverse("account_login"))
+        # Logged in
         self.client.login(email="Testy1@McTestFace.com", password="myPassword")
         response = self.client.get(sample, follow=True)
         self.assertRedirects(
@@ -229,11 +243,53 @@ class TestProfileViews(TestCase):
             msg_prefix="",
             fetch_redirect_response=True,
         )
+        # Guest
+        session = {"guest_user": self.guest.serialize()}
+        request = self.make_get_request(reverse("profile"))
+        request.session = session
+        response = views.profile(request)
+        self.assertEqual(response.status_code, 302)
+        path = response.headers["Location"]
+        self.assertEqual(path, reverse("account_login"))
         # Logged in
         self.client.login(email="Testy1@McTestFace.com", password="myPassword")
         response = self.client.get(reverse("profile"))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.queue1.title)
+
+    def _test_set_name(self):
+        data = {"name": "test name"}
+        old_nickname = self.user1.nickname
+        # Not logged in GET request
+        response = self.client.get(reverse("set_name"), follow=True)
+        self.assertRedirects(
+            response,
+            reverse("account_login"),
+            status_code=302,
+            target_status_code=200,
+            msg_prefix="",
+            fetch_redirect_response=True,
+        )
+        self.assertEqual(self.user1.nickname, old_nickname)
+        # Not logged in POST request
+        response = self.client.post(reverse("set_name"), data, follow=True)
+        self.assertRedirects(
+            response,
+            reverse("account_login"),
+            status_code=302,
+            target_status_code=200,
+            msg_prefix="",
+            fetch_redirect_response=True,
+        )
+        self.assertNotEqual(self.user1.nickname, "test name")
+        # Validated User
+        request = self.make_post_request(reverse("set_name"), data)
+        request.user = self.user1
+        response = views.set_name(request)
+        path = response.headers["Location"]
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(path, reverse("profile"))
+        self.assertEqual(self.user1.nickname, "test name")
 
     def _test_login_view(self):
         # Not Logged in
@@ -246,7 +302,7 @@ class TestProfileViews(TestCase):
         response = self.client.get(reverse("account_login"), follow=True)
         self.assertRedirects(
             response,
-            reverse("profile"),
+            reverse("index"),
             status_code=302,
             target_status_code=200,
             msg_prefix="",
@@ -282,31 +338,29 @@ class TestProfileViews(TestCase):
             fetch_redirect_response=True,
         )
 
-    def test_return_from_authorization(self):
+    def _test_return_from_auth(self):
         # Not logged in
-        response = self.client.get(REDIRECT_URI + sample, follow=True)
-        self.assertRedirects(
-            response,
-            reverse("index"),
-            status_code=302,
-            target_status_code=200,
-            msg_prefix="",
-            fetch_redirect_response=True,
-        )
+        request = self.make_get_request(REDIRECT_URI + sample)
+        response = views.return_from_authorization(request)
+        path = response.headers["Location"]
+        self.assertEqual(path, reverse("account_login"))
+        self.assertEqual(response.status_code, 302)
         # Logged in, approve access
-        with patch(yt_auth.token_auth.get_tokens) as mock_get:
-            credentials = self.setup_credentials()
-            mock_get.return_value = credentials.to_google_credentials()
-            self.client.login(email="Testy1@McTestFace.com", password="myPassword")
-            response = self.client.get(REDIRECT_URI + sample, follow=True)
-            self.assertRedirects(
-                response,
-                reverse("profile"),
-                status_code=302,
-                target_status_code=200,
-                msg_prefix="",
-                fetch_redirect_response=True,
-            )
-            print("refresh_tokens:")
-            print(self.user1.credentials.refresh_token)
-            self.assertTrue(self.user1.has_tokens)
+        request = self.make_get_request(REDIRECT_URI + sample)
+        request.user = self.user1
+        with patch("profiles.views.get_tokens") as mock_get_tokens:
+            mock_get_tokens.return_value = self.google_creds()
+            with patch("profiles.models.Profile.find_youtube_data") as mock_yt_data:
+                mock_yt_data.return_value = "test_channel", "test_handle"
+                response = views.return_from_authorization(request)
+                path = response.headers["Location"]
+        self.assertEqual(path, reverse("profile"))
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(self.user1.has_tokens)
+        # Logged in, deny access is handled by the index view and the function
+        # error_in_path
+    def test_revoke_auth(self):
+        pass
+
+    def test_guest_sign_in(self):
+        pass

@@ -29,8 +29,8 @@ main {
     background: linear-gradient(0deg, rgba(15, 15, 15, 1) 0%, rgba(39, 39, 39, 1) 50%, rgba(15, 15, 15, 1) 100%);
 }
 
-/* The use of the style-override Id was suggested as a way to override
-bootstrap styles.*/
+/* The use of the style-override Id was suggested on SO as a way to override
+Bootstrap styles.*/
 /* Override base styles*/
 #style-override ul li {
     list-style-type: none;
@@ -55,6 +55,10 @@ bootstrap styles.*/
 
 #style-override a {
     color: white;
+}
+
+#style-override .messages-div a {
+    color: #272727;
 }
 
 /* Navbar Styles */
