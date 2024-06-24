@@ -8,11 +8,11 @@ lighter grey from darkreader: 303436
 border color from dark reader 877D6F
 */
 
-Html, body 
-{
+Html,
+body {
     max-width: 100%;
     overflow-x: hidden;
- }
+}
 
 /* Base Styles */
 body {
@@ -147,8 +147,9 @@ main {
     border-color: rgb(135, 125, 111);
     border-width: 3px;
     justify-content: center;
-    background-color: rgb(48, 52, 54);
     margin: 16px 0;
+    background: rgb(53, 52, 53);
+    background: linear-gradient(90deg, rgba(53, 52, 53, 1) 0%, rgba(53, 58, 60, 1) 49%, rgba(53, 52, 54, 1) 100%);
     box-shadow: 0 0 5px rgba(231, 26, 26, .2), 2px 2px 5px rgba(231, 26, 26, 0.4);
 }
 
@@ -164,8 +165,10 @@ main {
     justify-content: center;
     background-color: #303436;
     margin: 16px 0;
-    background: rgb(53, 58, 60);
-    background: linear-gradient(135deg, rgba(53, 58, 60, 1) 0%, rgba(48, 52, 54, 1) 83%, rgba(53, 41, 42, 1) 100%);
+    background: rgb(53, 52, 53);
+    background: linear-gradient(90deg, rgba(53, 52, 53, 1) 0%, rgba(53, 58, 60, 1) 49%, rgba(53, 52, 54, 1) 100%);
+    /* background: rgb(53, 58, 60);
+    background: linear-gradient(135deg, rgba(53, 58, 60, 1) 0%, rgba(48, 52, 54, 1) 83%, rgba(53, 41, 42, 1) 100%);*/
     box-shadow: 0 0 5px #e71a1a33, 2px 2px 5px rgba(231, 26, 26, 0.4);
 }
 

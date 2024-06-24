@@ -143,4 +143,113 @@
     </div>
 </div>
 
+
+<div class="neumorphism">Neumorphism</div>
+
+<style>
+.neumorphism {
+    width: 200px;
+    height: 100px;
+    background: #e0e0e0;
+    border-radius: 10px;
+    box-shadow: 9px 9px 16px #bebebe,
+                -9px -9px 16px #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2em;
+    color: #333;
+    margin: 20px;
+}
+</style>
+
+<div class="perspective-container">
+    <div class="perspective-box">3D Transform</div>
+</div>
+
+<style>
+.perspective-container {
+    perspective: 1000px;
+    width: 200px;
+    height: 200px;
+    margin: 20px;
+}
+
+.perspective-box {
+    width: 100%;
+    height: 100%;
+    background-color: #3498db;
+    transform: rotateY(30deg) rotateX(20deg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.2em;
+}
+</style>
+<div class="layered-elements">
+    <div class="layer base">Base Layer</div>
+    <div class="layer middle">Middle Layer</div>
+    <div class="layer top">Top Layer</div>
+</div>
+
+<style>
+.layered-elements {
+    position: relative;
+    width: 200px;
+    height: 100px;
+    margin: 20px;
+}
+
+.layer {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    padding: 20px;
+    text-align: center;
+    border-radius: 8px;
+    color: white;
+}
+
+.base {
+    background-color: #3498db;
+    z-index: 1;
+}
+
+.middle {
+    background-color: #2980b9;
+    top: 10px;
+    left: 10px;
+    z-index: 2;
+}
+
+.top {
+    background-color: #1abc9c;
+    top: 20px;
+    left: 20px;
+    z-index: 3;
+}
+</style>
+<div>
+    <p>2</p>
+    <p>2</p>
+    <p>2</p>
+    <p>2</p>
+    <p>2</p>
+    <p>2</p>
+    <p>2</p>
+    <p></p>
+    <p></p>
+    <p></p>
+    <p></p>
+    <p></p>
+    <p></p>
+    <p></p>
+    <p></p>
+    <p></p>
+    <p></p>
+    <p></p>
+    <p></p>
+    <p></p>
+</div>
 {% endblock content %}
