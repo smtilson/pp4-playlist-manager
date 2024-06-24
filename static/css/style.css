@@ -8,10 +8,11 @@ lighter grey from darkreader: 303436
 border color from dark reader 877D6F
 */
 
-Html,
+html,
 body {
     max-width: 100%;
     overflow-x: hidden;
+    min-width:fit-content
 }
 
 /* Base Styles */
@@ -55,61 +56,18 @@ main {
     color: white;
 }
 
-#style-override .white {
-    color: white;
-}
-
-#style-override .red {
-    color: #FF0000;
-}
-
-#style-override .black {
-    color: #0F0F0F
-}
-
-#style-override .bkg-light-grey {
-    background-color: #303436
-}
-
-#style-override .bkg-grey {
-    background-color: #272727
-}
-
-#style-override .bkg-black {
-    background-color: #0F0F0F
-}
-
-#style-override .bkg-red {
-    background-color: #FF0000
-}
-
-#style-override .border-white {
-    border-color: white;
-}
-
-#style-override .border-red {
-    border-color: #f91f1fcb;
-    border-width: 3px;
-}
-
-#style-override .border-light-grey {
-    border-color: #303436
-}
-
-#style-override .border-grey {
-    border-color: #272727
-}
-
-#style-override .border-black {
-    border-color: #0F0F0F
-}
-
 /* Header Styles */
 #style-override .title {
     margin: 5em;
 }
 
 /* Navbar Styles */
+
+#style-override .navbar {
+    background-color: #0F0F0F;
+    width:100%;
+    color:white;
+}
 #style-override .navbar-toggler {
     border-color: #877D6F;
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%255, 0, 0, 0.55%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
@@ -133,6 +91,7 @@ main {
 /* My Containers */
 
 #style-override .my-list-item {
+    /* check margin-left */
     margin-left: 2%;
 }
 
@@ -189,6 +148,7 @@ main {
 }
 
 #style-override #searchQuery {
+    /* check margin-left */
     margin-left: .1em;
 }
 
@@ -238,20 +198,18 @@ main {
 
 #style-override .footer {
     padding-top: 0.4em;
+    background-color: #0F0F0F;
 }
 
 /* Specific Styles */
 
-#style-override #profile {
-    left: 2.5%;
-    position: relative;
-}
-
 #style-override #set-name-form-label {
+    /* check margin-left */
     margin-left: 2%
 }
 
 #style-override #set-name-form-button {
+    /* check left */
     left: 31%;
     position: relative;
     margin-top: 8%;
@@ -260,11 +218,13 @@ main {
 
 #style-override #create-queue .my-container {
     width: 70%;
+    /* check margin-left */
     margin-left: 15%;
 }
 
 #style-override #create-queue button {
     margin-top: 4%;
+    /* check margin-left */
     margin-left: 26%;
 }
 
@@ -274,10 +234,12 @@ main {
 
 #style-override #edit-queue #search-results-and-queue-entries .logo-div {
     width: 78%;
+    /* check margin-left */
     margin-left: 11%;
 }
 
 #style-override #edit-queue #search-results button {
+    /* check margin-left */
     margin-left: 35%;
 
 }
@@ -289,21 +251,13 @@ main {
 }
 
 #style-override #edit-queue .my-container {
+    /* check margin-left */
     margin-left: 5%;
 }
 
-#style-override #profile {
-    left: 6.5%;
-    position: relative;
-}
-
-#style-override #profile .logo-div {
-    left: 6.5%;
-    width: 75%;
-    position: relative;
-}
 
 #style-override #both-queues-div {
+    /* check margin-left */
     margin-left: -3%;
 }
 
@@ -313,6 +267,7 @@ main {
 }
 
 #style-override #queue-length {
+    /* check margin-left */
     margin-left: 40%;
 }
 
@@ -325,8 +280,22 @@ main {
     border-radius: 10px;
 }
 
+#style-override #profile{
+    left: 5%;
+    position: relative;
+}
+
+#style-override #profile .logo-div {
+    /* check left */
+    left: 6.5%;
+    width: 75%;
+    position: relative;
+}
+
+
 #style-override #profile #welcome {
     position: relative;
+    /* check left */
     left: -4.5%;
 }
 
@@ -338,6 +307,7 @@ main {
 }
 
 #style-override .queue-buttons-div {
+    /* check left */
     left: 10%;
     gap: 12%;
     width: 80%;
@@ -349,6 +319,7 @@ main {
 
 #style-override #logout {
     width: 80%;
+    /* check margin-left */
     margin-left: 8%;
 }
 
@@ -369,6 +340,7 @@ main {
 @media screen and (min-width: 425px) {
     #style-override #login {
         width: 92%;
+        /* check margin-left */
         margin-left: 4.5%;
     }
 
@@ -376,20 +348,19 @@ main {
         right: 4%;
     }
 
-    #style-override #profile {
-        left: 5.5%;
-    }
-
     #style-override #queue-display .my-container {
         width: 75%;
+        /* check margin-left */
         margin-left: 7%;
     }
 
     #style-override #create-queue button {
+        /* check margin-left */
         margin-left: 29.5%;
     }
 
     #style-override .queue-buttons-div {
+        /* check left */
         left: 16%;
         gap: 20%;
     }
@@ -399,22 +370,26 @@ main {
     }
 
     #style-override #logout {
+        /* check margin-left */
         margin-left: 9.5%;
     }
 
     #style-override #index {
         width: 90%;
+        /* check margin-left */
         margin-left: 5%;
     }
 
     #style-override #index .logo-div {
         width: 80%;
+        /* check margin-left */
         margin-left: 10%;
     }
 
     #style-override #my-queue-div .logo-div,
     #style-override #friends-queue-div .logo-div {
         width: 65%;
+        /* check left */
         left: 12%;
     }
 
@@ -424,6 +399,7 @@ main {
 
     #style-override #login {
         width: 70%;
+        /* check margin-left */
         margin-left: 16.3%;
         margin-top: 5%;
     }
@@ -431,11 +407,13 @@ main {
     #style-override #logout {
         width: 66%;
         margin-top: 10%;
+        /* check margin-left */
         margin-left: 17%;
     }
 
     #style-override #profile {
-        left: -2%;
+        /* check left */
+        left: 2.5%;
 
     }
 
@@ -444,6 +422,7 @@ main {
     }
 
     #style-override .queue-buttons-div {
+        /* check left */
         left: 27.5%;
         width: 60%;
         gap: 25%;
@@ -455,15 +434,18 @@ main {
 
     #style-override #create-queue .my-container {
         width: 50%;
+        /* check margin-left */
         margin-left: 22.5%;
     }
 
     #style-override #create-queue button {
         margin-top: 3%;
+        /* check margin-left */
         margin-left: 34%;
     }
 
     #style-override #edit-queue #search-results button {
+        /* check margin-left */
         margin-left: 5%;
 
     }
@@ -479,13 +461,6 @@ main {
     #style-override #both-queues-div .logo-div {
         min-height: 114px;
     }
-
-    #style-override #both-queues-div .logo {
-        position: relative;
-        align-self: center;
-        left: -9%;
-    }
-
 
     #style-override .last {
         margin-bottom: 20%;
@@ -511,34 +486,42 @@ main {
 
     #style-override #searchQuery {
         width: 26em;
+        /* check margin-left */
         margin-left: 5.8em;
     }
 
     #style-override #index {
         width: 90%;
+        /* check margin-left */
         margin-left: 5%;
     }
 
     #style-override #index .logo-div {
         width: 69%;
+        /* check margin-left */
         margin-left: 12.5%;
     }
 
-    /* Addresses bootstrap whitespace on the right*/
+    /* Addresses bootstrap whitespace on the right
+    I believe this is no longer relevant
     body {
+         check margin-left 
         margin-left: 35px;
-    }
+    }*/
 
     #style-override #search-results-and-queue-entries {
+        /* check margin-left */
         margin-left: -19px;
     }
 
     #style-override .edit-logo {
+        /* check margin-left */
         margin-left: 15px
     }
 
     #style-override #edit-queue #queue-info .my-container {
         width: 70%;
+        /* check margin-left */
         margin-left: 14%;
 
     }
@@ -546,12 +529,14 @@ main {
 
 @media screen and (min-width: 1024px) {
     #style-override #searchQuery {
+        /* check margin-left */
         margin-left: 20.5%;
         width: 60%;
     }
 
     #style-override #login {
         width: 61%;
+        /* check margin-left */
         margin-left: 21.3%;
         margin-top: 5%;
         margin-bottom: 3%;
@@ -559,19 +544,18 @@ main {
 
     #style-override #logout {
         width: 57%;
+        /* check margin-left */
         margin-left: 21.5%;
     }
 
     #style-override #index {
+        /* check margin-left */
         margin-left: 6.5%;
-    }
-
-    #style-override #profile {
-        left: -1%;
     }
 
     #style-override #profile .queue-display-divs {
         width: 43%;
+        /* check margin-left */
         margin-left: 4.5%;
     }
 
@@ -581,6 +565,7 @@ main {
     }
 
     #style-override #set-name-form-button {
+        /* check left */
         left: 38%;
     }
 
@@ -594,31 +579,37 @@ main {
 
     #style-override #create-queue .my-container {
         width: 45%;
+        /* check margin-left */
         margin-left: 25%;
         margin-top: 3%;
     }
 
     #style-override #create-queue button {
         margin-top: 2%;
+        /* check margin-left */
         margin-left: 35%;
     }
 
     #style-override #edit-queue #queue-info .my-container {
         width: 50%;
+        /* check margin-left */
         margin-left: 24%;
 
     }
 
     #style-override #edit-queue {
+        /* check margin-left */
         margin-left: -3%;
     }
 
     #style-override #search-youtube {
         width: 70%;
+        /* check margin-left */
         margin-left: 14%;
     }
 
     #style-override #edit-queue #search-results button {
+        /* check margin-left */
         margin-left: 35%;
     }
 
@@ -631,6 +622,7 @@ main {
     }
 
     #style-override #edit-queue #queue-entries .btn-group {
+        /* check left */
         left: 3%;
     }
 
