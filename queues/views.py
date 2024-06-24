@@ -7,6 +7,7 @@ from django.contrib import messages
 from yt_query.yt_api_utils import YT
 from requests.exceptions import HTTPError
 from collections import defaultdict
+from utils import abbreviate
 from errors.views import error_handler, error_in_path
 
 
@@ -15,7 +16,7 @@ def debug_template(request):
     context = {}
     context["queue"] = Queue.objects.first()
     context["is_owner"] = True
-    return render(request, "queues/owner_buttons_from_scratch.html", context)
+    return render(request, "queues/control_panel.html", context)
 
 
 def create_queue(request):
@@ -73,14 +74,21 @@ def edit_queue(request, queue_id):
                 )
         if recent_search == "None":
             recent_search = "Search YouTube"
+        if queue.length == 1:
+            num_entries = " Entry"
+        else:
+            num_entries = " Entries"
+        if search_results:
+            for result in search_results:
+                result['title'] = abbreviate(result['title'], 30)
         context = {
             "queue": queue,
             "recent_search": recent_search,
             "search_results": search_results,
             "user": user,
             "is_owner": is_owner,
-        }
-
+            "num_entries": num_entries
+        }    
         response = render(request, "queues/edit_queue.html", context)
     response = error_handler(request, response)
     return response

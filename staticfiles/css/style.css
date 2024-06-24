@@ -47,33 +47,8 @@ body {
     background-color: #272727
 }
 
-#style-override .bkg-black {
-    background-color: #0F0F0F
-}
-
 #style-override .bkg-red {
     background-color: #FF0000
-}
-
-#style-override .border-white {
-    border-color: white;
-}
-
-#style-override .border-red {
-    border-color: #f91f1fcb;
-    border-width: 3px;
-}
-
-#style-override .border-light-grey {
-    border-color: #303436
-}
-
-#style-override .border-grey {
-    border-color: #272727
-}
-
-#style-override .border-black {
-    border-color: #0F0F0F
 }
 
 /* Header Styles */
@@ -167,7 +142,7 @@ body {
 
 /* Button Styles */
 
-#style-override .my-button-group {
+#style-override .my-btn-group {
     gap: 5px;
 }
 
@@ -176,7 +151,7 @@ body {
     border-width: 1px;
 }
 
-#style-override .my-button-group .btn {
+#style-override .my-btn-group .btn {
     border-color: black;
     border-width: 1px;
 }

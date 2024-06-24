@@ -3,42 +3,29 @@
 
 {% block content %}
 <section id="index">
-<div class="text-center logo-div my-container">
-    <h1 class="logo">YouTube DJ</h1>
-    <h3 class="tag-line">Tag line</h3>
-</div>
+    <div class="text-center logo-div my-container">
+        <h1 class="logo">YouTube DJ</h1>
+    </div>
 
-<div class="text-center my-container">
-    <h4>Welcome to <span>YouTube DJ</span>, a webapp for making collaborative playlists.</h4>
-    <p class="blurb">
-    Once logged in, you will be able to <a href="{% url 'create_queue' %}">Create</a>, <a
-        href="{% url 'edit_queue' 1 %}">Edit</a>, and 'Share' queues with friends.
-    You and your friends will be able to add videos from YouTube to the queue from the edit page.
-    Get the most out of YouTube Dj by creating an account and pairing it with your YouTube account. Link to something
-    about the usage of yotube credentials. Once paired with a YouTube account, you will be able to 'Publish' your queues
-    to
-    YouTube as playlists. You can even continue editing the queue with your friends. Simply update the YouTube playlist
-    by 'Sync'ing them from the edit page. (only the queues owner can do this).
-    To fully utilize YouTube DJ, you must <a href="{% url 'account_login' %}">Login</a> or<a
-        href="{% url 'account_signup' %}">Register</a>
-    and give
-    us permission to create and edit playlists on your YouTube account. This access is only used to upload queues to
-    YouTube as well a sync them.</p>
-</div>
-<div class="my-container">
-    <h4>How we use your YouTube Data</h4>
-    <p>We use your YouTube Data to create and edit playlists. You can revoke these permissions at any time from the
-        profile page. This will remove them from our system. You can also visit <a
-            href="https://myaccount.google.com/connections">Third Party apps and Services</a> to invalidate the
-        permissions on Google's end.</p>
-</div>
-<div id="last" class="text-center text-container container my-container">
-    {% if not user.is_authenticated %}
-    <p class="mb-1">Have an account already, please <a href="{% url 'account_login' %}">login</a>.</p>
-    {% else %}
-    <p class="mb-1">You are logged in as <a href="{% url 'profile' %}">{{ user.nickname }}</a>.</p>
-    <a href="{% url 'account_logout' %}" class="btn">Logout</a>
-    {% endif %}
-</div>
+    <div class="my-container">
+        <h4 class="text-center">Make playlists with your friends!</h4>
+        <ul>
+            <li class="my-list-item"><a href="{% url 'create_queue' %}">Create</a> a new queue!</li>
+            <li class="my-list-item"><a href="{% url 'edit_queue' 1 %}">Add</a> videos to an existing queue.
+            </li>
+            <li class="my-list-item">Invite your friends to collaborate.</li>
+            <li class="my-list-item">Publish the queue as a YouTube playlist.</li>
+            <li class="my-list-item">Sync a queue to update the playlist.</li>
+        </ul>
+    </div>
+    <div class="my-container last">
+        <h4 class="text-center">How we use your Data</h4>
+        <p>We only use your YouTube Data to create and edit playlists. This canYou can revoke these permissions at any
+            time from the
+            <a href="{% url 'profile' %}">Profile</a> page. You can also visit <a
+                href="https://myaccount.google.com/connections">Third Party apps and Services</a> to invalidate the
+            permissions on Google's end.
+        </p>
+    </div>
 </section>
 {% endblock content%}

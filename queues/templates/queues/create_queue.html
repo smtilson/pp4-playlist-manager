@@ -1,18 +1,19 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<section id="create-queue">
 <div class="logo-div my-container text-center">
-<h2>Create a New Queue</h2>
+<h2 class="no-wrap">Create a New<br>Queue</h2>
 </div>
-<div class="container my-container">
-<form id="queue-form" method="POST" action="{% url 'create_queue' %}" style="margin-top: 1.3em;">
+<div class="container my-container last">
+<form id="queue-form" method="POST" action="{% url 'create_queue' %}">
     {% csrf_token %}
     <label for="queue-title" class="form-label">Title:</label>
     <input type="text" id="queue-title" required class="form-control" name="queue-title">
     <label for="queue-description" class="form-label">Description:</label>
     <input type="textarea" class="form-control" id="queue-description" name="queue-description">
-    <button id="submitButton" type="submit" class="btn btn-success btn-sm">Create Queue</button>
+    <button id="submitButton" type="submit" class="btn btn-success btn-sm create-queue-button">Create Queue</button>
 </form>
 </div>
-
+</section>
 {% endblock content %}
