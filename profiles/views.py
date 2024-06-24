@@ -40,9 +40,6 @@ def index(request):
         view_name = request.session["redirect_action"]["action"]
         args = request.session["redirect_action"]["args"]
         response = HttpResponseRedirect(reverse(view_name, args=args))
-    elif user.is_authenticated:
-        
-        response = HttpResponseRedirect(reverse("profile"))
     else:
         
         response = render(request, "profiles/index.html", {"user": user})

@@ -325,9 +325,21 @@ main {
     position: relative;
 }
 
-#style-override .blurb {
-    margin-top: 1.3em;
+#style-override #index {
+    position: relative;
+    left: 5%;
 }
+
+#style-override #index .my-list-item {
+    margin-bottom: 3%;
+}
+
+#style-override #login {
+    position: relative;
+    left: 5%;
+}
+
+
 
 #style-override .last {
     /* it was 35%, but changed it because of the profiel page. */
@@ -341,9 +353,14 @@ main {
 
 @media screen and (min-width: 425px) {
     #style-override #login {
-        width: 92%;
-        /* check margin-left */
-        margin-left: 4.5%;
+        width: 90%;
+        left: 9.5%;
+    }
+
+    #style-override #login .logo-div {
+        width: 70%;
+        left: 10%;
+        position: relative;
     }
 
     #style-override #edit-queue .remove-button {
@@ -373,14 +390,13 @@ main {
 
     #style-override #index {
         width: 90%;
-        /* check margin-left */
-        margin-left: 5%;
+        left: 9%;
     }
 
     #style-override #index .logo-div {
         width: 80%;
-        /* check margin-left */
-        margin-left: 10%;
+        left: 5%;
+        position: relative;
     }
 
     #style-override #my-queue-div .logo-div,
@@ -399,8 +415,7 @@ main {
 
     #style-override #login {
         width: 70%;
-        /* check margin-left */
-        margin-left: 16.3%;
+        left: 18%;
         margin-top: 5%;
     }
 
@@ -500,15 +515,18 @@ main {
     }
 
     #style-override #index {
-        width: 90%;
-        /* check margin-left */
-        margin-left: 5%;
+        width: 70%;
+        left: 18%;
     }
 
     #style-override #index .logo-div {
         width: 69%;
-        /* check margin-left */
-        margin-left: 12.5%;
+        left: 10%;
+    }
+
+    #style-override #index ul,
+    #style-override #index p {
+        margin-left: 5%;
     }
 
     /* Addresses bootstrap whitespace on the right
@@ -545,8 +563,7 @@ main {
 
     #style-override #login {
         width: 61%;
-        /* check margin-left */
-        margin-left: 21.3%;
+        left: 22.5%;
         margin-top: 5%;
         margin-bottom: 3%;
     }
@@ -556,9 +573,9 @@ main {
         left: 30.5%;
     }
 
-    #style-override #index {
-        /* check margin-left */
-        margin-left: 6.5%;
+    #style-override #index .logo-div {
+        width: 60%;
+        left: 14%;
     }
 
     #style-override #profile {
