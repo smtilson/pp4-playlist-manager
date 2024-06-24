@@ -339,7 +339,15 @@ main {
     left: 5%;
 }
 
+#style-override #signup {
+    position: relative;
+    left: 5%;
+}
 
+#style-override #signup .p-container {
+    padding-top: 3%;
+    padding-bottom: 1%;
+}
 
 #style-override .last {
     /* it was 35%, but changed it because of the profiel page. */
@@ -361,6 +369,11 @@ main {
         width: 70%;
         left: 10%;
         position: relative;
+    }
+
+    #style-override #signup {
+        width: 90%;
+        left: 9.5%;
     }
 
     #style-override #edit-queue .remove-button {
@@ -417,6 +430,25 @@ main {
         width: 70%;
         left: 18%;
         margin-top: 5%;
+    }
+
+    #style-override #signup {
+        width: 75%;
+        left: 16%;
+    }
+
+    #style-override #signup .logo-div {
+        width: 70%;
+        left: 9.5%;
+        position: relative;
+    }
+
+    #style-override #signup .p-container {
+        width: 50%;
+        left: 20%;
+        position: relative;
+        margin-top: 5%;
+        margin-bottom: 5%;
     }
 
     #style-override #logout {
