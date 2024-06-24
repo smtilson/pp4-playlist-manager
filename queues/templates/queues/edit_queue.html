@@ -11,7 +11,6 @@
         <div class="queue-data my-container container row">
             <div class="col d-flex-column align-items-center">
                 <h4>Owned by {{queue.owner.nickname}}</h4>
-                <p>Created on {{queue.created_at}}</p>
                 <h5>Description:</h5>
                 <p>{{queue.description}}</p>
                 <span class="row text-center">
@@ -249,8 +248,8 @@
                             <div class="row d-flex align-items-center">
                                 <div class="{% if is_owner %}col-9{% else %}col-12{% endif %} col-md-8">
                                     <h5 class="entry-display">{{entry.position}}. {{entry.title_abv}} </h5>
-                                    <div class="text-center">
-                                        <h5 class="no-wrap slign-self-center">{{entry.username}} </h5>
+                                    <div class="nickname">
+                                        <h5 class="no-wrap">{{entry.username}} </h5>
                                     </div>
                                 </div>
                                 {%if is_owner %}

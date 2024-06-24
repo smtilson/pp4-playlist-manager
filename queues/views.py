@@ -70,11 +70,12 @@ def edit_queue(request, queue_id):
         elif request.method == "GET":
             recent_search, search_results = yt.get_last_search(request, queue_id)
         if queue.length == 1:
-            num_entries = "1 entry"
+            num_entries = " Entry"
         else:
-            num_entries = f"{queue.length} entries"
-        for result in search_results:
-            result['title'] = abbreviate(result['title'], 30)
+            num_entries = " Entries"
+        if search_results:
+            for result in search_results:
+                result['title'] = abbreviate(result['title'], 30)
         context = {
             "queue": queue,
             "recent_search": recent_search,
