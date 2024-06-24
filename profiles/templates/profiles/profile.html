@@ -1,159 +1,114 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container">
-    <div class="row">
-        <div class="col-md-6 text-center logo-div my-container">
-            <h2 class="text-center logo">Profile: {{user.nickname}}</h2>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-6">
-            <div class="my-container text-center logo-div">
-                <h3>Profile Data</h3>
-            </div>
-            <div class="my-container text-center">
-                <ul>
-                    {% for key, value in info_dict.items %}
-                    <li>{{key}}: {{value}}</li>
-                    {% endfor %}
-                </ul>
+<section id="profile">
+    <section id="info-n-control-buttons">
+        <div class="row d-flex justify-content-center">
+            <div id="welcome" class="col-md-6 text-center logo-div">
+                <h2 class="logo">Welcome {{user.nickname}}</h2>
             </div>
         </div>
-
-        <div class="col-md-6">
-            {% if not user.name %}
-            <div>
-                Please add a name so that your friends know who made the queue or added the videos. (Maybe they will
-                even move
-                it up
-                in the queue!)
-                <form action="{% url 'set_name' %}" method="POST">
-                    {% csrf_token %}
-                    <label for="name">Name:</label><input type="text" name="name" id="name" required>
-                    <button type="submit">Submit</button>
-                </form>
+        <div class="row">
+            <div class="col-md-6 container min-height-row">
+                <div class="my-container profile-top" id="üser-info-div">
+                    <div class="d-flex">
+                        <ul class="">
+                            {% for key, value in info_dict.items %}
+                            <li class="row my-list-item">{{key}}:&nbsp &nbsp {{value}}</li>
+                            {% endfor %}
+                            <li class="row my-list-item">{{youtube_access}}</li>
+                        </ul>
+                    </div>
+                    <div id="user-buttons-div" class="row text-center" role="group" aria-label="User Buttons">
+                        {% if not user.has_tokens %}
+                        <a href="{{authorization_url}}"><button type="button" class="btn btn-success">Give Youtube
+                                DJ permissions</button></a>
+                        {% else %}
+                        <a href="{% url 'revoke_authorization' %}"><button type="button" class="btn btn-danger">Revoke
+                                Credentials</button></a>
+                        {% endif %}
+                        <a href="{% url 'create_queue' %}"><button type="button" class="btn btn-success">Create New
+                                Queue</button></a>
+                    </div>
+                </div>
             </div>
-            {% endif %}
-            {% if not user.has_tokens %}
-            <a href="{{authorization_url}}" target="_blank"><button class="btn btn-success">Give Youtube DJ
-                    permissions</button></a>
-            {% else %}
-            <a href="{% url 'revoke_authorization' %}"><button class="btn btn-danger">Revoke Credentials</button></a>
-            {% endif %}
-            <hr>
-            <a href="{% url 'create_queue' %}"><button class="btn btn-success">Create New Queue</button></a>
+            <div class="col-md-6 container min-height-row">
+                <div class="btn-group d-md-none queue-buttons-div" role="group" aria-label="Queue Buttons">
+                    <a href="#my-queue-div"><button type="button" class="btn btn-secondary">My<br>Queues</button></a>
+                    <a href="#friends-queue-div"><button type="button"
+                            class="btn btn-secondary">Friends<br>Queues</button></a>
+                </div>
+                <div id="name-form-div" class="row my-container profile-top">
+                        {% if not user.name %}
+                        Please add a name so that your friends know who made the queue or added the videos. (Maybe they
+                        will
+                        even move
+                        it up
+                        in the queue!)
+                        {% else %}
+                        Care to update your name? (This change will be reflected in all queues.)
+                        {% endif %}
+                    <form action="{% url 'set_name' %}" method="POST">
+                        {% csrf_token %}
+                        {% if user.name %}
+                        <label for="name" id="set-name-form-label">New Name:</label><input type="text" name="name"
+                            id="name" placeholder="{{user.name}}" required>
+                        {% else %}
+                        <label for="name" id="set-name-form-label">Name:</label><input type="text" name="name" id="name"
+                            required>
+                        {% endif %}
+                        <button type="submit" class="btn btn-secondary" id="set-name-form-button">Submit</button>
+                    </form>
+                </div>
+            </div>
         </div>
-    </div>
-    <div class="row">
-        <div class="col-md-6">
-            <div class="logo-div text-center my-container">
-                <h2>My Queues</h2>
-            </div>
-            {% for queue in my_queues %}
-            <div class="my-container text-center">
-                <h4><a href="{% url 'edit_queue' queue.id %}">{{queue.title}}</a></h4>
-                <h5> {% if queue.length != 1 %}
-                    {{queue.length}} videos
-                    {% else %}
-                    1 video
-                    {% endif %}
-                </h5>
-                <div class="owner-buttons container row">
-                    <div class="col-xs-3">
-                        <a href="{% url 'gain_access' queue.secret queue.owner.secret %}"><button
-                                class="btn btn-sm btn-success">Share</button></a></h3>
-                    </div>
-                    {% if user.has_tokens %}
-                    {% if not queue.published %}
-                    <div class="col-xs-3">
-                        <a href="{% url 'publish' queue.id %}"><button
-                                class="btn btn-sm btn-success">Publish</button></a>
-                    </div>
-                    {% elif not queue.synced %}
-                    <div class="col-xs-3">
-                        <a href="{% url 'sync' queue.id %}"><button class="btn btn-sm btn-success">Sync</button></a>
-                    </div>
+    </section>
+    <section id="queue-display">
+        <div class="d-flex-column d-flex-md-row row" id="both-queues-div">
+            <div id="my-queue-div" class="queue-display-divs col-md-6 d-flex-column align-items-center container">
+                <div class="logo-div text-center row no-wrap">
+                    <h2 class="logo">My Queues</h2>
+                </div>
+                {% for queue in my_queues %}
+                <div class="my-container text-center row min-height-row{% if forloop.last %} last{% endif %}">
+                    <div class="col">
+                        <h4><a href="{% url 'edit_queue' queue.id %}">{{queue.title}}</a></h4>
 
-                    <!-- Unpublish Modal Trigger -->
-                    <div class="col-xs-3">
-                        <button type="button" data-bs-toggle="modal" data-bs-target="#unpublishModal"
-                            class="btn btn-sm btn-danger">Unpublish</button>
-
-                        <div class="modal fade" id="unpublishModal" tabindex="-1" aria-labelledby="unpublishModalLabel"
-                            aria-hidden="true">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="unpublishModalLabel">Unpublish {{queue.title}}</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                            aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        Are you sure you want to unpublish?
-                                        This will remove the playlist from YouTube, but not delete the Queue on YouTube
-                                        DJ.
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary"
-                                            data-bs-dismiss="modal">Close</button>
-                                        <button type="button" class="btn btn-danger">Unpublish</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    {% endif %}
-                    {%endif%}
-                    <!-- Delete Modal Trigger -->
-                    <div class="col-xs-3">
-                        <button type="button" data-bs-toggle="modal" data-bs-target="#deleteModal"
-                            class="btn btn-sm btn-danger">Delete</button>
-                    </div>
-
-                    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel"
-                        aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="deleteModalLabel">Delete {{queue.title}}</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                        aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    Are you sure you want to Delete {{queue.title}}?
-                                    This will delete the queue from YouTube DJ, but not delete the playlist from
-                                    YouTube.
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary"
-                                        data-bs-dismiss="modal">Close</button>
-                                    <a href="{% url 'delete_queue' queue.id %}"><button
-                                            class="btn btn-danger">Delete</button></a>
-                                </div>
-                            </div>
+                        <h5>
+                            {% if queue.length != 1 %}
+                            {{queue.length}} entries
+                            {% else %}
+                            1 entry
+                            {% endif %}
+                        </h5>
+                        <div class="share-play-buttons btn-group" role="group" aria-label="Share and Play buttons">
+                            <a class="" href="{% url 'gain_access' queue.secret queue.owner.secret %}"><button
+                                    type="button" class="btn btn-success">Share</button></a>
+                            <a href="{{queue.url}}" target="_blank"><button class="btn btn-ytube">Play</button></a>
                         </div>
                     </div>
                 </div>
-
+                {% endfor %}
             </div>
-            {% endfor %}
+            <div id="friends-queue-div" class="queue-display-divs col-md-6 d-flex-column align-items-center container">
+                <div class="logo-div text-center row no-wrap">
+                    <h2 class="logo">My Friends'<br>Queues</h2>
+                </div>
+                {% for queue in other_queues %}
+                <div class="my-container text-center min-height-row row{% if forloop.last %} last{% endif %}">
+                    <h4 class="row"><a href="{% url 'edit_queue' queue.id %}">{{queue.title}}</a></h4>
+                    <h5>
+                        {% if queue.length != 1 %}
+                        {{queue.length}} entries
+                        {% else %}
+                        1 entry
+                        {% endif %}
+                    </h5>
+                    <a href="{{queue.url}}" target="_blank"><button class="btn btn-ytube">Play</button></a>
+                </div>
+                {% endfor %}
+            </div>
         </div>
-        <div class="col-md-6">
-            <div class="logo-div my-container text-center">
-                <h2>My Friends' Queues</h2>
-            </div>
-            {% for queue in other_queues %}
-            <div class="my-container text-center">
-                <h4><a href="{% url 'edit_queue' queue.id %}">{{queue.title}}</a></h4>
-                <h5>Created <!--on {{queue.date_created}} -->by {{queue.owner.nickname}}</h5>
-                <h5> {% if queue.length != 1 %}
-                    {{queue.length}} videos
-                    {% else %}
-                    1 video
-                    {% endif %}
-                </h5>
-            </div>
-            {% endfor %}
-        </div>
-        {% endblock content %}
+    </section>
+</section>
+{% endblock content %}

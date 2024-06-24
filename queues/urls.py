@@ -18,6 +18,7 @@ urlpatterns = [
         views.delete_queue,
         name="delete_queue",
     ),
+    path("debug_template", views.debug_template, name="debug_template"),
     path("swap/<int:entry_id>/<int:other_entry_position>",views.swap,name="swap"),
     path("publish/<int:queue_id>", views.publish, name="publish"),
 ]

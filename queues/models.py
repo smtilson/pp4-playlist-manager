@@ -36,6 +36,8 @@ class Queue(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
 
     @property
     def synced(self):
+        if not self.published:
+            return True
         for entry in self.entries.all():
             if not entry.synced:
                 return False
@@ -113,6 +115,7 @@ class Queue(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
         self.save()
         return f"Queue {self.title} successfully added to youtube."
 
+    
     @property
     def url(self):
         if self.published:
@@ -137,6 +140,7 @@ class Queue(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
         self.save()
         print(response)
 
+
     def pop(self, index: int = -1):
         entry = self[index]
         e_dict = entry.to_dict()
@@ -144,22 +148,6 @@ class Queue(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
         self.length -= 1
         self.save()
         return e_dict
-
-    def get_published_version(self, yt):
-        if not self.published:
-            print("This queue isn't published yet.")
-            return
-        response = yt.get_published_playlist(self.yt_id)
-        return response
-
-    def prepare_removed_entries(self, yt):
-        current_playlist = self.get_published_version(yt)
-        excess_entries = [
-            yt_entry
-            for yt_entry in current_playlist
-            if yt_entry["position"] >= self.length
-        ]
-        return excess_entries
 
     def remove_excess(self, yt):
         for entry in self.deleted_entries:
@@ -176,7 +164,11 @@ class Queue(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
             elif not entry.synced:
                 entry.sync(yt)
         self.save()
+        
+   
+    
 
+    
     def resort(self):
         positions = {entry._position for entry in self.all_entries}
         count = 0
@@ -216,6 +208,12 @@ class Entry(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
 
     def __str__(self):
         return f"{self.position}. {self.title} added by {self.username}"
+    
+    @property
+    def title_abv(self):
+        if len(self.title) > 30:
+            return self.title[:30]+"..."
+        return self.title
     @property
     def username(self):
         if '@' in self.user:
@@ -249,7 +247,7 @@ class Entry(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
         self.published = True
         self.synced = True
         self.save()
-
+    
     def to_dict(self) -> dict:
         return self.to_dict_mixin(self.field_names(), {"p_queue"})
 
@@ -282,7 +280,9 @@ class Entry(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
         return self, other_entry
 
 
-def has_authorization(user, queue):
-    if queue.id in getattr(user, "all_queue_ids", []):
+def has_authorization(user, queue_id):
+    if not user.is_authenticated and not user.is_guest:
+        return False
+    elif queue_id in getattr(user, "all_queue_ids", []):
         return True
     return False

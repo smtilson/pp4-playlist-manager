@@ -1,4 +1,4 @@
-# Write helper functions for interacting with youtube API
+# Helper class and methods for interacting with youtube API
 # from profiles.models import Profile
 from googleapiclient.discovery import build
 from utils import produce_url_code
@@ -173,10 +173,7 @@ def parse_video_result(response_item: dict) -> dict:
         "yt_id": response_item["id"],
         "video_id": response_item["id"],
         "title": response_item["snippet"]["title"],
-        # thumbnail data is in response_item['snippet']['thumbnails'] then with different sizes
         "duration": response_item["contentDetails"]["duration"],
-        # region restrictions is in response_item['contentDetails']['regionRestriction'] etc
-        # private, public, and unlisted as possible values
         "status": response_item["status"]["privacyStatus"],
     }
     return video_result
