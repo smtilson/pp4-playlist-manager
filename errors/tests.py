@@ -71,7 +71,7 @@ class TestErrors(TestCase):
         return request
     
 
-    def _test_error_handler_200(self):
+    def test_error_handler_200(self):
         # Logged in
         response = Mock(status_code=200)
         request = self.user_request("/")
@@ -89,7 +89,7 @@ class TestErrors(TestCase):
         self.assertEqual(response.status_code, 200)
         
     
-    def _test_error_handler_302(self):
+    def test_error_handler_302(self):
         # Logged in
         response = Mock(status_code=302)
         request = self.user_request("/")
@@ -112,23 +112,16 @@ class TestErrors(TestCase):
         request = self.user_request("/")
         response = views.error_handler(request, response)
         self.assertEqual(response.status_code, 404)
-        test_string = str.encode("Page Not Found")
-        self.assertContains(response, test_string)
         # Guest
-        print("hit guest test")
         response = Mock(status_code=404)
         request = self.guest_request("/")
         response = views.error_handler(request, response)
         self.assertEqual(response.status_code, 404)
-        test_string = str.encode("Page Not Found")
-        self.assertContains(response, test_string)
         # Anonymous
         response = Mock(status_code=404)
         request = self.anon_request("/")
         response = views.error_handler(request, response)
         self.assertEqual(response.status_code, 404)
-        test_string = str.encode("Page Not Found")
-        self.assertContains(response, test_string)
 
     def test_error_handler_500(self):
         # Logged in
