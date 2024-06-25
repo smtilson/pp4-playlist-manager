@@ -9,11 +9,12 @@ from unittest.mock import patch, MagicMock, Mock
 from django.contrib.sessions.backends import db
 from django.urls import reverse
 from django.test import TestCase, RequestFactory
-from queues.models import Queue
+from queues.models import Queue, has_authorization
 from django.http import HttpResponseRedirect
 import os
 from django.test import RequestFactory
 import yt_auth
+from utils import check_valid_redirect_action
 
 if os.path.isfile("env.py"):
     import env
@@ -137,7 +138,7 @@ class TestProfileViews(TestCase):
         self.assertTrue(user.is_authenticated)
         self.assertFalse(user.is_guest)
 
-    def _test_index_no_code_no_redirect(self):
+    def _test_index(self):
         # Anonymous User
         response = self.client.get(reverse("index"))
         self.assertEqual(response.status_code, 200)
@@ -151,85 +152,73 @@ class TestProfileViews(TestCase):
         self.client.login(email="Testy1@McTestFace.com", password="myPassword")
         response = self.client.get(reverse("index"))
         self.assertEqual(response.status_code, 200)
-        path = response.request["PATH_INFO"]
-        self.assertEqual(path, "/")
-
-    def test_index_redirect_action(self):
-        # Guest with good session data
-        self.guest.queue_id = self.queue2.id
-        session = {
-            "guest_user": self.guest.serialize(),
-            "redirect_action": {"action": "edit_queue", "args": [self.queue2.id]},
-        }
+        # Guest with queue_id
+        self.guest.queue_id = self.queue1.id
+        session = {"guest_user": self.guest.serialize()}
         request = self.make_get_request("/")
         request.session = session
         response = views.index(request)
         self.assertEqual(response.status_code, 302)
         path = response.headers["Location"]
-        self.assertEqual(path, "/queues/edit_queue/2")
+        self.assertEqual(path, f"/queues/edit_queue/{self.queue1.id}")
+        # Code present
+        response = self.client.get(sample)
+        self.assertEqual(response.status_code, 302)
+        path = response.headers["Location"]
+        self.assertEqual(path, reverse("return_from_authorization"))
+        # Redirect action in session
+        session = {"redirect_action": "edit_queue", "queue_id": self.queue1.id}
+        request = self.make_get_request("/")
+        request.session = session
+        response = views.index(request)
+        self.assertEqual(response.status_code, 302)
+        path = response.headers["Location"]
+        self.assertEqual(path, reverse("redirect_action"))
+
+    def _test_redirect_action(self):
+        # Guest with good redirect action
+        self.guest.queue_id = self.queue2.id
+        session = {
+            "guest_user": self.guest.serialize(),
+            "redirect_action": "edit_queue",
+            "queue_id": self.queue2.id,
+        }
+        request = self.make_get_request("redirect_action")
+        request.session = session
+        response = views.redirect_action(request)
+        self.assertEqual(response.status_code, 302)
+        path = response.headers["Location"]
+        self.assertEqual(path, reverse("edit_queue", args=[self.queue2.id]))
         # Guest with invalid redirect data
         session = {
             "guest_user": self.guest.serialize(),
-            "redirect_action": {"action": "edit_queue", "args": [self.queue1.id]},
+            "redirect_action": "edit_queue",
+            "queue_id": self.queue1.id,
         }
-        request = self.make_get_request("/")
+        request = self.make_get_request(reverse("redirect_action"))
         request.session = session
-        response = views.index(request)
-        self.assertEqual(response.status_code, 200)
-        # path = response.headers["Location"]
-        # self.assertEqual(path, "/")
+        response = views.redirect_action(request)
+        self.assertEqual(response.status_code, 302)
+        path = response.headers["Location"]
+        self.assertEqual(path, "/")
         # Logged in with access
-        session = {
-            "redirect_action": {"action": "edit_queue", "args": [self.queue1.id]}
-        }
-        request = self.make_get_request("/")
+        session = {"redirect_action": "edit_queue", "queue_id": self.queue1.id}
+        request = self.make_get_request(reverse("redirect_action"))
         request.session = session
         request.user = self.user1
-        response = views.index(request)
+        response = views.redirect_action(request)
         self.assertEqual(response.status_code, 302)
         path = response.headers["Location"]
         self.assertEqual(path, "/queues/edit_queue/1")
         # Logged in without access
-        session = {
-            "redirect_action": {"action": "edit_queue", "args": [self.queue2.id]}
-        }
-        request = self.make_get_request("/")
+        session = {"redirect_action": "edit_queue", "queue_id": self.queue2.id}
+        request = self.make_get_request(reverse("redirect_action"))
         request.session = session
         request.user = self.user1
-        response = views.index(request)
-        self.assertEqual(response.status_code, 200)
-
-    def _test_index_has_code(self):
-        # Note, these tests pass but an exception occurs.
-        # Not logged in
-        response = self.client.get(sample, follow=True)
-        self.assertRedirects(
-            response,
-            reverse("account_login"),
-            status_code=302,
-            target_status_code=200,
-            msg_prefix="",
-            fetch_redirect_response=True,
-        )
-        # Guest
-        session = {"guest_user": self.guest.serialize()}
-        request = self.make_get_request(sample)
-        request.session = session
-        response = views.index(request)
+        response = views.redirect_action(request)
         self.assertEqual(response.status_code, 302)
         path = response.headers["Location"]
-        self.assertEqual(path, reverse("account_login"))
-        # Logged in
-        self.client.login(email="Testy1@McTestFace.com", password="myPassword")
-        response = self.client.get(sample, follow=True)
-        self.assertRedirects(
-            response,
-            reverse("profile"),
-            status_code=302,
-            target_status_code=200,
-            msg_prefix="",
-            fetch_redirect_response=True,
-        )
+        self.assertEqual(path, "/")
 
     def _test_index_error_code(self):
         # Not logged In
@@ -343,19 +332,27 @@ class TestProfileViews(TestCase):
             fetch_redirect_response=True,
         )
 
-    def _test_return_from_auth(self):
+    def test_return_from_auth(self):
         # Not logged in
         request = self.make_get_request(REDIRECT_URI + sample)
         response = views.return_from_authorization(request)
         path = response.headers["Location"]
         self.assertEqual(path, reverse("account_login"))
         self.assertEqual(response.status_code, 302)
+        # Guest
+        session = {"guest_user": self.guest.serialize()}
+        request = self.make_get_request(sample)
+        request.session = session
+        response = views.return_from_authorization(request)
+        self.assertEqual(response.status_code, 302)
+        path = response.headers["Location"]
+        self.assertEqual(path, reverse("account_login"))
         # Logged in, approve access
         request = self.make_get_request(REDIRECT_URI + sample)
         request.user = self.user1
         with patch("profiles.views.get_tokens") as mock_get_tokens:
             mock_get_tokens.return_value = self.google_creds()
-            with patch("profiles.models.Profile.find_youtube_data") as mock_yt_data:
+            with patch("profiles.models.YT.find_user_youtube_data") as mock_yt_data:
                 mock_yt_data.return_value = "test_channel", "test_handle"
                 response = views.return_from_authorization(request)
                 path = response.headers["Location"]
@@ -364,7 +361,7 @@ class TestProfileViews(TestCase):
         # Check Tokens
         self.assertTrue(self.user1.has_tokens)
         # Check YouTube Data
-        self.assertEqual(self.user1.youtube_channel_id, "test_channel")
+        self.assertEqual(self.user1.youtube_channel, "test_channel")
         self.assertEqual(self.user1.youtube_handle, "test_handle")
         # Logged in, deny access is handled by the index view and the function
         # error_in_path
@@ -397,14 +394,11 @@ class TestProfileViews(TestCase):
             with patch("profiles.models.YT.find_user_youtube_data") as mock_yt_data:
                 mock_yt_data.return_value = "test_channel", "test_handle"
                 response1 = views.return_from_authorization(request1)
-        print(self.user1.youtube_handle)
         data = {
             self.user1.has_tokens,
             self.user1.youtube_handle,
             self.user1.youtube_channel,
         }
-        for datum in data:
-            print(data)
         if not all(data):
             raise ValueError("Tokens and data were not mocked/acquired.")
         request2 = self.make_get_request(reverse("revoke_authorization"))
@@ -420,56 +414,52 @@ class TestProfileViews(TestCase):
         }
         self.assertFalse(any(data))
 
-    def test_guest_sign_in_GET_no_redirect_action(self):
-        # No queue in session, not logged in
+    def _test_guest_sign_in_GET(self):
+        # No queue in session
         response = self.client.get(reverse("guest_sign_in"), follow=True)
-        self.assertRedirects(
-            response,
-            reverse("index"),
-            status_code=302,
-            target_status_code=200,
-            msg_prefix="",
-            fetch_redirect_response=True,
-        )
-        # No queue in session, logged in
-        self.client.login(email="Testy1@McTestFace.com", password="myPassword")
-        response = self.client.get(reverse("guest_sign_in"), follow=True)
-        self.assertRedirects(
-            response,
-            reverse("index"),
-            status_code=302,
-            target_status_code=200,
-            msg_prefix="",
-            fetch_redirect_response=True,
-        )
-        # Queue in session, not logged in
-        session = {"queue_id":self.queue1.id}
+        self.assertEqual(response.status_code, 404)
+        #self.assertEqual(path, "404")            
+        # Queue in session, not logged in, GET request
+        session = {"queue_id": self.queue1.id}
         request = self.make_get_request(reverse("guest_sign_in"))
         request.user = AnonymousUser()
         request.session = session
         response = views.guest_sign_in(request)
-        print(type(response))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, str.encode(self.queue1.title))
         # Queue in session, logged in
-        session = {"queue_id":self.queue1.id}
+        session = {"queue_id": self.queue1.id}
         request = self.make_get_request(reverse("guest_sign_in"))
         request.user = self.user1
         request.session = session
         response = views.guest_sign_in(request)
         self.assertEqual(response.status_code, 302)
         path = response.headers["Location"]
-        self.assertEqual(path, reverse("profile"))
-        
+        self.assertEqual(path, reverse("edit_queue", args=[self.queue1.id]))
+        # Queue in session, guest
+        session = {"queue_id": self.queue1.id, "guest_user": self.guest.serialize()}
+        request = self.make_get_request(reverse("guest_sign_in"))
+        request.session = session
+        response = views.guest_sign_in(request)
+        self.assertEqual(response.status_code, 302)
+        path = response.headers["Location"]
+        self.assertEqual(path, reverse("edit_queue", args=[self.queue1.id]))
 
-'''
-        self.client.login(email="Testy1@McTestFace.com", password="myPassword")
-        response = self.client.get(reverse("guest_sign_in"), follow=True)
-        self.assertRedirects(
-            response,
-            reverse("index"),
-            status_code=302,
-            target_status_code=200,
-            msg_prefix="",
-            fetch_redirect_response=True,
-        )'''
+    def _test_guest_sign_in_POST(self):
+        # No queue in session
+        response = self.client.post(reverse("guest_sign_in"), follow=True)
+        self.assertEqual(response.status_code, 404)
+        # Queue in session
+        session = {"queue_id": self.queue1.id}
+        data = {"guest_name":"guest_test_name", "guest_email":"guest_test_email"}
+        request = self.make_post_request(reverse("guest_sign_in"), data)
+        request.session = session
+        response = views.guest_sign_in(request)
+        self.assertEqual(response.status_code, 302)
+        path = response.headers["Location"]
+        self.assertEqual(path, reverse("edit_queue", args=[self.queue1.id]))
+        user = make_user(request)
+        self.assertTrue(user.is_guest)
+        self.assertEqual(user.name, data["guest_name"])
+        self.assertEqual(user.email, data["guest_email"])
+        self.assertTrue(has_authorization(user,self.queue1.id))

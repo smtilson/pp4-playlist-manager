@@ -46,10 +46,8 @@ def produce_url_code(**kwargs) -> str:
 
 
 def check_valid_redirect_action(request) -> bool:
-    redirect_action = request.session.get("redirect_action",{})
-    valid_actions = {"edit_queue"}
-    return redirect_action.get('action','None') in valid_actions
-
+    # Currently only one redirect action is implemented
+    return request.session.get("redirect_action") == "edit_queue"
 
 
 def abbreviate(string: str, cutoff:int) -> str:

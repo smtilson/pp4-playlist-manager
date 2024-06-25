@@ -356,10 +356,7 @@ def gain_access(request, queue_secret, owner_secret):
         response = HttpResponseRedirect(reverse("index"))
     else:
         request.session["queue_id"] = queue.id
-        request.session["redirect_action"] = {
-            "action": "edit_queue",
-            "args": [queue.id],
-        }
+        request.session["redirect_action"] = "edit_queue"
         if not user.is_authenticated and not user.is_guest:
             msg = (
                 "Please sign in or create a guest account to gain access to this queue."

@@ -5,6 +5,7 @@ from utils import check_valid_redirect_action
 from queues.models import Queue, has_authorization
 from django.contrib import messages
 from errors.models import RequestReport
+from errors.utils import process_path
 from django.utils.safestring import mark_safe
 from errors.views import error_handler, error_in_path
 from yt_auth.token_auth import (
@@ -17,7 +18,7 @@ from yt_auth.token_auth import (
 
 
 def index(request):
-    # finished testing I believe.
+    # need to test guest without redirect
     """
     Handles the index view for the app.
     Args: request (HttpRequest)
@@ -26,23 +27,18 @@ def index(request):
     path = request.get_full_path()
     user = make_user(request)
     keywords = {"?state=", "&code=", "&scope=https://www.googleapis.com/auth/youtube"}
-    valid_redirect = check_valid_redirect_action(request)
-    request = error_in_path(request)
-    if all(word in path for word in keywords):    
-        response = return_from_authorization(request)
-    elif not valid_redirect:
-        response = render(request, "profiles/index.html")
+    if all(word in path for word in keywords):
+        response = HttpResponseRedirect(reverse("return_from_authorization"))
+    elif "error" in path:
+        msg = "An error occurred during the previous action."
+        msg += process_path(path)
+        messages.add_message(request, messages.ERROR, msg)
+    elif check_valid_redirect_action(request):
+        response = HttpResponseRedirect(reverse("redirect_action"))
+    elif user.is_guest and user.queue_id:
+        response = HttpResponseRedirect(reverse("edit_queue", args=[user.queue_id]))
     else:
-        view_name = request.session["redirect_action"]["action"]
-        args = request.session["redirect_action"]["args"]
-        if has_authorization(user, args[0]) and len(args)==1:
-            # Currently only one redirect action is permitted
-            response = HttpResponseRedirect(reverse(view_name, args=args))
-        else:
-            msg = "Invalid redirect action encountered."
-            messages.add_message(request, messages.INFO, msg)
-            request.session["redirect_action"] = None
-            response = render(request, "profiles/index.html")
+        response = render(request, "profiles/index.html")
     response = error_handler(request, response)
     return response
 
@@ -108,6 +104,7 @@ def set_name(request):
 
 
 def return_from_authorization(request):
+    # not finished testing
     """
     Handles the redirect from Oauth2 authorization process.
     Args: request (HttpRequest)
@@ -131,7 +128,7 @@ def return_from_authorization(request):
             # print(e)
             msg_type = messages.ERROR
         else:
-            msg = user.set_credentials(tokens)            
+            msg = user.set_credentials(tokens)
             user.save()
             msg_type = messages.SUCCESS
         messages.add_message(request, msg_type, msg)
@@ -174,7 +171,29 @@ def revoke_authorization(request):
     return response
 
 
+def redirect_action(request):
+    # finished testing
+    # Currently only one redirect action is implemented
+    user = make_user(request)
+    if check_valid_redirect_action(request):
+        view_name = request.session["redirect_action"]
+        del request.session["redirect_action"]
+        queue_id = request.session["queue_id"]
+    if has_authorization(user, queue_id):
+        msg = "Redirecting to Edit page for the given queue."
+        msg_type = messages.SUCCESS
+        response = HttpResponseRedirect(reverse(view_name, args=[queue_id]))
+    else:
+        msg = "An error occurred. There is no valid redirect action."
+        msg_type = messages.ERROR
+        response = HttpResponseRedirect(reverse("index"))
+    messages.add_message(request, msg_type, msg)
+    response = error_handler(request, response)
+    return response
+
+
 def guest_sign_in(request):
+    # finished testing
     """
     Handles the guest sign-in process. Redirects user after sign in and
     generates a GuestProfile object.
@@ -182,39 +201,34 @@ def guest_sign_in(request):
     Returns:
     """
     user = make_user(request)
-    try:
-        queue = get_object_or_404(Queue, id=request.session["queue_id"])
-    except (KeyError, Http404) as e:
-        msg = "An error occurred."
-        msg += str(e)
-        msg_type = messages.ERROR
-        response = HttpResponseRedirect(reverse("index"))
+    queue_id = request.session.get("queue_id")
+    if queue_id is None:
+        raise Http404("A queue must be associated with this particular request.")
     else:
-        if user.is_authenticated:
-            print("hit user authenticated")
-            msg = "You are already logged in."
-            msg_type = messages.INFO
-            messages.add_message(request, msg_type, msg)
-            if "redirect_action" in request.session:
-                response = HttpResponseRedirect(reverse("index"))
-            else:
-                response = HttpResponseRedirect(reverse("profile"))
-        elif request.method == "GET":
-            context = {"queue": queue}
-            response = render(request, "profiles/guest_sign_in.html", context)
-        elif request.method == "POST":
-            name = request.POST["guest_name"]
-            email = request.POST.get("guest_email")
-            user = GuestProfile(
-                name=name,
-                email=email,
-                queue_id=queue.id,
-                queue_secret=queue.secret,
-                owner_secret=queue.owner.secret,
-            )
-            request.session["guest_user"] = user.serialize()
-            msg = f"Guest account set up for {user.nickname}"
-            messages.add_message(request, messages.SUCCESS, msg)
-            response = HttpResponseRedirect(reverse("edit_queue", args=[queue.id]))
+        queue = get_object_or_404(Queue, id=request.session["queue_id"])
+    if user.is_authenticated or user.is_guest:
+        msg = f"You are already logged in {user.nickname}."
+        msg_type = messages.INFO
+        messages.add_message(request, msg_type, msg)
+        response = HttpResponseRedirect(reverse("edit_queue", args=[queue_id]))
+    elif request.method == "GET":
+        context = {"queue": queue}
+        response = render(request, "profiles/guest_sign_in.html", context)
+    elif request.method == "POST":
+        name = request.POST["guest_name"]
+        email = request.POST.get("guest_email")
+        user = GuestProfile(
+            name=name,
+            email=email,
+            queue_id=queue.id,
+            queue_secret=queue.secret,
+            owner_secret=queue.owner.secret,
+        )
+        request.session["guest_user"] = user.serialize()
+        msg = f"Guest account set up for {user.nickname}"
+        messages.add_message(request, messages.SUCCESS, msg)
+        response = HttpResponseRedirect(reverse("edit_queue", args=[queue.id]))
+    else:
+        response = HttpResponseRedirect(reverse("index"))
     response = error_handler(request, response)
     return response
