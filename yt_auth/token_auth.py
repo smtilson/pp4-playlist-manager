@@ -63,7 +63,7 @@ def revoke_tokens(user):
         params={"token": credentials.token},
         headers={"content-type": "application/x-www-form-urlencoded"},
     )
-    print(revoke)
+    #print(revoke)
 
 
     status_code = getattr(revoke, "status_code")
@@ -72,10 +72,10 @@ def revoke_tokens(user):
 
 def refresh_tokens(user):
     credentials = user.google_credentials
-    old_dict = json_to_dict(credentials.to_json())
-    new_dict = {}
+    #old_dict = json_to_dict(credentials.to_json())
+    #new_dict = {}
     credentials.refresh(Request())
-    new_dict = json_to_dict(credentials.to_json())
+    #new_dict = json_to_dict(credentials.to_json())
     user.set_credentials(credentials)
-    print(old_dict == new_dict)
+    #print(old_dict == new_dict)
 

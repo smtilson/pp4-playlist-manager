@@ -122,6 +122,7 @@ def return_from_authorization(request):
         path = request.get_full_path()
         try:
             tokens = get_tokens(path)
+        # something should be done about this exceptioin
         except Exception as e:
             msg = "An unknown error occurred while fetching your tokens."
             msg += str(e)

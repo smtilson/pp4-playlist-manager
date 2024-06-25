@@ -138,7 +138,7 @@ class Queue(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
             entry.clear_resource_id()
         self.yt_id = ""
         self.save()
-        print(response)
+        #print(response)
 
 
     def pop(self, index: int = -1):
@@ -254,7 +254,7 @@ class Entry(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
     def sync(self, yt: "YT") -> None:
         response = yt.move_playlist_item(self)
         # add an error check here
-        print(response)
+        #print(response)
         self.synced = True
         self.save()
 

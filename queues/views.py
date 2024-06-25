@@ -8,6 +8,7 @@ from yt_query.yt_api_utils import YT
 from requests.exceptions import HTTPError
 from collections import defaultdict
 from utils import abbreviate
+from errors.views import error_handler
 
 
 # Create your views here.
@@ -306,7 +307,6 @@ def swap(request, entry_id, other_entry_position):
     Returns: JSON response containing the swapped entry data.
     """
     entry = get_object_or_404(Entry, id=entry_id)
-    print("inside swap function")
     new_entry, other_entry = entry.swap_entry_positions(other_entry_position)
     if not other_entry:
         other_entry = entry
@@ -326,7 +326,6 @@ def swap(request, entry_id, other_entry_position):
         "duration": other_entry.duration,
     }
     response_dict = {"entry1": entry_data, "entry2": other_entry_data}
-    print("swap done")
     return JsonResponse(response_dict)
 
 

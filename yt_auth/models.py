@@ -59,5 +59,4 @@ class Credentials(models.Model, DjangoFieldsMixin, ToDictMixin):
                 setattr(self, field_name, has_tokens)
             else:
                 setattr(self, field_name, new_credentials[field_name])
-        print(self.has_tokens)
         self.save()
