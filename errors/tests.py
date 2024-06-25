@@ -111,7 +111,7 @@ class TestErrors(TestCase):
         response = Mock(status_code=404)
         request = self.user_request("/")
         response = views.error_handler(request, response)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 404)
         test_string = str.encode("Page Not Found")
         self.assertContains(response, test_string)
         # Guest
@@ -119,14 +119,14 @@ class TestErrors(TestCase):
         response = Mock(status_code=404)
         request = self.guest_request("/")
         response = views.error_handler(request, response)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 404)
         test_string = str.encode("Page Not Found")
         self.assertContains(response, test_string)
         # Anonymous
         response = Mock(status_code=404)
         request = self.anon_request("/")
         response = views.error_handler(request, response)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 404)
         test_string = str.encode("Page Not Found")
         self.assertContains(response, test_string)
 
