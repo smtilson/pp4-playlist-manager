@@ -7,7 +7,7 @@ from django.contrib import messages
 from errors.models import RequestReport
 from errors.utils import process_path
 from django.utils.safestring import mark_safe
-from errors.views import error_handler, error_in_path
+from errors.views import error_handler
 from yt_auth.token_auth import (
     get_authorization_url,
     get_tokens,
