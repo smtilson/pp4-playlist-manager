@@ -27,14 +27,18 @@ def create_queue(request):
         messages.add_message(request, messages.INFO, msg)
         response = HttpResponseRedirect(reverse("account_login"))
     elif request.method == "POST":
-        if not request.POST["queue-title"]:
-            raise ValueError("Queue title cannot be empty.")
-        queue_title = request.POST["queue-title"]
-        queue_description = request.POST.get("queue-description")
-        queue = Queue(title=queue_title, description=queue_description, owner=user)
-        queue.save()
-        msg = f"{queue.title} has been created."
-        messages.add_message(request, messages.SUCCESS, msg)
+        if not request.POST.get("queue-title"):
+            msg = "Queue title cannot be empty."
+            msg_type = messages.ERROR
+            #raise ValueError("Queue title cannot be empty.")
+        else:
+            queue_title = request.POST["queue-title"]
+            queue_description = request.POST.get("queue-description")
+            queue = Queue(title=queue_title, description=queue_description, owner=user)
+            queue.save()
+            msg = f"{queue.title} has been created."
+            msg_type = messages.SUCCESS
+        messages.add_message(request, msg_type, msg)
         response = HttpResponseRedirect(reverse("edit_queue", args=[queue.id]))
     else:
         response = render(request, "queues/create_queue.html")

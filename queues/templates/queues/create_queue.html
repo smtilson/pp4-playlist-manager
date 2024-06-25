@@ -9,7 +9,7 @@
 <form id="queue-form" method="POST" action="{% url 'create_queue' %}">
     {% csrf_token %}
     <label for="queue-title" class="form-label">Title:</label>
-    <input type="text" id="queue-title" required class="form-control" name="queue-title">
+    <input type="text" id="queue-title" class="form-control" name="queue-title" required>
     <label for="queue-description" class="form-label">Description:</label>
     <input type="textarea" class="form-control" id="queue-description" name="queue-description">
     <button id="submitButton" type="submit" class="btn btn-success btn-sm create-queue-button">Create Queue</button>

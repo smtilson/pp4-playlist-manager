@@ -30,9 +30,10 @@ def index(request):
     if all(word in path for word in keywords):
         response = HttpResponseRedirect(reverse("return_from_authorization"))
     elif "error" in path:
-        msg = "An error occurred during the previous action."
+        msg = "An error occurred during the previous process."
         msg += process_path(path)
         messages.add_message(request, messages.ERROR, msg)
+        response = HttpResponseRedirect(reverse("profile"))
     elif check_valid_redirect_action(request):
         response = HttpResponseRedirect(reverse("redirect_action"))
     elif user.is_guest and user.queue_id:
