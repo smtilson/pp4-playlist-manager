@@ -24,19 +24,59 @@ I made various wireframes during my work on this project. At times, the final pr
 I used Balsamiq to make all of the wireframes.
 
 #### Landing Pages
-Here are the Mobile and Desktop versions of the Landing page.
+
+Mobile and Desktop Landing pages
 
 Mobile Landing Page        |  Desktop Landing Page
 :-------------------------:|:-------------------------:
 <img src="./readme_files/wireframes/mobile-landing-page.png" alt="Mobile Landing page wireframe" height="150px" width="75px">  |  <img src="./readme_files/wireframes/desktop-landing-page.png" alt="Desktop Landing page wireframe" height="150px" width="175px">
 
-Here are the mobile Login, Logout, and Signup pages. They differ only from the desktop version in the size of the containers and the navbar elements. I therefore did not make wireframes for the desktop versions of these pages.
+Mobile Login, Logout, and Sign up pages
 
 Login  | Logout       |  Sign Up
 :----------------:|:---------:|:----------------:
 <img src="./readme_files/wireframes/mobile-login.png" alt="Mobile Login wireframe" height="150px" width="75px">  |  <img src="./readme_files/wireframes/mobile-logout.png" alt="Mobile Logout wireframe" height="150px" width="75px">|  <img src="./readme_files/wireframes/mobile-signup.png" alt="Mobile Sign up wireframe" height="150px" width="75px">
 
-These are the m
+The above differ only from the desktop versions in the size of the containers and the navbar elements. I therefore did not make wireframes for the desktop versions of these pages.
+
+Mobile navigation menus
+Nav: Logged In        |  Nav: not Logged In
+:-------------------------:|:-------------------------:
+<img src="./readme_files/wireframes/mobile-nav-logged-in.png" alt="Mobile Nav Logged In wireframe" height="75px" width="75px">  |  <img src="./readme_files/wireframes/mobile-nav-not-logged-in.png" alt="Mobile Nav not Logged In wireframe" height="75px" width="75px">
+
+Mobile and Desktop Profile page
+
+Top of Profile page     |  Mobile Queues Display | Desktop Profile page
+:-------------------------:|:---------------:|:----------:
+<img src="./readme_files/wireframes/mobile-profile-top.png" alt="Mobile Profile top of page wireframe" height="175px" width="75px">  |  <img src="./readme_files/wireframes/mobile-profile-queues-display.png" alt="Mobile Profile Queues display wireframe" height="175px" width="75px">|<img src="./readme_files/wireframes/desktop-profile-page.png" alt="Desktop Profile page wireframe" height="150px" width="155px">
+
+Create Queue page
+
+Mobile Create Queue
+
+<img src="./readme_files/wireframes/mobile-create-queue.png" alt="Mobile Create Queue page wireframe" height="175px" width="75px">  
+
+The mobile and desktop Create Queue pages differ only in the size and the nav elements so I did not make a wireframe for the desktop version.
+
+Edit Queue pages
+Mobile version
+
+Top of Edit page     |  Search Results and Queue entries
+:-------------------------:|:---------------:
+<img src="./readme_files/wireframes/mobile-edit-top.png" alt="Mobile Edit Queue top of page wireframe" height="175px" width="75px">  |  <img src="./readme_files/wireframes/mobile-edit-results-n-entries.png" alt="Mobile Edit Queue search results and queue entries wireframe" height="175px" width="75px">
+
+Desktop version
+Top of Edit page     |  Search Results and Queue entries
+:-------------------------:|:---------------:
+<img src="./readme_files/wireframes/desktop-edit-top.png" alt="Desktop Edit Queue top of page wireframe" height="150px" width="155px">  |  <img src="./readme_files/wireframes/desktop-edit-results-n-entries.png" alt="Desktop Edit Queue search results and queue entries wireframe" height="150px" width="155px">
+
+
+
+Top of Profile page     |  Mobile Queues Display | Desktop Profile page
+:-------------------------:|:---------------:|:----------:
+<img src="./readme_files/wireframes/mobile-profile-top.png" alt="Mobile Profile top of page wireframe" height="175px" width="75px">  |  <img src="./readme_files/wireframes/mobile-profile-queues-display.png" alt="Mobile Profile Queues display wireframe" height="175px" width="75px">|<img src="./readme_files/wireframes/desktop-profile-page.png" alt="Desktop Profile page wireframe" height="150px" width="155px">
+
+
 ## Features
 
 ### Future Directions
