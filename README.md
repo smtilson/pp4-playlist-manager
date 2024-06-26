@@ -87,10 +87,18 @@ Entity Relationship Diagram
 ## Features
 
 ### Account Creation
-The user can create an account. With their account
+The user can create an account using the Django All-Auth library. This involves a sign up page, a login page, and a logout page. It is possible to have the webapp remember your login credentials. There is no username field, this can be set from the profile page.
 
+Sign Up
 
+<img src="./readme_files/screenshots/sign-up-page.png" alt="Sign up page" height="200 px" width="140px">
 
+### Landing Page
+The Landing page gives a brief introduction to the site with an explanation of the features.
+
+Landing page
+
+<img src="./readme_files/screenshots/landing-page.png" alt="Landing page" height="200 px" width="140px">
 
 ### Authentication
 Users can pair their account with a YouTube account. This will allow users to publish their queues to YouTube, making associated YouTube playlists. This is discussed more in the YouTubePlaylist section below. Users can also revoke these permissions. Our code to revoke credentials will always purge the records from our system. It does not, however, consistently invalidate the credentials on Google's end. We have therefore included feedback to the user encouraging them to visit the relevant google page (a link is provided in the feedback message).
@@ -120,19 +128,49 @@ Not Logged In
 
 <img src="./readme_files/screenshots/desktop-nav-not-logged-in.png" alt="Desktop Nav Menu (not logged in)" height="40px" width="350px">|
 
+In the footer, there are links to both YouTube and YT Music where the playlists can be accessed in general.
+
+Footer Links
+
+<img src="./readme_files/screenshots/footer-links.png" alt="Footer links to YouTube and YT Music" height="75px" width="175px">
+
+### Profile page
+
 ### Queues
-#### Create Queues
+Queues is the apps version of a playlist. Videos (entries) can be added from YouTube simultaneously by multiple users (provided they have been invited to do so by the owner of the queue). While collaborators have the ability to add videos, only the owner has the ability to interact with the queue in other ways. This includes removing entries, reordering entries, publishing a queue to YouTube, unpublishing a queue (removing it from YouTube), syncing a queue (updating the playlist on YouTube to reflect any changes), deleting a queue, or sharing a queue (inviting someone to collaborate). These different actions will be discussed in detail below. Collaborators (as well as owners) are also able to open find the playlist on youtube through a link. The playlists are published to youtube as unlisted (at this stage of the project).
 
-#### Delete Queues
+#### Create Queue
+Any logged in user can create a queue. There is a link on the profile page which takes users to the Create Queue page. Once their, they can enter a title (required) and a description of the queue. The description is optional and will be visible to all users. After creating, the user is redirected to the Edit Queue page for the newly created queue.
 
-#### Share Queues
+Create Queue
 
-#### Add Entries
+<img src="./readme_files/screenshots/create-queue.png" alt="Create Queue form" height="120px" width="100px">
 
-#### Reorder Entries
+#### Share Queue
+An owner has the ability to invite others (not necessarily users with accounts) to collaborate (add videos) to the queue. The link to do this can be copied from the share button present on the Edit Queue page as well as the users profile page (underneath each queue). Entering this link will bring the (potential) user to a guest sign in page. After creating a guest account (not stored in the database and email is optional), they re taken to the Edit page for the queue.
 
-#### Remove Entries
+Guest Sign In
 
+<img src="./readme_files/screenshots/guest-sign-in.png" alt="Guest Sign in page" height="120px" width="100px">
+
+If the user already has an account, they can click the link to be redirected to the user login page. Upon login, they are added as a collaborator for the queue, and are redirected to the appropriate Edit page. They can then search for and add videos from youtube.
+
+If the app already has an account stored (through the "Remember me" feature from All-Auth), the user will be added as a collaborator for the queue and automatically redirected to the Edit Queue page for the associated queue.
+
+These queues will then be listed under "Friends' Queues" on the users profile page.
+
+#### Edit Queue
+##### Delete Queue
+
+
+
+##### Add Entries
+
+##### Reorder Entries
+
+##### Remove Entries
+
+##### Refresh Queue
 ### YouTube Playlists
 
 #### Create Playlists

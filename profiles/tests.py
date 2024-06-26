@@ -37,7 +37,7 @@ class TestProfileViews(TestCase):
     # For these tests, I had to combine two different approaches. One uses
     # RequestFactory objects to make requests that can store data. This was
     # necessary, but less convenient than the other approach, will be evident.
-    # Note: the login, logout, and signup views are all halndled by all-auth
+    # Note: the login, logout, and sign up views are all halndled by all-auth
     # and I therefore did not test them.
     def setup_users(self):
         self.user1 = Profile.objects.create_superuser(

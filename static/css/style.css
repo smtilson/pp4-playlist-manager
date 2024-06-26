@@ -334,18 +334,21 @@ Bootstrap styles.*/
     margin-bottom: 3%;
 }
 
-/* Login, Signup, and Logout Pages */
+/* Login, Sign up, Logout, Guest Sign in Pages */
 
 #style-override #login,
-#style-override #signup {
+#style-override #signup,
+#style-override #guest-sign-in {
     position: relative;
     left: 5%;
 }
 
-#style-override #signup .p-container {
+#style-override #signup .p-container,
+#style-override #guest-sign-in .p-container {
     padding-top: 3%;
     padding-bottom: 1%;
 }
+
 #style-override #signup ul {
     text-align: left;
 }
@@ -360,7 +363,7 @@ Bootstrap styles.*/
 
 @media screen and (min-width: 425px) {
 
-    /* Login, Signup, and Logout Pages */
+    /* Login, Sign up, and Logout Pages */
     #style-override #login {
         width: 90%;
         left: 9.5%;
@@ -372,7 +375,8 @@ Bootstrap styles.*/
         position: relative;
     }
 
-    #style-override #signup {
+    #style-override #signup,
+    #style-override #guest-sign-in {
         width: 90%;
         left: 9.5%;
     }
@@ -431,7 +435,7 @@ Bootstrap styles.*/
 
 @media screen and (min-width: 768px) {
 
-    /* Login, Signup, and Logout Pages */
+    /* Login, Sign up, and Logout Pages */
     #style-override #login {
         width: 70%;
         left: 18%;
@@ -439,18 +443,22 @@ Bootstrap styles.*/
     }
 
     #style-override #signup,
-    #style-override #login {
+    #style-override #login,
+    #style-override #guest-sign-in {
         width: 75%;
         left: 16%;
     }
 
-    #style-override #signup .logo-div {
+
+    #style-override #signup .logo-div,
+    #style-override #guest-sign-in .logo-div {
         width: 70%;
         left: 9.5%;
         position: relative;
     }
 
-    #style-override #signup .p-container {
+    #style-override #signup .p-container,
+    #style-override #guest-sign-in .p-container {
         width: 50%;
         left: 20%;
         position: relative;
@@ -574,7 +582,7 @@ Bootstrap styles.*/
 
 @media screen and (min-width: 900px) {
 
-    /* Login, Signup, and Logout Pages */
+    /* Login, Sign up, and Logout Pages */
     #style-override #login {
         width: 61%;
         left: 22.5%;
@@ -582,9 +590,23 @@ Bootstrap styles.*/
         margin-bottom: 3%;
     }
 
+    #style-override #signup,
+    #style-override #guest-sign-in {
+        width: 50%;
+        left: 27%;
+    }
+
+    #style-override #signup form,
+    #style-override #guest-sign-in form {
+        width: 86%;
+        left: 7%;
+        position: relative;
+    }
+
     #style-override #login .my-container,
     #style-override #logout .my-container,
-    #style-override #signup .my-container {
+    #style-override #signup .my-container,
+    #style-override #guest-sign-in .my-container {
         width: 60%;
         left: 15%;
         position: relative;
@@ -627,9 +649,26 @@ Bootstrap styles.*/
     }
 
     /* Create Queue Page */
+    #style-override #create-queue {
+        width: 80%;
+        left: 12.5%;
+        position: relative;
+        margin-top: 10%;
+    }
+
+    #style-override #create-queue form {
+        width: 80%;
+        position: relative;
+        left: 10%;
+    }
+
+    #style-override #create-queue .create-queue-button {
+        margin-left: -34%;
+    }
+
+
     #style-override #create-queue .my-container {
         width: 45%;
-        /* check margin-left */
         margin-left: 25%;
         margin-top: 3%;
     }
@@ -678,6 +717,11 @@ Bootstrap styles.*/
     }
 
     /* Index Page */
+    #style-override #index {
+        width: 50%;
+        left: 28%;
+    }
+
     #style-override #index .logo-div {
         width: 60%;
         left: 14%;

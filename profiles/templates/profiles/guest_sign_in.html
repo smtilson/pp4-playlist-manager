@@ -1,24 +1,27 @@
+{% extends "base.html" %}
+
 {% block content %}
-<div class="text-center logo-div my-container">
-<h1 class="logo text-center">Guest sign in.</h1>
-</div>
-<div class="text-center my-container">
-<p class="invitation">{{queue.owner.nickname}} has invited you to collaborate on {{queue.title}}.</p>
-{% if queue.description %}
-<p>{{queue.description}}</p>
-{% endif %}
-<form method="POST" action="guest_sign_in">
-    {% csrf_token %}
-    <label for="guest_name">Nickname:</label>
-    <input id="guest_name" type="text" name="guest_name" required>
-    <label for="guest_email">Email:</label>
-    <input id="guest_email" type="text" name="guest_email" placeholder="(Optional)">
-    <button type="submit">Proceed to {{queue.title}}</button>
-</form>
-</div>
-<div class="text-center my-container">
-<h3>Have an account?</h3>
-make this a button.
-<a href="{% url 'account_login'%}">Login</a>
-</div>
+<section id="guest-sign-in">
+    <div class="text-center logo-div my-container">
+        <h1 class="logo text-center">Guest sign in.</h1>
+    </div>
+    <div class="text-center my-container">
+        <p class="invitation">{{queue.owner.nickname}} has invited you to collaborate on <span class="no-wrap">{{queue.title}}.</span></p>
+        {% if queue.description %}
+        <p>{{queue.description}}</p>
+        {% endif %}
+        <form method="POST" action="guest_sign_in">
+            {% csrf_token %}
+            <label for="guest_name">Nickname:</label>
+            <input id="guest_name" type="text" name="guest_name" required>
+            <label for="guest_email">Email:</label>
+            <input id="guest_email" type="text" name="guest_email" placeholder="(Optional)">
+            <button type="submit" class="primaryAction mt-2 btn btn-secondary">Proceed to {{queue.title}}</button>
+        </form>
+    </div>
+    <div class="text-center my-container last">
+        <h3>Have an account?</h3>
+        <a href="{% url 'account_login'%}"><button class="primaryAction btn btn-secondary" type="submit">Login</button></a>
+    </div>
+</section>
 {% endblock content %}
