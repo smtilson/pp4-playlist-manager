@@ -173,7 +173,6 @@ def parse_video_result(response_item: dict) -> dict:
         "yt_id": response_item["id"],
         "video_id": response_item["id"],
         "title": response_item["snippet"]["title"],
-        "duration": response_item["contentDetails"]["duration"],
         "status": response_item["status"]["privacyStatus"],
     }
     return video_result

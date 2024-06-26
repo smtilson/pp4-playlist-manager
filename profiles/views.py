@@ -4,7 +4,6 @@ from .models import Profile, GuestProfile, make_user
 from utils import check_valid_redirect_action
 from queues.models import Queue, has_authorization
 from django.contrib import messages
-from errors.models import RequestReport
 from errors.utils import process_path
 from django.utils.safestring import mark_safe
 from errors.views import error_handler

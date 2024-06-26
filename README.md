@@ -79,7 +79,7 @@ Top of Profile page     |  Mobile Queues Display | Desktop Profile page
 
 
 ### Database
-At the core of the project are two main objects: Profiles  (users), and Queues (playlists). Profiles are built on top of the All-Auth AbstractBaseUser model. They also have a reference to a Credentials model, which is made to store the permissions obtained using Oauth 2. Queues are our representation of playlists. This difference in name allows for distinction between the local object and the YouTube object. They are comprised of entries. Entries store references to YouTube videos as well as the relative position in the queue.
+At the core of the project are two main objects: Profiles  (users), and Queues (playlists). Profiles are built on top of the All-Auth AbstractBaseUser model. They also have a reference to a Credentials model, which is made to store the permissions obtained using Oauth 2. Queues are our representation of playlists. This difference in name allows for distinction between the local object and the YouTube object. They are comprised of entries. Entries store references to YouTube videos as well as the relative position in the queue. Note that Queues have both owner (many queues to one profile) and collaborator (many queues to many profiles) relationships. In the ERD, the lines demonstrating this cross, this is due to the representation made by dbdiagram.io, I was unable to fix this.
 
 ## Features
 
@@ -150,6 +150,15 @@ Do to the extensive mature of testing on this project, there is a separate docum
 
 
 ## References
+
+### Technologies Used
+Programmind languages/Frameworks: Python, Javascript, Django, Bootstrap, HTML, CSS.
+
+Design Tools: dbdiagram.io, Balsamiq, 
+
+Individuals:
+
+
 
 ### StackOverflow
 

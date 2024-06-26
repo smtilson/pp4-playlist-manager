@@ -1,6 +1,5 @@
 from django.shortcuts import render, reverse, get_object_or_404
 from django.http import HttpResponseRedirect, JsonResponse
-from errors.models import RequestReport
 from .models import Queue, Entry, has_authorization
 from profiles.models import make_user
 from django.contrib import messages
@@ -319,13 +318,13 @@ def swap(request, entry_id, other_entry_position):
         "id": new_entry.id,
         "title": new_entry.title,
         "position": new_entry.position,
-        "addedBy": new_entry.username,
+        "addedBy": new_entry.username
     }
     other_entry_data = {
         "id": other_entry.id,
         "title": other_entry.title,
         "position": other_entry.position,
-        "user": other_entry.username,
+        "user": other_entry.username
     }
     response_dict = {"entry1": entry_data, "entry2": other_entry_data}
     return JsonResponse(response_dict)
