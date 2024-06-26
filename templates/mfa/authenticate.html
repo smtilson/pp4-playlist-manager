@@ -12,7 +12,7 @@
           method="POST"
           action="{% url 'mfa_authenticate' %}">
         {% csrf_token %}
-        {{ form.as_p }}
+        {{ form.as_div }}
         <button type="submit">{% trans "Sign In" %}</button>
     </form>
 {% endblock content %}

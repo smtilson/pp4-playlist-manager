@@ -7,7 +7,7 @@
     </p>
     <form method="POST" action="{% url 'mfa_generate_recovery_codes' %}">
         {% csrf_token %}
-        {{ form.as_p }}
+        {{ form.as_div }}
         <button type="submit">{% trans "Generate" %}</button>
     </form>
 {% endblock content %}

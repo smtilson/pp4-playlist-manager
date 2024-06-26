@@ -336,11 +336,7 @@ Bootstrap styles.*/
 
 /* Login, Signup, and Logout Pages */
 
-#style-override #login {
-    position: relative;
-    left: 5%;
-}
-
+#style-override #login,
 #style-override #signup {
     position: relative;
     left: 5%;
@@ -349,6 +345,9 @@ Bootstrap styles.*/
 #style-override #signup .p-container {
     padding-top: 3%;
     padding-bottom: 1%;
+}
+#style-override #signup ul {
+    text-align: left;
 }
 
 #style-override #logout {

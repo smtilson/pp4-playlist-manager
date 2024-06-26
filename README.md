@@ -13,6 +13,30 @@ Testing
 Welcome to YouTube DJ, a webapp designed to enable collaborative YouTube playlist management. I was inspired to design this webapp based on an experience I had this past Easter. During the celebration with my wife's immediate family, we listened to music. This was done by passing around a single phone and having family members select one song at a time. It seemed to me that it would be convenient to have a way for us to all add songs independently via our own devices. This app enables that while allowing the "owner" of the queue to maintain control.
 
 
+## Design
+
+### Design Layout and Scaling
+I have tried to lay the website out in a way that is visually acceptable to me. I have a visual disability which means that I view things zoomed in and in a dark color scheme. This makes it difficult to address responsiveness as in chrome dev tools there is not only the slider for controlling the size of the display but something to also control how zoomed in the display is. I decided to use what ever default zoom chrome presented me with as this is not something I can control on the user end. This may explain some of my design choices in terms of positioning and scaling.
+
+### Wireframes
+I made various wireframes during my work on this project. At times, the final project differed from these wireframes. This is because I either felt the I liked what was displayed on screen better than my initial design with the wireframe or because there may have been an issue getting the page to look 100% how I wanted with the wireframe. As I am new to wireframes and Balsamiq, they do not include the best assets, like rounded buttons or containers.
+
+I used Balsamiq to make all of the wireframes.
+
+#### Landing Pages
+Here are the Mobile and Desktop versions of the Landing page.
+
+Mobile Landing Page        |  Desktop Landing Page
+:-------------------------:|:-------------------------:
+<img src="./readme_files/wireframes/mobile-landing-page.png" alt="Mobile Landing page wireframe" height="150px" width="75px">  |  <img src="./readme_files/wireframes/desktop-landing-page.png" alt="Desktop Landing page wireframe" height="150px" width="175px">
+
+Here are the mobile Login, Logout, and Signup pages. They differ only from the desktop version in the size of the containers and the navbar elements. I therefore did not make wireframes for the desktop versions of these pages.
+
+Login  | Logout       |  Sign Up
+:----------------:|:---------:|:----------------:
+<img src="./readme_files/wireframes/mobile-login.png" alt="Mobile Login wireframe" height="150px" width="75px">  |  <img src="./readme_files/wireframes/mobile-logout.png" alt="Mobile Logout wireframe" height="150px" width="75px">|  <img src="./readme_files/wireframes/mobile-signup.png" alt="Mobile Sign up wireframe" height="150px" width="75px">
+
+These are the m
 ## Features
 
 ### Future Directions
