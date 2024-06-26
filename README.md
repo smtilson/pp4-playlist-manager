@@ -81,7 +81,44 @@ Top of Profile page     |  Mobile Queues Display | Desktop Profile page
 ### Database
 At the core of the project are two main objects: Profiles  (users), and Queues (playlists). Profiles are built on top of the All-Auth AbstractBaseUser model. They also have a reference to a Credentials model, which is made to store the permissions obtained using Oauth 2. Queues are our representation of playlists. This difference in name allows for distinction between the local object and the YouTube object. They are comprised of entries. Entries store references to YouTube videos as well as the relative position in the queue. Note that Queues have both owner (many queues to one profile) and collaborator (many queues to many profiles) relationships. In the ERD, the lines demonstrating this cross, this is due to the representation made by dbdiagram.io, I was unable to fix this.
 
+Entity Relationship Diagram
+<img src="./readme_files/ERD/ERD.png" alt="Entity Relationship Diagram">
+
 ## Features
+
+### Account Creation
+The user can create an account. With their account
+
+
+
+
+### Authentication
+
+### Navigation
+There is a navigation bar which allows the user to visit different parts of the site. In mobile, this is an accordion/dropdown style menu. The Options for navigation depend on whether or not the user is logged in. When not logged in, the user can navigate to the Home, Login, 
+
+### Queues
+#### Create Queues
+
+#### Delete Queues
+
+#### Share Queues
+
+#### Add Entries
+
+#### Reorder Entries
+
+#### Remove Entries
+
+### YouTube Playlists
+
+#### Create Playlists
+
+#### Sync Playlists
+
+#### Unpublish Playlists
+
+
 
 ### Future Directions
 There are several different avenues for future development.
