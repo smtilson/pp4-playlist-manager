@@ -93,9 +93,32 @@ The user can create an account. With their account
 
 
 ### Authentication
+Users can pair their account with a YouTube account. This will allow users to publish their queues to YouTube, making associated YouTube playlists. This is discussed more in the YouTubePlaylist section below. Users can also revoke these permissions. Our code to revoke credentials will always purge the records from our system. It does not, however, consistently invalidate the credentials on Google's end. We have therefore included feedback to the user encouraging them to visit the relevant google page (a link is provided in the feedback message).
 
+Profile Page Info Section
+Without Credentials | With Credentials | Error Message
+:--:|:--:|:--:
+<img src="./readme_files/screenshots/without-credentials.png" alt="Info panel without credentials">|<img src="./readme_files/screenshots/with-credentials.png" alt="Info panel with credentials">|<img src="./readme_files/screenshots/revoke-error-message.png" alt="Error message after 'Revoke Credentials' button is clicked">
+
+The button changes depending on whether or not the user has successfully paired a YouTube account.
 ### Navigation
-There is a navigation bar which allows the user to visit different parts of the site. In mobile, this is an accordion/dropdown style menu. The Options for navigation depend on whether or not the user is logged in. When not logged in, the user can navigate to the Home, Login, 
+There is a navigation bar which allows the user to visit different parts of the site. In mobile, this is an accordion/dropdown style menu. The Options for navigation depend on whether or not the user is logged in. When not logged in, the user can navigate to the Home, Login, or Sign Up page. When Logged in, the user can navigate to the Home, Profile, Logout, or Create Queue page.
+
+Mobile Nav Menu
+
+Logged In | Not Logged In | Collapsed
+:--:|:--:|:--:
+<img src="./readme_files/screenshots/mobile-nav-logged-in.png" alt="Mobile Nav Menu (logged in)" height="130px" width="160px">|<img src="./readme_files/screenshots/mobile-nav-not-logged-in.png" alt="Mobile Nav Menu (not logged in)" height="110px" width="165px">|<img src="./readme_files/screenshots/mobile-nav-collapsed.png" alt="Mobile Nav Menu (collapsed)" height="30px" width="150px">
+
+Desktop Nav Menu
+
+Logged In
+
+<img src="./readme_files/screenshots/desktop-nav-logged-in.png" alt="Desktop Nav Menu (logged in)" height="40px" width="320px">
+
+Not Logged In
+
+<img src="./readme_files/screenshots/desktop-nav-not-logged-in.png" alt="Desktop Nav Menu (not logged in)" height="40px" width="350px">|
 
 ### Queues
 #### Create Queues
@@ -191,7 +214,7 @@ Do to the extensive mature of testing on this project, there is a separate docum
 ### Technologies Used
 Programmind languages/Frameworks: Python, Javascript, Django, Bootstrap, HTML, CSS.
 
-Design Tools: dbdiagram.io, Balsamiq, 
+Design Tools: dbdiagram.io (Entity Relationship Diagrams), Balsamiq (Wireframes), Snipping Tool (Windows program for cropping images)
 
 Individuals:
 

@@ -24,10 +24,11 @@ def index(request):
     Returns:
     """
     path = request.get_full_path()
+    print(path)
     user = make_user(request)
     keywords = {"?state=", "&code=", "&scope=https://www.googleapis.com/auth/youtube"}
     if all(word in path for word in keywords):
-        response = HttpResponseRedirect(reverse("return_from_authorization"))
+        response = return_from_authorization(request)
     elif "error" in path:
         msg = "An error occurred during the previous process."
         msg += process_path(path)
@@ -120,12 +121,15 @@ def return_from_authorization(request):
         response = HttpResponseRedirect(reverse("account_login"))
     else:
         path = request.get_full_path()
+        print(path)
         try:
             tokens = get_tokens(path)
         # something should be done about this exceptioin
         except Exception as e:
+            print("error occurred while retrieving tokens")
             msg = "An unknown error occurred while fetching your tokens."
             msg += str(e)
+            msg += "error occurred while retrieving tokens"
             # print(e)
             msg_type = messages.ERROR
         else:
