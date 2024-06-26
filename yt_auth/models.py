@@ -32,7 +32,7 @@ class Credentials(models.Model, DjangoFieldsMixin, ToDictMixin):
     )
     account = models.CharField(max_length=300, default="", null=True, blank=True)
     has_tokens = models.BooleanField(default=False)
-    #"['http...']"
+
     def to_google_credentials(self):
         creds_dict = self.to_dict()
         creds_dict['scopes'] = [creds_dict['scopes'][2:-2]]
