@@ -92,7 +92,7 @@ function writeEntryData(entryData) {
     position = entryData.position;
     positionDiv = $(`#div-${position}`);
     positionSpan = positionDiv.find('h4')[0];
-    positionSpan.innerText = entryData.position + ". " + entryData.title + " added by " + entryData.user + "(" + entryData.duration + ")";
+    positionSpan.innerText = entryData.position + ". " + entryData.title + " added by " + entryData.user;
     for (let button of positionDiv.find('.move-btn')) {
         button.setAttribute("data-entry", entryData.id);
         if (button.getAttribute("data-direction") == "+") {

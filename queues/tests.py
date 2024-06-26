@@ -89,8 +89,7 @@ class TestQueueViews(TestCase):
             "kind": f"kind-{index}",
             "yt_id": f"id-{index}",
             "video_id": f"video-id-{index}",
-            "title": f"title-{index}",
-            "duration": f"duration-{index}",
+            "title": f"title-{index}"
         }
         return video_result
         request = self.factory.get(path)

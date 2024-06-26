@@ -320,14 +320,12 @@ def swap(request, entry_id, other_entry_position):
         "title": new_entry.title,
         "position": new_entry.position,
         "addedBy": new_entry.username,
-        "duration": new_entry.duration,
     }
     other_entry_data = {
         "id": other_entry.id,
         "title": other_entry.title,
         "position": other_entry.position,
         "user": other_entry.username,
-        "duration": other_entry.duration,
     }
     response_dict = {"entry1": entry_data, "entry2": other_entry_data}
     return JsonResponse(response_dict)

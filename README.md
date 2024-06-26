@@ -77,6 +77,10 @@ Top of Profile page     |  Mobile Queues Display | Desktop Profile page
 <img src="./readme_files/wireframes/mobile-profile-top.png" alt="Mobile Profile top of page wireframe" height="175px" width="75px">  |  <img src="./readme_files/wireframes/mobile-profile-queues-display.png" alt="Mobile Profile Queues display wireframe" height="175px" width="75px">|<img src="./readme_files/wireframes/desktop-profile-page.png" alt="Desktop Profile page wireframe" height="150px" width="155px">
 
 
+
+### Database
+At the core of the project are two main objects: Profiles  (users), and Queues (playlists). Profiles are built on top of the All-Auth AbstractBaseUser model. They also have a reference to a Credentials model, which is made to store the permissions obtained using Oauth 2. Queues are our representation of playlists. This difference in name allows for distinction between the local object and the YouTube object. They are comprised of entries. Entries store references to YouTube videos as well as the relative position in the queue.
+
 ## Features
 
 ### Future Directions

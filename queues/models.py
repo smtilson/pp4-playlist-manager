@@ -20,7 +20,6 @@ class Queue(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
     # make these date names consistent throughout the app.
     date_created = models.DateTimeField(auto_now_add=True)
     last_edited = models.DateTimeField(auto_now=True)
-    length = models.PositiveIntegerField(default=0)
     secret = models.CharField(max_length=20, unique=True, default=get_secret)
     kind = models.CharField(max_length=100, default="", null=True, blank=True)
     yt_id = models.CharField(max_length=100, default="", null=True, blank=True)
@@ -191,7 +190,6 @@ class Entry(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
     title = models.CharField(max_length=100)
     p_queue = models.ForeignKey(Queue, on_delete=models.CASCADE, related_name="entries")
     video_id = models.CharField(max_length=100)
-    duration = models.CharField(max_length=100, default="")
     user = models.CharField(
         max_length=50, default="I am embarassed to have added this."
     )
