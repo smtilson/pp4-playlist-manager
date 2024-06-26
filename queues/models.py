@@ -36,6 +36,8 @@ class Queue(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
 
     @property
     def synced(self):
+        if not self.published:
+            return True
         for entry in self.entries.all():
             if not entry.synced:
                 return False
@@ -136,7 +138,7 @@ class Queue(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
             entry.clear_resource_id()
         self.yt_id = ""
         self.save()
-        print(response)
+        #print(response)
 
 
     def pop(self, index: int = -1):
@@ -252,7 +254,7 @@ class Entry(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
     def sync(self, yt: "YT") -> None:
         response = yt.move_playlist_item(self)
         # add an error check here
-        print(response)
+        #print(response)
         self.synced = True
         self.save()
 
@@ -272,7 +274,7 @@ class Entry(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
         other_entry = self.p_queue.all_entries[other_position - 1]
         self._position, other_entry._position = other_entry._position, self._position
         self.synced = False
-        other_entry.synced = False
+        other_entry.synced = False        
         self.save()
         other_entry.save()
         return self, other_entry

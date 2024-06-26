@@ -109,10 +109,11 @@ class Profile(AbstractBaseUser, PermissionsMixin, DjangoFieldsMixin, ToDictMixin
 
     @property
     def has_tokens(self):
-        return getattr(self.credentials, "has_token", False)
+        return getattr(self.credentials, "has_tokens", False)
 
+    @property
     def all_queues(self):
-        pass
+        return list(self.my_queues.all())+list(self.other_queues.all())
 
     def initialize(self):
         self.credentials = Credentials()
@@ -124,14 +125,7 @@ class Profile(AbstractBaseUser, PermissionsMixin, DjangoFieldsMixin, ToDictMixin
         my_queue_ids = {queue.id for queue in self.my_queues.all()}
         other_queue_ids = {queue.id for queue in self.other_queues.all()}
         return my_queue_ids.union(other_queue_ids)
-    @property
-    # is this used?
-    # this needs to be properly addressed
-    def valid_credentials(self):
-        if self.credentials.expiry == "":
-            return False
-        return self.google_credentials.valid
-
+    
     def set_credentials(self, new_credentials=None):
         """
         new_credentials is a google Credentials object. Updates credentials to
@@ -194,7 +188,6 @@ class GuestProfile(ToDictMixin):
         self.youtube_handle = ""
         self.secret = ""
         self.has_tokens = False
-        self.valid_credentials = False
 
     @property
     def nickname(self):
@@ -222,7 +215,7 @@ def make_user(request) -> Union["Profile", "GuestProfile"]:
     user = request.user
     # a dict or none
     guest = request.session.get("guest_user")
-    if guest:
+    if guest and not user.is_authenticated:
         user = GuestProfile(**guest)
     elif not user.is_authenticated:
         user = GuestProfile()

@@ -9,7 +9,6 @@ CREDENTIALS_FIELDS = {
     "token_uri",
     "token",
     "refresh_token",
-    "expiry",
     "client_id",
     "client_secret",
     "scopes",
@@ -25,7 +24,6 @@ class Credentials(models.Model, DjangoFieldsMixin, ToDictMixin):
     token_uri = models.CharField(max_length=300, default="", null=True, blank=True)
     token = models.CharField(max_length=300, default="", null=True, blank=True)
     refresh_token = models.CharField(max_length=300, default="", null=True, blank=True)
-    expiry = models.CharField(max_length=50, default="", null=True, blank=True)
     client_id = models.CharField(max_length=300, default="", null=True, blank=True)
     client_secret = models.CharField(max_length=300, default="", null=True, blank=True)
     scopes = models.CharField(max_length=200, default="", null=True, blank=True)
@@ -39,7 +37,6 @@ class Credentials(models.Model, DjangoFieldsMixin, ToDictMixin):
         creds_dict = self.to_dict()
         creds_dict['scopes'] = [creds_dict['scopes'][2:-2]]
         del creds_dict["has_tokens"]
-        del creds_dict['expiry']
         return g_oa2_creds.Credentials(**creds_dict)
 
     def to_dict(self):

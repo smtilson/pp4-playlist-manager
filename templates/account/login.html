@@ -5,26 +5,23 @@
 {% block head_title %}{% trans "Sign In" %}{% endblock head_title %}
 
 {% block content %}
+<section id="login">
 <div class="my-container text-center logo-div">
 <h1 class="logo">{% trans "Sign In" %}</h1>
 </div>
 
-<div class="text-center my-container">
+<div class="text-center my-container last">
 <p>{% blocktrans %}If you have not created an account yet, then please
 <a href="{{ signup_url }}">sign up</a> first.{% endblocktrans %}</p>
-</div>
-
-<div class="text-center my-container">
-<form class="login" method="POST" action="{% url 'account_login' %}">
+<form class="login" id="login-form" method="POST" action="{% url 'account_login' %}">
   {% csrf_token %}
   {{ form.as_p }}
   {% if redirect_field_value %}
   <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
   {% endif %}
   <input type="hidden" name="next" value="{{ next }}" />
-  <a class="button secondaryAction" href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
-  <button class="primaryAction" type="submit">{% trans "Sign In" %}</button>
+  <button class="primaryAction btn btn-secondary" type="submit">{% trans "Sign In" %}</button>
 </form>
 </div>
-
+</section>
 {% endblock content %}
