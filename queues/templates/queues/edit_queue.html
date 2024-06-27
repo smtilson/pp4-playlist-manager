@@ -65,12 +65,12 @@
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary"
                                         data-bs-dismiss="modal">Close</button>
-                                    <button type="button" class="btn btn-danger">Unpublish</button>
+                                    <a href="{% url 'unpublish' queue.id %}"><button type="button"
+                                            class="btn btn-danger">Unpublish</button></a>
                                 </div>
                             </div>
                         </div>
                     </div>
-
                     {% endif %}
                     {% endif %}
                     {% if is_owner %}
@@ -255,20 +255,22 @@
                                             aria-label="Position Control Buttons">
                                             <!--<div class="position-div">-->
                                             <button type="button" data-queue="{{queue.id}}" data-entry="{{entry.id}}"
-                                                class="move-btn btn btn-sm btn-warning" data-position="{{entry.position|add:-1}}"
-                                                data-direction="+">Up</button>
+                                                class="move-btn btn btn-sm btn-warning"
+                                                data-position="{{entry.position|add:-1}}" data-direction="+">Up</button>
                                             <button type="button" data-queue="{{queue.id}}" data-entry="{{entry.id}}"
-                                                class="move-btn btn btn-sm btn-warning" data-position="{{entry.position|add:1}}"
+                                                class="move-btn btn btn-sm btn-warning"
+                                                data-position="{{entry.position|add:1}}"
                                                 data-direction="-">Down</button>
                                             <input id="new-position-{{entry.id}}" type="number"
                                                 class="swap-input d-none d-md-inline form-control">
-                                            <button type="button" class="btn btn-sm d-md-block btn-warning swap-button d-none"
+                                            <button type="button"
+                                                class="btn btn-sm d-md-block btn-warning swap-button d-none"
                                                 data-queue="{{queue.id}}"><label for="new-position-{{entry.id}}"
                                                     id="label-{{entry.id}}" class="d-md-block js-form-label d-none"
                                                     data-entry="{{entry.id}}">Swap</label></button>
                                         </div>
                                         {% endif %}
-            
+
                                     </div>
                                 </div>
                                 {%if is_owner %}

@@ -4,6 +4,7 @@ from django.shortcuts import get_object_or_404
 from yt_query.yt_api_utils import YT
 from utils import get_secret
 from mixins import DjangoFieldsMixin, ToDictMixin, ResourceID
+from django.contrib import messages
 
 # Create your models here.
 MAX_QUEUE_LENGTH = YT.MAX_QUEUE_LENGTH
@@ -56,10 +57,6 @@ class Queue(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
     @property
     def deleted_entries(self):
         return [entry for entry in self.entries.all() if entry.to_delete]
-
-    @classmethod
-    def find_queue(cls, request, queue_id):
-        return request, get_object_or_404(Queue, id=queue_id)
 
     def serialize(self):
         q_dict = self.to_dict_mixin(
@@ -124,12 +121,9 @@ class Queue(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
     # do not use this, it wastes resources
     def unpublish(self) -> None:
         if not self.published:
-            print("This playlist isn't published yet.")
-            return
-        decision = input("Are you sure you want to do this? \n It wastes resources.")
-        if decision != "yes":
-            print("Thank you, exiting unpublish method.")
-            return
+            msg = "This playlist isn't published yet."
+            msg_type = messages.INFO
+            return msg, msg_type
         yt = YT(self.owner)
         response = yt.delete_playlist(self.yt_id)
         self.clear_resource_id()
@@ -137,7 +131,11 @@ class Queue(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
             entry.clear_resource_id()
         self.yt_id = ""
         self.save()
-        #print(response)
+        print(response)
+        msg = f"{self.title} has been removed from YouTube. To delete the"
+        msg += "playlist from YouTube DJ, click the Delete button."
+        msg_type = messages.SUCCESS
+        return msg, msg_type
 
 
     def pop(self, index: int = -1):
@@ -163,6 +161,7 @@ class Queue(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
             elif not entry.synced:
                 entry.sync(yt)
         self.save()
+        return f"{self.title} has been synced with YouTube."
         
    
     

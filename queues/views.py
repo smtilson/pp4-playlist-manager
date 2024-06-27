@@ -96,7 +96,6 @@ def edit_queue(request, queue_id):
 
 
 def delete_queue(request, queue_id):
-    # finished testing
     """
     Checks for authorization and then deletes the queue. Deletion of playlists
     on YouTube is temporarily disabled due to API rate limits.
@@ -106,22 +105,18 @@ def delete_queue(request, queue_id):
     """
     queue = get_object_or_404(Queue, id=queue_id)
     user = make_user(request)
-
-    # there should be a modal to double check on the front end
     if queue.owner == user:
-        # commented out due to rate limit issues.
-        # msg = queue.unpublish()
-        # add in try except block if unpublish is added back in for HttpError
         queue.delete()
         msg = f"{queue.title} has been deleted. If the queue was published"
         msg += " on YouTube, it will remain there. To remove the playlist from"
         msg += " YouTube, click the Unpublish button."
         msg_type = messages.SUCCESS
+        response = HttpResponseRedirect(reverse("profile"))
     else:
         msg = "You do not have permission to delete this queue."
         msg_type = messages.ERROR
+        response = HttpResponseRedirect(reverse("edit_queue", args=[queue.id]))
     messages.add_message(request, msg_type, msg)
-    response = HttpResponseRedirect(reverse("profile"))
     response = error_handler(request, response)
     return response
 
@@ -135,17 +130,12 @@ def unpublish(request, queue_id):
     """
     queue = get_object_or_404(Queue, id=queue_id)
     user = make_user(request)
-    
     if queue.owner == user:
         try:
-            queue.unpublish()
+            msg, msg_type = queue.unpublish()
         except HTTPError as e:
             msg = f"The following error occurred: {e}"
             msg_type = messages.ERROR
-        else:
-            msg = f"{queue.title} has been removed from YouTube. To delete the"
-            msg += "playlist from YouTube DJ, click the Delete button."
-            msg_type = messages.SUCCESS
     else:
         msg = "You do not have permission to delete this queue."
         msg_type = messages.ERROR
@@ -157,7 +147,6 @@ def unpublish(request, queue_id):
 
 def publish(request, queue_id):
     user = make_user(request)
-    
     queue = get_object_or_404(Queue, id=queue_id)
     if not queue.owner.youtube_channel:
         msg = "There is no channel associated with this queue. It can not be published. Please connect your account to a valid YouTube account in order."
@@ -192,7 +181,6 @@ def sync(request, queue_id):
     """
     queue = get_object_or_404(Queue, id=queue_id)
     user = make_user(request)
-    
     if not user == queue.owner:
         msg = "You must be the owner of the queue in order to sync it with YouTube."
         msg_type = messages.ERROR
@@ -210,7 +198,6 @@ def sync(request, queue_id):
             msg = f"The following error occurred: {e}"
             msg_type = messages.ERROR
         else:
-            msg = f"{queue.title} has been synced with YouTube."
             msg_type = messages.SUCCESS
     messages.add_message(request, msg_type, msg)
     response = HttpResponseRedirect(reverse("edit_queue", args=[queue_id]))

@@ -137,17 +137,16 @@ Footer Links
 ### Profile page
 Every user has a profile page. It contains some personal data, links to authorization, the create queue page, a form for setting the name (cosmetic), and lists of queues owned by the user and queues they are collaborators on.
 
-Profile page Top | Queue Lists
-:---:|:---:
+Profile page
+
+<img src="./readme_files/screenshots/profile-page.png" alt="Profile page" height="250px" width="250px">
 
 
 #### Setting Name
-The name is primarily cosmetic. It lets other users know who owns each queue and who added each entry. It can be reset by the user. The default value is the portion of the users email address before '@'.
+The name is primarily cosmetic. It lets other users know who owns each queue and who added each entry. It can be reset by the user. The default value is the portion of the users email address before '@'. This is in the upper right of the above image.
 
 #### Queue Lists
-This section enumerates the queues that the user has access to. On the left are the queues owned by the user. On the right are queues owned by other users. The title of each queue is a link to the edit page for the given queue.
-
-Queue Lists
+This section enumerates the queues that the user has access to. On the left are the queues owned by the user. On the right are queues owned by other users. The title of each queue is a link to the edit page for the given queue. These are in the lower half of the above image.
 
 ### Queues
 Queues is the apps version of a playlist. Videos (entries) can be added from YouTube simultaneously by multiple users (provided they have been invited to do so by the owner of the queue). While collaborators have the ability to add videos, only the owner has the ability to interact with the queue in other ways. This includes removing entries, reordering entries, publishing a queue to YouTube, unpublishing a queue (removing it from YouTube), syncing a queue (updating the playlist on YouTube to reflect any changes), deleting a queue, or sharing a queue (inviting someone to collaborate). These different actions will be discussed in detail below. Collaborators (as well as owners) are also able to open find the playlist on youtube through a link. The playlists are published to youtube as unlisted (at this stage of the project).
@@ -173,26 +172,44 @@ If the app already has an account stored (through the "Remember me" feature from
 This queue will then be listed under "Friends' Queues" on the users profile page.
 
 #### Edit Queue
+The Edit Queue page contains many features. There is some metadata about the queue, such as who created it, the description, how many entries are on it, and a link to the published playlist (if published). There is a "Control Panel" with various buttons. There is a search bar where users can search YouTube for entries to add. The user can also see what entries are already in the queue as well as their relative position. On mobile devices, the search results appear before the current queue entries. On larger devices, the search results and current queue entries appear side by side.
 
-##### Add Entries
+Most of the features below provide the user with feedback using Django's message framework. Changing the position of entries is the only feature that does not provide the user with feedback.
 
-##### Delete Queue
+##### Control Panel
+The buttons displayed depend on the status of the user (owner vs collaborator/guest and whether or not the account is connected to YouTube), as well as the state of the queue (published vs unpublished and syncd vs unsynced). Here is a display of all possible buttons. Depending on the size of the display, the buttons appear on either a single or two rows.
 
-##### Reorder Entries
+Control Panel
 
-##### Remove Entries
+<img src="./readme_files/screenshots/control-panel-buttons.png" alt="All Control Panel buttons" height="50px" width="">
 
-##### Refresh Queue
+Refresh: refreshes the page to update the queue. This will show changes that new entries that other collaborators have added as well as changes the owner may have made. All users see this button.
 
-### YouTube Playlists
+Share: link to share/invite other users to collaborate on the playlist. It must be copied and sent to other users via a messaging service. Only available for queue owner.
 
-#### Create Playlists
+Sync: updates playlist on YouTube to match the queue. Currently, this only functions properly when edits have not been made on YouTube directly. Only available for queue owner with paired YouTube account and only when queue is published but out of sync (differs from the published playlist in some way).
 
-#### Sync Playlists
+Publish: creates a YouTube playlist containing videos from the queue in the specified order. Only available for queue owner with paired YouTube account and only when queue is not published.
 
-#### Unpublish Playlists
+Unpublish: removes playlist from YouTube. Only available for queue owner with paired YouTube account and only when queue is published. This does not delete the local queue. The user is prompted before the action takes place using a modal.
 
+Delete: deletes the queue from YouTube DJs database. Only available for queue owner. This does not remove the playlist from YouTube. The user is prompted before the action takes place using a modal.
 
+##### Search YouTube & Adding Entries
+From the Edit page, users can search YouTube for videos to add. Currently, the number of results is capped. This limit is related to the API rate limit. 
+
+Search Bar | Search Results
+:--:|:--:
+<img src="./readme_files/screenshots/search-bar.png" alt="Search Bar" height="125px" width="275px">|<img src="./readme_files/screenshots/search-results.png" alt="Search Results with Add button">
+
+Next to each result is an "Add" button which will add a video to the end of the queue as a new entry. The name of the result also serves as a link to the video on YouTube.
+
+Currently, the length of queues is capped at 10. This is a design decision as queues are meant to be temporary and active, for the moment, so to say.
+
+##### Reorder & Remove Entries
+The owner of the queue can reorder and remove entries. "Up" and "Down" move the entry one position up or down respectively. They have no effect on an entry at the beginning or end of the queue, respectively. The can swap the position of two entries by entering the position the user wants the entry to occupy into the input field (a possible range is listed as a placeholder) and then clicking the swap button. On mobile devices, the swap input and button are removed for design reasons.
+
+<img src="./readme_files/screenshots/queue-entry.png" alt="A queue entries with buttons for changing the position" width="150px" height="75px">
 
 ### Future Directions
 There are several different avenues for future development.
