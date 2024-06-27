@@ -107,7 +107,9 @@
                         1 entry
                         {% endif %}
                     </h5>
+                    {% if queue.published %}
                     <a href="{{queue.url}}" target="_blank"><button class="btn btn-ytube">Play</button></a>
+                    {% endif %}
                 </div>
                 {% endfor %}
             </div>
