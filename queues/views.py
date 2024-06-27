@@ -52,11 +52,15 @@ def edit_queue(request, queue_id):
     is_owner = user == queue.owner
     recent_search = request.POST.get("searchQuery", None)
     search_results = []
-    if not has_authorization(user, queue_id):
+    has_auth = has_authorization(user, queue_id)
+    if not has_auth:
         msg = "You do not have authorization to edit this queue."
         msg_type = messages.INFO
-        messages.add_message(request, msg_type, msg)
-        response = HttpResponseRedirect(reverse("account_login"))
+        messages.add_message(request, msg_type, msg)   
+        if user.is_authenticated:
+            response = HttpResponseRedirect(reverse("profile"))
+        else:
+            response = HttpResponseRedirect(reverse("account_login"))
     else:
         yt = YT(user)
         if request.method == "GET":
@@ -96,6 +100,7 @@ def edit_queue(request, queue_id):
 
 
 def delete_queue(request, queue_id):
+    # finished testing chcek
     """
     Checks for authorization and then deletes the queue. Deletion of playlists
     on YouTube is temporarily disabled due to API rate limits.
@@ -261,7 +266,7 @@ def add_entry(request, queue_id, video_id):
 
 
 def delete_entry(request, queue_id, entry_id):
-    # finished testing
+    # finished testing check
     """
     Checks for authorization and then deletes an entry from a queue.
     Args: request (HttpRequest)
@@ -269,7 +274,6 @@ def delete_entry(request, queue_id, entry_id):
           entry_id (int)
     Returns: Redirects to the "edit_queue" page of the relevant queue.
     """
-    
     queue = get_object_or_404(Queue, id=queue_id)
     user = make_user(request)
     entry = get_object_or_404(Entry, id=entry_id)
@@ -287,7 +291,7 @@ def delete_entry(request, queue_id, entry_id):
 
 
 def swap(request, entry_id, other_entry_position):
-    # finished testing
+    # finished testing check
     """
     Swaps the positions of two entries in the queue in the back-end and then
     sends the updated entry data to the front-end.
