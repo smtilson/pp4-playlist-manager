@@ -7,14 +7,31 @@ other grey: AAAAAA
 lighter grey from darkreader: 303436
 border color from dark reader 877D6F
 */
-
-
 /* Base Styles */
+html,
 body {
-    background-color: #272727;
+    max-width: 100%;
+    overflow-x: hidden;
+    min-width: fit-content
+}
+
+
+body {
+    /*background-color: #272727;
+    background-color: black;*/
+    background-color: #0F0F0F;
     color: white;
 }
 
+main {
+    /* Gotten from cssgradient.io */
+    background: rgb(15, 15, 15);
+    background: linear-gradient(0deg, rgba(15, 15, 15, 1) 0%, rgba(39, 39, 39, 1) 50%, rgba(15, 15, 15, 1) 100%);
+}
+
+/* The use of the style-override Id was suggested on SO as a way to override
+Bootstrap styles.*/
+/* Override base styles*/
 #style-override ul li {
     list-style-type: none;
 }
@@ -23,40 +40,34 @@ body {
     padding: 0;
 }
 
+#style-override .logo-div h1,
+#style-override .logo-div h2,
+#style-override .logo-div h3,
+#style-override .logo-div h4,
+#style-override .logo-div h5,
+#style-override .logo-div h6 {
+    align-self: center;
+}
+
+#style-override .no-wrap {
+    white-space: nowrap;
+}
+
 #style-override a {
     color: white;
 }
 
-#style-override .white {
-    color: white;
-}
-
-#style-override .red {
-    color: #FF0000;
-}
-
-#style-override .black {
-    color: #0F0F0F
-}
-
-#style-override .bkg-light-grey {
-    background-color: #303436
-}
-
-#style-override .bkg-grey {
-    background-color: #272727
-}
-
-#style-override .bkg-red {
-    background-color: #FF0000
-}
-
-/* Header Styles */
-#style-override .title {
-    margin: 5em;
+#style-override .message-div a {
+    color: #272727;
 }
 
 /* Navbar Styles */
+#style-override .navbar {
+    background-color: #0F0F0F;
+    width: 100%;
+    color: white;
+}
+
 #style-override .navbar-toggler {
     border-color: #877D6F;
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%255, 0, 0, 0.55%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
@@ -64,9 +75,59 @@ body {
     border-radius: 10px;
 }
 
+
+/* Messages Div */
+/* Ensures messages don't conflict with the navbar. */
+#style-override .message-div {
+    margin-top: 100px;
+}
+
+/* My Style Classes */
+#style-override .my-list-item {
+    margin-left: 2%;
+}
+
+#style-override .logo-div {
+    width: fit-content;
+    padding: 1em 2.5em;
+    align-self: center;
+    margin: 1em;
+    justify-content: center;
+    border-radius: 10px;
+    border-style: outset;
+    border-color: rgb(135, 125, 111);
+    border-width: 3px;
+    justify-content: center;
+    margin: 16px 0;
+    background: rgb(15, 15, 15);
+    /* Gotten from cssgradient.io */
+    background: radial-gradient(circle, rgba(39, 39, 39, 1) 0%, rgba(53, 52, 53, 1) 67%);
+    box-shadow: 0 0 5px rgba(231, 26, 26, .2), 2px 2px 5px rgba(203, 199, 199, 0.4);
+}
+
+#style-override .my-container {
+    align-self: center;
+    padding: 20px;
+    margin: 1em;
+    width: 90%;
+    border-radius: 10px;
+    border-style: outset;
+    border-color: #877d6f;
+    border-width: 3px;
+    justify-content: center;
+    background-color: #303436;
+    margin: 16px 0;
+    background: rgb(15, 15, 15);
+    /* Gotten from cssgradient.io */
+    background: radial-gradient(circle, rgba(39, 39, 39, 1) 0%, rgba(53, 52, 53, 1) 67%);
+    box-shadow: 0 0 5px #e71a1a33, 2px 2px 5px rgba(203, 199, 199, 0.4);
+}
+
+#style-override .my-btn-group {
+    gap: 5px;
+}
+
 #style-override .tag-line {
-    color: black;
-    background-color: #f91f1fcb;
     padding-left: 10px;
     padding-right: 10px;
     border-radius: 5px;
@@ -75,6 +136,78 @@ body {
     font-weight: 700;
 }
 
+#style-override .my-brand {
+    color: white;
+    background-color: rgba(231, 26, 26, 0.796);
+}
+
+#style-override .my-btn-border button {
+    border-color: #0f0f0f;
+    border-width: 1px;
+}
+
+
+#style-override .btn-ytube {
+    background-color: #e71a1a;
+    background-color: rgba(231, 26, 26, 0.796);
+    color: white;
+    font-weight: 600;
+    margin: 5px;
+    border-radius: 10px;
+}
+
+/* I do not think this rule is necessary.
+#style-override .my-btn-group .btn {
+    border-color: #0f0f0f;
+    border-width: 1px;
+}*/
+
+/* Input Elements */
+#style-override form .js-input-background {
+    color: white;
+    background-color: #0f0f0f;
+}
+
+#style-override .swap-input {
+    width: 70px;
+    color: white;
+    background-color: #0f0f0f;
+}
+
+#style-override #searchQuery {
+    margin-left: .1em;
+}
+
+#style-override .form-check-input {
+    border-color: white;
+    border-width: 1px;
+    margin-top: 5px;
+}
+
+/* Button Styles */
+#style-override .btn:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+/* Ensures the above effect applies to navbar toggler as well.*/
+#style-override button:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+#style-override .btn {
+    border-radius: 10px;
+    margin: 1px;
+}
+
+/* Footer Styles */
+#style-override .footer {
+    padding-top: 0.4em;
+    background-color: #0F0F0F;
+}
+
+/* Specific Styles */
 #style-override .modal-body,
 #style-override .modal-header,
 #style-override .modal-footer {
@@ -82,83 +215,542 @@ body {
     background-color: #303436
 }
 
-/* Messages Div */
-
-#style-override .message-div {
-    margin-top: 100px;
+#style-override #set-name-form-label {
+    /* check margin-left */
+    margin-left: 2%
 }
 
-/* My Containers */
-
-#style-override .my-list-item {
-    margin-left: 20px;
+#style-override #set-name-form-button {
+    left: 31%;
+    position: relative;
+    margin-top: 8%;
+    margin-bottom: -2%;
 }
 
-#style-override .logo-div {
-    width: fit-content;
-    padding: 1em 2.5em;
-    align-self: center;
-    margin: 1em;
-    border-radius: 15px;
-    border-style: solid;
-    border-color: #877D6F;
-    border-width: 3px;
-    justify-content: center;
-    background-color: #303436;
+/* Ensures footer doesn't cover content.*/
+#style-override .last {
+    /* it was 35%, but changed it because of the profile page. */
+    margin-bottom: 43%;
 }
 
-#style-override .my-container {
-    align-self: center;
-    padding: 20px;
-    margin: 1em;
-    width: 90%;
-    border-radius: 15px;
-    border-style: solid;
-    border-color: #877D6F;
-    border-width: 3px;
-    justify-content: center;
-    background-color: #303436;
+/* Page specific styles*/
+
+/* Create Queue Page */
+#style-override #create-queue .my-container {
+    width: 70%;
+    margin-left: 15%;
 }
 
-/* Input Elements */
+#style-override #create-queue button {
+    margin-top: 4%;
+    left: 17%;
+    position: relative;
+}
 
-#style-override input {
+/* Edit Queue Page */
+#style-override #edit-queue .logo-div {
+    width: 70%;
+}
+
+#style-override #results-and-entries .logo-div {
+    width: 78%;
+    position: relative;
+    left: 5.5%;
+}
+
+#style-override #edit-queue #search-results button {
+    margin-left: 35%;
+}
+
+#style-override #edit-queue .remove-button {
+    position: relative;
+    right: 12%;
+}
+
+#style-override #edit-queue .my-container {
+    /* check margin-left */
+    margin-left: 5%;
+}
+
+#style-override #edit-queue .nickname-buttons {
+    position: relative;
+    left: -16%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#style-override #queue-length {
+    /* check margin-left */
+    margin-left: 40%;
+}
+
+/* Profile Page */
+#style-override #profile {
+    left: 5%;
+    position: relative;
+}
+
+#style-override #profile .logo-div {
+    /* check left */
+    left: 6.5%;
+    width: 75%;
+    position: relative;
+}
+
+#style-override #profile #welcome {
+    left: -4.5%;
+}
+
+#style-override #profile .btn-ytube {
+    background-color: #e71a1acb;
     color: white;
-    background-color: black;
-}
-
-#style-override form .js-input-background {
-    color: white;
-    background-color: black;
-}
-
-#style-override #searechQuery {
-    width: 1em;
-}
-
-#style-override .swap-input {
-    width: 70px;
-}
-
-/* Button Styles */
-
-#style-override .my-btn-group {
-    gap: 5px;
-}
-
-#style-override .my-btn-border button {
-    border-color: black;
-    border-width: 1px;
-}
-
-#style-override .my-btn-group .btn {
-    border-color: black;
-    border-width: 1px;
-}
-
-#style-override .btn-ytube {
-    background-color: #f91f1fcb;
+    margin: 1px;
     font-weight: 600;
-    margin: 5px;
-    border-radius: 10px;
+}
+
+#style-override #both-queues-div {
+    margin-left: -3%;
+}
+
+#style-override .queue-buttons-div {
+    /* check left */
+    left: 10%;
+    gap: 12%;
+    width: 80%;
+}
+
+#style-override .queue-buttons-div button {
+    width: 120%;
+}
+
+/* Index Page */
+#style-override #index {
+    position: relative;
+    left: 5%;
+}
+
+#style-override #index .my-list-item {
+    margin-bottom: 3%;
+}
+
+/* Login, Sign up, Logout, Guest Sign in Pages */
+
+#style-override #login,
+#style-override #signup,
+#style-override #guest-sign-in {
+    position: relative;
+    left: 5%;
+}
+
+#style-override #signup .p-container,
+#style-override #guest-sign-in .p-container {
+    padding-top: 3%;
+    padding-bottom: 1%;
+}
+
+#style-override #signup ul {
+    text-align: left;
+}
+
+#style-override #logout {
+    width: 70%;
+    left: 18%;
+    position: relative;
+}
+
+
+
+@media screen and (min-width: 425px) {
+
+    /* Login, Sign up, and Logout Pages */
+    #style-override #login {
+        width: 90%;
+        left: 9.5%;
+    }
+
+    #style-override #login .logo-div {
+        width: 70%;
+        left: 10%;
+        position: relative;
+    }
+
+    #style-override #signup,
+    #style-override #guest-sign-in {
+        width: 90%;
+        left: 9.5%;
+    }
+
+    /* Edit Queue Page */
+    #style-override #edit-queue .remove-button {
+        right: 4%;
+    }
+
+    #style-override #queue-display .my-container {
+        width: 75%;
+        /* check margin-left */
+        margin-left: 7%;
+    }
+
+    /* Create Queue Page */
+    #style-override #create-queue button {
+        /* check margin-left */
+        margin-left: 29.5%;
+    }
+
+    /* Profile Page */
+    #style-override #profile #welcome {
+        left: -5%;
+    }
+
+    #style-override #my-queue-div .logo-div,
+    #style-override #friends-queue-div .logo-div {
+        width: 65%;
+        /* check left */
+        left: 12%;
+    }
+
+    #style-override .queue-buttons-div {
+        /* check left */
+        left: 16%;
+        gap: 20%;
+    }
+
+    #style-override .queue-buttons-div button {
+        width: 143%;
+    }
+
+    /* Index Page */
+    #style-override #index {
+        width: 90%;
+        left: 9%;
+    }
+
+    #style-override #index .logo-div {
+        width: 80%;
+        left: 5%;
+        position: relative;
+    }
+}
+
+@media screen and (min-width: 768px) {
+
+    /* Login, Sign up, and Logout Pages */
+    #style-override #login {
+        width: 70%;
+        left: 18%;
+        margin-top: 5%;
+    }
+
+    #style-override #signup,
+    #style-override #login,
+    #style-override #guest-sign-in {
+        width: 75%;
+        left: 16%;
+    }
+
+
+    #style-override #signup .logo-div,
+    #style-override #guest-sign-in .logo-div {
+        width: 70%;
+        left: 9.5%;
+        position: relative;
+    }
+
+    #style-override #signup .p-container,
+    #style-override #guest-sign-in .p-container {
+        width: 50%;
+        left: 20%;
+        position: relative;
+        margin-top: 5%;
+        margin-bottom: 5%;
+    }
+
+    #style-override #logout {
+        width: 60%;
+        margin-top: 25%;
+        left: 23%;
+        height: 100%;
+        padding-bottom: 20%;
+    }
+
+    /* Profile Page */
+    #style-override #profile {
+        left: 2%;
+    }
+
+    #style-override #profile #welcome {
+        left: -3%;
+    }
+
+    #style-override .min-height-row .profile-top {
+        min-height: 240px;
+        min-width: 310px
+    }
+
+    #style-override #user-info-div {
+        padding-bottom: 6.5%;
+    }
+
+    #style-override .queue-display-divs {
+        position: relative;
+        left: 1%;
+    }
+
+    #style-override #both-queues-div .logo-div {
+        min-height: 25%;
+    }
+
+    /* Create Queue Page */
+    #style-override #create-queue .my-container {
+        width: 50%;
+        /* check margin-left */
+        margin-left: 22.5%;
+    }
+
+    #style-override #create-queue button {
+        margin-top: 3%;
+        margin-left: 22.5%;
+    }
+
+    /* Edit Queue Page */
+    #style-override #edit-queue #search-results button {
+        margin-left: 5%;
+    }
+
+    #style-override #edit-queue .remove-button {
+        right: 1%;
+    }
+
+    #style-override #edit-queue .nickname-buttons {
+        left: 7%;
+    }
+
+    #style-override #results-and-entries .logo-div {
+        min-height: 25%;
+    }
+
+    #style-override #searchQuery {
+        width: 26em;
+        /* check margin-left */
+        margin-left: 5.8em;
+    }
+
+    #style-override #results-and-entries {
+        margin-left: -19px;
+    }
+
+    #style-override #queue-info .my-container {
+        width: 70%;
+        margin-left: 14%;
+    }
+
+    /* Index Page */
+    #style-override #index {
+        width: 70%;
+        left: 18%;
+    }
+
+    #style-override #index .logo-div {
+        width: 69%;
+        left: 10%;
+    }
+
+    #style-override #index ul,
+    #style-override #index p {
+        margin-left: 5%;
+    }
+
+    /* Other styles */
+    #style-override .last {
+        margin-bottom: 20%;
+    }
+
+    #style-override .footer {
+        padding-top: 0.8em;
+    }
+
+    #style-override .my-btn-group {
+        gap: 150px;
+        display: inline-block;
+    }
+
+    #style-override .my-container {
+        margin-top: 3%;
+    }
+}
+
+@media screen and (min-width: 900px) {
+
+    /* Login, Sign up, and Logout Pages */
+    #style-override #login {
+        width: 50%;
+        left: 27%;
+        margin-top: 5%;
+        margin-bottom: 3%;
+    }
+
+    #style-override #signup,
+    #style-override #guest-sign-in {
+        width: 50%;
+        left: 27%;
+    }
+
+    #style-override #login form,
+    #style-override #signup form,
+    #style-override #guest-sign-in form {
+        width: 86%;
+        left: 7%;
+        position: relative;
+    }
+
+    #style-override #login .my-container,
+    #style-override #logout .my-container,
+    #style-override #signup .my-container,
+    #style-override #guest-sign-in .my-container {
+        width: 60%;
+        left: 15%;
+        position: relative;
+    }
+
+    #style-override #logout {
+        width: 44%;
+        left: 30.5%;
+    }
+
+    #style-override #logout-button-container {
+        margin-top: 13%;
+    }
+
+    /* Profile Page */
+    #style-override #profile {
+        left: 11.5%;
+        width:  80%;
+    }
+
+    #style-override .min-height-row .profile-top {
+        min-height: 90%;
+    }
+
+    #style-override #set-name-form-button {
+        /* check left */
+        left: 38%;
+    }
+
+    #style-override #both-queues-div .logo-div {
+        min-height: 8em;
+    }
+
+    #style-override #profile #my-queue-div .logo {
+        position:relative;
+        right:16%;
+    }
+
+    #style-override #profile #friends-queue-div .logo {
+        position:relative;
+        right:1%;
+    }
+
+    #style-override #both-queues-div .min-height-row {
+        min-height: 10em;
+    }
+
+    #style-override #profile .queue-display-divs {
+        width: 43%;
+        left: 0%;
+    }
+
+    /* Create Queue Page */
+    #style-override #create-queue {
+        width: 80%;
+        left: 12.5%;
+        position: relative;
+        margin-top: 10%;
+    }
+
+    #style-override #create-queue form {
+        width: 80%;
+        position: relative;
+        left: 10%;
+    }
+
+    #style-override #create-queue .create-queue-button {
+        margin-left: -34%;
+    }
+
+
+    #style-override #create-queue .my-container {
+        width: 45%;
+        margin-left: 25%;
+        margin-top: 3%;
+    }
+
+    #style-override #create-queue button {
+        margin-top: 2%;
+        /* check margin-left */
+        margin-left: 35%;
+    }
+
+    /* Edit Queue Page */
+    #style-override #edit-queue {
+        width: 70%;
+        position: relative;
+        left: 15.5%;
+    }
+
+    #style-override #edit-queue #queue-info .my-container {
+        width: 50%;
+        margin-left: 24%;
+    }
+
+    #style-override #search-youtube {
+        width: 70%;
+        margin-left: 14%;
+    }
+
+    #style-override #edit-queue #search-results button {
+        margin-left: 35%;
+    }
+
+    #style-override #edit-queue .remove-button {
+        right: -5%;
+    }
+
+    #style-override #edit-queue #queue-entries .btn-group {
+        left: 3%;
+    }
+
+    #style-override #edit-queue .my-list-item {
+        margin-bottom: 3%;
+    }
+
+    #style-override #searchQuery {
+        margin-left: 20.5%;
+        width: 60%;
+    }
+
+    /* Index Page */
+    #style-override #index {
+        width: 50%;
+        left: 28%;
+    }
+
+    #style-override #index .logo-div {
+        width: 60%;
+        left: 14%;
+    }
+
+    /* Other styles */
+    #style-override .tag-line {
+        position: fixed;
+        right: 4%;
+    }
+
+    #style-override .last {
+        margin-bottom: 25%;
+    }
+
+    #style-override .footer {
+        padding-top: 0.8em;
+    }
 }
