@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django.contrib.sites",
+    "corsheaders",
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
@@ -85,8 +86,8 @@ CORS_ORIGIN_WHITELIST = [
     "https://pp4-playlist-manager-67004a99f0e2.herokuapp.com",
 ]
 
-CORS_ALLOW_HEADERS = ['*'] 
-'''[
+CORS_ALLOW_HEADERS = ["*"]
+"""[
     "accept",
     "accept-encoding",
     "authorization",
@@ -96,7 +97,7 @@ CORS_ALLOW_HEADERS = ['*']
     "user-agent",
     "x-csrftoken",
     "x-requested-with",
-]'''
+]"""
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -160,9 +161,9 @@ if LOCAL:
 else:
     DATABASES = {"default": dj_database_url.parse(os.environ.get("DATABASE_URL"))}
 
-if 'test' in sys.argv:
-    DATABASES['default']['ENGINE'] = 'django.db.backends.sqlite3'
-    
+if "test" in sys.argv:
+    DATABASES["default"]["ENGINE"] = "django.db.backends.sqlite3"
+
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
 
