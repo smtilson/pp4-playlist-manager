@@ -17,8 +17,41 @@ Responsiveness was tested on Chrome, Edge, and Firefox.
 ### Account Sign up, Login, Logout
 I used All-auth to handle sign up, login, and logout. 
 
-### Queue CRUD
+### Navigation
+Logged in Navigation bar desktop, all links work
+footer links tested, they work
+login link from sign up page works
+not authenticated desktop navigation works
 
+mobile navigation bar?
+
+### Account 
+Login works
+signout works
+sign in link from
+Sign up prevents users with same email from signing up
+sign up prevents problematic passwords (too short, too similar, too common)
+sign up works
+
+### Queue CRUD
+Create Queue works and redirects to edit page
+
+add song works
+up and down work
+swap works
+
+### youtube
+publish works
+sync adds songs and reorders songs
+sync removes songs
+
+### share
+share to authentivcated 
+guest sign in worked
+buttons hidden to non owners
+
+There is an issue with buttons in control panel spacing.
+Meg didn't realize that the link would take her to the edit page of the queue, add edit button next to play and share.
 
 ## Bugs Left in
 The following bugs are things that were left in. I was either unable to find a solution because of ability, the underlying technology over which I have no control (see the first Bug listed), or I ran out of time.
