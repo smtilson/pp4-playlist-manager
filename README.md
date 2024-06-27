@@ -215,15 +215,18 @@ The owner of the queue can reorder and remove entries. "Up" and "Down" move the 
 There are several different avenues for future development.
 
 1. The implementation of 4 character codes used to share queues instead of links.
-2. The easy transition from Guest user to authenticated user. This would mean, in particular, that the queue initial queue that brought the user to the site would be added to their list of collaborative queues automatically.
-3. Queue sharing links updating/expiring. That is to say that the link used to share a queue would expire after a certain amount of time.
+2. The easy transition from Guest user to authenticated user. This would mean, in particular, that the initial queue that brought the user to the site would be added to their list of collaborative queues automatically.
+3. The link/code used to share a queue would expire after a certain amount of time.
 4. Taking location into account as not all YouTube videos are accessible in all locations.
 5. Being able to determine the privacy status of an uploaded playlist. Currently this is set to unlisted.
 6. Enabling other user's to have more control over queues, such as the ability to remove entries or reorder them.
 7. Enabling syncing of queues with published playlists so that a queue will reflect songs added to the playlist through YouTube.
 8. Enable "friends" or "Frequent Collaborators" and browsing features so that you can see what queues other people are working on/have and request permissions to collaborate on them.
-9. Enable better "Share" functionality. Right now, one must copy the link associated to the share button. Instead, it would be nice if for mobile devices it opened the share menu and on desktop it copied the address automatically when you clicked it.
+9. Enable better "Share" functionality. For example, using "share" button on mobile devices effectively.
 10. Increasing the size of Queues and the number of max search results. This artifical limit is imposed due to the rate limit of the YouTube Data API.
+11. Addressing foreign and special characters that show up in search results.
+12. Automatic syncing of queues with published playlists. This may be too "expensive."
+13. Implementing more of the CRUD functionality with the Fetch API so that the screen doesn't need to refresh.
 
 
 ## Deployment
