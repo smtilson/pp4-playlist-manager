@@ -584,8 +584,8 @@ Bootstrap styles.*/
 
     /* Login, Sign up, and Logout Pages */
     #style-override #login {
-        width: 61%;
-        left: 22.5%;
+        width: 50%;
+        left: 27%;
         margin-top: 5%;
         margin-bottom: 3%;
     }
@@ -596,6 +596,7 @@ Bootstrap styles.*/
         left: 27%;
     }
 
+    #style-override #login form,
     #style-override #signup form,
     #style-override #guest-sign-in form {
         width: 86%;
@@ -623,11 +624,12 @@ Bootstrap styles.*/
 
     /* Profile Page */
     #style-override #profile {
-        left: 2.5%;
+        left: 11.5%;
+        width:  80%;
     }
 
     #style-override .min-height-row .profile-top {
-        min-height: 249px;
+        min-height: 90%;
     }
 
     #style-override #set-name-form-button {
@@ -637,6 +639,16 @@ Bootstrap styles.*/
 
     #style-override #both-queues-div .logo-div {
         min-height: 8em;
+    }
+
+    #style-override #profile #my-queue-div .logo {
+        position:relative;
+        right:16%;
+    }
+
+    #style-override #profile #friends-queue-div .logo {
+        position:relative;
+        right:1%;
     }
 
     #style-override #both-queues-div .min-height-row {
@@ -681,12 +693,13 @@ Bootstrap styles.*/
 
     /* Edit Queue Page */
     #style-override #edit-queue {
-        left: 2.5%;
+        width: 70%;
+        position: relative;
+        left: 15.5%;
     }
 
     #style-override #edit-queue #queue-info .my-container {
         width: 50%;
-        /* check margin-left */
         margin-left: 24%;
     }
 

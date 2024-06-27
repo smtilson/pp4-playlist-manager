@@ -135,6 +135,19 @@ Footer Links
 <img src="./readme_files/screenshots/footer-links.png" alt="Footer links to YouTube and YT Music" height="75px" width="175px">
 
 ### Profile page
+Every user has a profile page. It contains some personal data, links to authorization, the create queue page, a form for setting the name (cosmetic), and lists of queues owned by the user and queues they are collaborators on.
+
+Profile page Top | Queue Lists
+:---:|:---:
+
+
+#### Setting Name
+The name is primarily cosmetic. It lets other users know who owns each queue and who added each entry. It can be reset by the user. The default value is the portion of the users email address before '@'.
+
+#### Queue Lists
+This section enumerates the queues that the user has access to. On the left are the queues owned by the user. On the right are queues owned by other users. The title of each queue is a link to the edit page for the given queue.
+
+Queue Lists
 
 ### Queues
 Queues is the apps version of a playlist. Videos (entries) can be added from YouTube simultaneously by multiple users (provided they have been invited to do so by the owner of the queue). While collaborators have the ability to add videos, only the owner has the ability to interact with the queue in other ways. This includes removing entries, reordering entries, publishing a queue to YouTube, unpublishing a queue (removing it from YouTube), syncing a queue (updating the playlist on YouTube to reflect any changes), deleting a queue, or sharing a queue (inviting someone to collaborate). These different actions will be discussed in detail below. Collaborators (as well as owners) are also able to open find the playlist on youtube through a link. The playlists are published to youtube as unlisted (at this stage of the project).
@@ -157,20 +170,20 @@ If the user already has an account, they can click the link to be redirected to 
 
 If the app already has an account stored (through the "Remember me" feature from All-Auth), the user will be added as a collaborator for the queue and automatically redirected to the Edit Queue page for the associated queue.
 
-These queues will then be listed under "Friends' Queues" on the users profile page.
+This queue will then be listed under "Friends' Queues" on the users profile page.
 
 #### Edit Queue
-##### Delete Queue
-
-
 
 ##### Add Entries
+
+##### Delete Queue
 
 ##### Reorder Entries
 
 ##### Remove Entries
 
 ##### Refresh Queue
+
 ### YouTube Playlists
 
 #### Create Playlists
