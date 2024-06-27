@@ -70,7 +70,7 @@
                     <h2 class="logo">My Queues</h2>
                 </div>
                 {% for queue in my_queues %}
-                <div class="my-container text-center row min-height-row{% if forloop.last %} last{% endif %}">
+                <div class="my-container text-center row min-height-row">
                     <div class="col">
                         <h4><a href="{% url 'edit_queue' queue.id %}">{{queue.title}}</a></h4>
 
@@ -92,10 +92,13 @@
             </div>
             <div id="friends-queue-div" class="queue-display-divs col-md-6 d-flex-column align-items-center container">
                 <div class="logo-div text-center row no-wrap">
-                    <h2 class="logo">My Friends'<br>Queues</h2>
+                    <div class="logo">
+                    <h2>Friends'</h2>
+                    <h2>Queues</h2>
+                </div>
                 </div>
                 {% for queue in other_queues %}
-                <div class="my-container text-center min-height-row row{% if forloop.last %} last{% endif %}">
+                <div class="my-container text-center min-height-row row">
                     <h4 class="row"><a href="{% url 'edit_queue' queue.id %}">{{queue.title}}</a></h4>
                     <h5>
                         {% if queue.length != 1 %}
@@ -110,5 +113,7 @@
             </div>
         </div>
     </section>
+    <!-- Pushes Content above footer -->
+    <div class="last">&nbsp</div>
 </section>
 {% endblock content %}

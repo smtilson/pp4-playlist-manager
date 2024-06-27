@@ -142,7 +142,7 @@ body {
 
 /* Button Styles */
 
-#style-override .my-button-group {
+#style-override .my-btn-group {
     gap: 5px;
 }
 
@@ -151,7 +151,7 @@ body {
     border-width: 1px;
 }
 
-#style-override .my-button-group .btn {
+#style-override .my-btn-group .btn {
     border-color: black;
     border-width: 1px;
 }

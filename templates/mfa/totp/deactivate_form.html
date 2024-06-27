@@ -7,7 +7,7 @@
     </p>
     <form method="POST" action="{% url 'mfa_deactivate_totp' %}">
         {% csrf_token %}
-        {{ form.as_p }}
+        {{ form.as_div }}
         <button type="submit">{% trans "Deactivate" %}</button>
     </form>
 {% endblock content %}

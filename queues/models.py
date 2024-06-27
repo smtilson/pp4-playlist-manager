@@ -4,6 +4,7 @@ from django.shortcuts import get_object_or_404
 from yt_query.yt_api_utils import YT
 from utils import get_secret
 from mixins import DjangoFieldsMixin, ToDictMixin, ResourceID
+from django.contrib import messages
 
 # Create your models here.
 MAX_QUEUE_LENGTH = YT.MAX_QUEUE_LENGTH
@@ -20,7 +21,6 @@ class Queue(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
     # make these date names consistent throughout the app.
     date_created = models.DateTimeField(auto_now_add=True)
     last_edited = models.DateTimeField(auto_now=True)
-    length = models.PositiveIntegerField(default=0)
     secret = models.CharField(max_length=20, unique=True, default=get_secret)
     kind = models.CharField(max_length=100, default="", null=True, blank=True)
     yt_id = models.CharField(max_length=100, default="", null=True, blank=True)
@@ -57,10 +57,6 @@ class Queue(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
     @property
     def deleted_entries(self):
         return [entry for entry in self.entries.all() if entry.to_delete]
-
-    @classmethod
-    def find_queue(cls, request, queue_id):
-        return request, get_object_or_404(Queue, id=queue_id)
 
     def serialize(self):
         q_dict = self.to_dict_mixin(
@@ -125,12 +121,9 @@ class Queue(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
     # do not use this, it wastes resources
     def unpublish(self) -> None:
         if not self.published:
-            print("This playlist isn't published yet.")
-            return
-        decision = input("Are you sure you want to do this? \n It wastes resources.")
-        if decision != "yes":
-            print("Thank you, exiting unpublish method.")
-            return
+            msg = "This playlist isn't published yet."
+            msg_type = messages.INFO
+            return msg, msg_type
         yt = YT(self.owner)
         response = yt.delete_playlist(self.yt_id)
         self.clear_resource_id()
@@ -139,6 +132,10 @@ class Queue(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
         self.yt_id = ""
         self.save()
         print(response)
+        msg = f"{self.title} has been removed from YouTube. To delete the"
+        msg += "playlist from YouTube DJ, click the Delete button."
+        msg_type = messages.SUCCESS
+        return msg, msg_type
 
 
     def pop(self, index: int = -1):
@@ -164,6 +161,7 @@ class Queue(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
             elif not entry.synced:
                 entry.sync(yt)
         self.save()
+        return f"{self.title} has been synced with YouTube."
         
    
     
@@ -191,7 +189,6 @@ class Entry(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
     title = models.CharField(max_length=100)
     p_queue = models.ForeignKey(Queue, on_delete=models.CASCADE, related_name="entries")
     video_id = models.CharField(max_length=100)
-    duration = models.CharField(max_length=100, default="")
     user = models.CharField(
         max_length=50, default="I am embarassed to have added this."
     )
@@ -254,7 +251,7 @@ class Entry(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
     def sync(self, yt: "YT") -> None:
         response = yt.move_playlist_item(self)
         # add an error check here
-        print(response)
+        #print(response)
         self.synced = True
         self.save()
 
@@ -274,7 +271,7 @@ class Entry(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
         other_entry = self.p_queue.all_entries[other_position - 1]
         self._position, other_entry._position = other_entry._position, self._position
         self.synced = False
-        other_entry.synced = False
+        other_entry.synced = False        
         self.save()
         other_entry.save()
         return self, other_entry

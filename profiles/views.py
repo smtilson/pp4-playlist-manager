@@ -1,19 +1,18 @@
 from django.shortcuts import render, reverse, get_object_or_404
-from django.http import HttpResponseRedirect, JsonResponse
+from django.http import HttpResponseRedirect, JsonResponse, Http404
 from .models import Profile, GuestProfile, make_user
-from queues.models import Queue
+from utils import check_valid_redirect_action
+from queues.models import Queue, has_authorization
+from requests.exceptions import HTTPError
 from django.contrib import messages
-from errors.models import RequestReport
+from errors.utils import process_path
 from django.utils.safestring import mark_safe
-from error_processing import process_path
+from errors.views import error_handler
 from yt_auth.token_auth import (
     get_authorization_url,
     get_tokens,
     revoke_tokens,
 )
-
-# Create your views here.
-
 
 def index(request):
     """
@@ -23,33 +22,21 @@ def index(request):
     """
     path = request.get_full_path()
     user = make_user(request)
-    print(path)
-    if "code" in path:
-        # should this be a redirect?
+    keywords = {"?state=", "&code=", "&scope=https://www.googleapis.com/auth/youtube"}
+    if all(word in path for word in keywords):
         response = return_from_authorization(request)
     elif "error" in path:
-        error_msg = process_path(path)
-        messages.add_message(request, messages.ERROR, error_msg)
-        if user.is_authenticated:
-            response = HttpResponseRedirect(reverse("profile"))
-        else:
-            response = render(
-            request, "profiles/index.html", {"error_msg": error_msg, "user": user}
-            )
-    elif "redirect_action" in request.session:
-        view_name = request.session["redirect_action"]["action"]
-        args = request.session["redirect_action"]["args"]
-        response = HttpResponseRedirect(reverse(view_name, args=args))
+        msg = "An error occurred during the previous process."
+        msg += process_path(path)
+        messages.add_message(request, messages.ERROR, msg)
+        response = HttpResponseRedirect(reverse("profile"))
+    elif check_valid_redirect_action(request):
+        response = HttpResponseRedirect(reverse("redirect_action"))
+    elif user.is_guest and user.queue_id:
+        response = HttpResponseRedirect(reverse("edit_queue", args=[user.queue_id]))
     else:
-        
-        response = render(request, "profiles/index.html", {"user": user})
-    '''status, msg, msg_type = RequestReport.process(response)
-    if status == 404:
-        messages.add_message(request, msg_type, msg)
-        response = HttpResponseRedirect(reverse("404"))
-    elif status not in {200, 302}:
-        messages.add_message(request, msg_type, msg)
-        response = HttpResponseRedirect(reverse("profile"))'''
+        response = render(request, "profiles/index.html")
+    response = error_handler(request, response)
     return response
 
 
@@ -61,7 +48,6 @@ def profile(request):
         otherwise renders the appropriate "profile" page.
     """
     user = make_user(request)
-    print(f"{user.is_authenticated=}")
     if not user.is_authenticated:
         msg = "You must be logged in to view your profile."
         messages.add_message(request, messages.INFO, msg)
@@ -69,28 +55,22 @@ def profile(request):
     else:
         if not user.credentials:
             user.initialize()
-        if not user.has_tokens:
-            youtube_permission_status = "Profile has no associated youtube account."
+        if user.youtube_handle:
+            youtube_permission_status = (
+                f"Youtube DJ has access to {user.youtube_handle}."
+            )
         else:
-            youtube_permission_status = f"Youtube DJ has access to {user.youtube_handle}."
-        info_dict = user.info_dict
+            youtube_permission_status = "Profile has no associated youtube account."
         context = {
             "user": user,
-            "view_name": "profile",
             "authorization_url": get_authorization_url(),
-            "info_dict": info_dict,
+            "info_dict": user.info_dict,
             "my_queues": user.my_queues.all(),
             "other_queues": user.other_queues.all(),
-            "youtube_access":youtube_permission_status,
+            "youtube_access": youtube_permission_status,
         }
         response = render(request, "profiles/profile.html", context)
-    '''status, msg, msg_type = RequestReport.process(response)
-    if status == 404:
-        messages.add_message(request, msg_type, msg)
-        response = HttpResponseRedirect(reverse("404"))
-    elif status not in {200, 302}:
-        messages.add_message(request, msg_type, msg)
-        response = HttpResponseRedirect(reverse("index"))'''
+    response = error_handler(request, response)
     return response
 
 
@@ -106,20 +86,17 @@ def set_name(request):
         msg = "You must be logged in to set your name."
         messages.add_message(request, messages.INFO, msg)
         response = HttpResponseRedirect(reverse("account_login"))
-    user.name = request.POST["name"]
-    user.save()
-    msg = f"Name set to {user.name}"
-    messages.add_message(request, messages.SUCCESS, msg)
+    elif request.method != "POST":
+        msg = "Invalid request method."
+        messages.add_message(request, messages.INFO, msg)
+    else:
+        user.name = request.POST["name"]
+        user.save()
+        msg = f"Name set to {user.name}"
+        messages.add_message(request, messages.SUCCESS, msg)
     response = HttpResponseRedirect(reverse("profile"))
-    '''status, msg, msg_type = RequestReport.process(response)
-    if status == 404:
-        messages.add_message(request, msg_type, msg)
-        response = HttpResponseRedirect(reverse("404"))
-    elif status not in {200, 302}:
-        messages.add_message(request, msg_type, msg)
-        response = HttpResponseRedirect(reverse("profile"))'''
+    response = error_handler(request, response)
     return response
-
 
 
 def return_from_authorization(request):
@@ -129,37 +106,32 @@ def return_from_authorization(request):
     Returns: Redirects to appropriate page based on the outcome of the
     Oauth2 authorization process.
     """
-    # do I need to check here that they don't have credentials since it is checked on the front end
     user = make_user(request)
     if not user.is_authenticated:
-        msg = "How did you get here, I am genuinely curious."
+        msg = "How did you get here? I am genuinely curious. This"\
+              " authorization code will be discarded and you will have to try"\
+              " again after you are logged in."
         messages.add_message(request, messages.INFO, msg)
         response = HttpResponseRedirect(reverse("account_login"))
     else:
         path = request.get_full_path()
-        if user.has_tokens:
-            msg = f"{user.nickname} is already connected to {user.youtube_handle}. If you would like to change which account is connected, please first revoke the current permissions"
-            msg_type = messages.INFO
+        try:
+            tokens = get_tokens(path)
+        except HTTPError as e:
+            print("error occurred while retrieving tokens")
+            msg = "An unknown error occurred while fetching your tokens."
+            msg += str(e)
+            msg += "error occurred while retrieving tokens"
+            msg_type = messages.ERROR
         else:
-            try:
-                tokens = get_tokens(path)
-            except Exception as e:
-                msg = "An unknown error occurred while fetching your tokens."	
-                msg += str(e)
-                msg_type = messages.ERROR
-            else:
-                msg = user.set_credentials(tokens)
-                msg_type = messages.SUCCESS
+            msg = user.set_credentials(tokens)
+            user.save()
+            msg_type = messages.SUCCESS
         messages.add_message(request, msg_type, msg)
         response = HttpResponseRedirect(reverse("profile"))
-    '''status, msg, msg_type = RequestReport.process(response)
-    if status == 404:
-        messages.add_message(request, msg_type, msg)
-        response = HttpResponseRedirect(reverse("404"))
-    elif status not in {200, 302}:
-        messages.add_message(request, msg_type, msg)
-        response = HttpResponseRedirect(reverse("profile"))'''
+    response = error_handler(request, response)
     return response
+
 
 def revoke_authorization(request):
     """
@@ -173,29 +145,47 @@ def revoke_authorization(request):
         msg = "You must be logged in to revoke your authorization."
         messages.add_message(request, messages.INFO, msg)
         response = HttpResponseRedirect(reverse("account_login"))
-    status_code = revoke_tokens(user)
-    if status_code == 200:
-        msg = "Credentials successfully revoked for " + user.youtube_handle
-        msg_type = messages.SUCCESS
     else:
-        address = '<a href="https://myaccount.google.com/permissions">Third party apps and services</a>'
-        msg = "An error occurred. Your credentials have been wiped from our "
-        msg += f"system. To be on the safe side, please visit {address}"
-        msg += "to revoke your permissions. Look for 'pp4-playlist-manager' in"
-        msg += "the list of third party apps."
-        msg_type = messages.ERROR
-    user.revoke_youtube_data()
-    # there should be a modal for this
-    messages.add_message(request, msg_type, mark_safe(msg))
-    response = HttpResponseRedirect(reverse("profile"))
-    '''status, msg, msg_type = RequestReport.process(response)
-    if status == 404:
-        messages.add_message(request, msg_type, msg)
-        response = HttpResponseRedirect(reverse("404"))
-    elif status not in {200, 302}:
-        messages.add_message(request, msg_type, msg)
-        response = HttpResponseRedirect(reverse("profile"))'''
+        # This error code is never 200, but sometimes the credentials are
+        # invalidated on Google's end as well.
+        status_code = revoke_tokens(user)
+        user.revoke_youtube_data()
+        if status_code == 200:
+            msg = "Credentials successfully revoked for " + user.youtube_handle
+            msg_type = messages.SUCCESS
+        else:
+            address = '<a href="https://myaccount.google.com/permissions">Third party apps and services</a>'
+            msg = "An error occurred. Your credentials have been wiped from our "
+            msg += f"system. To be on the safe side, please visit {address}"
+            msg += "to revoke your permissions. Look for 'pp4-playlist-manager' in"
+            msg += "the list of third party apps."
+            msg_type = messages.ERROR
+        # there should be a modal for this
+        messages.add_message(request, msg_type, mark_safe(msg))
+        response = HttpResponseRedirect(reverse("profile"))
+    response = error_handler(request, response)
     return response
+
+
+def redirect_action(request):
+    # Currently, only one redirect action is implemented
+    user = make_user(request)
+    if check_valid_redirect_action(request):
+        view_name = request.session["redirect_action"]
+        del request.session["redirect_action"]
+        queue_id = request.session["queue_id"]
+    if has_authorization(user, queue_id):
+        msg = "Redirecting to Edit page for the given queue."
+        msg_type = messages.SUCCESS
+        response = HttpResponseRedirect(reverse(view_name, args=[queue_id]))
+    else:
+        msg = "An error occurred. There is no valid redirect action."
+        msg_type = messages.ERROR
+        response = HttpResponseRedirect(reverse("index"))
+    messages.add_message(request, msg_type, msg)
+    response = error_handler(request, response)
+    return response
+
 
 def guest_sign_in(request):
     """
@@ -204,22 +194,20 @@ def guest_sign_in(request):
     Args: request (HttpRequest)
     Returns:
     """
-    queue = get_object_or_404(Queue, id=request.session["queue_id"])
     user = make_user(request)
-    # are these ever hit? This seems maybe overly defensive.
-    if user.is_authenticated:
-        msg = "You are already logged in."
+    queue_id = request.session.get("queue_id")
+    if queue_id is None:
+        raise Http404("A queue must be associated with this particular request.")
+    else:
+        queue = get_object_or_404(Queue, id=request.session["queue_id"])
+    if user.is_authenticated or user.is_guest:
+        msg = f"You are already logged in {user.nickname}."
         msg_type = messages.INFO
         messages.add_message(request, msg_type, msg)
-        if "redirect_action" in request.session:
-            view_name = request.session["redirect_action"]["action"]
-            args = request.session["redirect_action"]["args"]
-            response = HttpResponseRedirect(reverse(view_name, args=args))
-        else:
-            response = HttpResponseRedirect(reverse("profile"))
-    if request.method == "GET":
+        response = HttpResponseRedirect(reverse("edit_queue", args=[queue_id]))
+    elif request.method == "GET":
         context = {"queue": queue}
-        return render(request, "profiles/guest_sign_in.html", context)
+        response = render(request, "profiles/guest_sign_in.html", context)
     elif request.method == "POST":
         name = request.POST["guest_name"]
         email = request.POST.get("guest_email")
@@ -234,11 +222,7 @@ def guest_sign_in(request):
         msg = f"Guest account set up for {user.nickname}"
         messages.add_message(request, messages.SUCCESS, msg)
         response = HttpResponseRedirect(reverse("edit_queue", args=[queue.id]))
-    '''status, msg, msg_type = RequestReport.process(response)
-    if status == 404:
-        messages.add_message(request, msg_type, msg)
-        response = HttpResponseRedirect(reverse("404"))
-    elif status not in {200, 302}:
-        messages.add_message(request, msg_type, msg)
-        response = HttpResponseRedirect(reverse("index"))'''
+    else:
+        response = HttpResponseRedirect(reverse("index"))
+    response = error_handler(request, response)
     return response

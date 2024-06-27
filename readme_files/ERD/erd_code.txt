@@ -1,0 +1,60 @@
+// Use DBML to define your database structure
+// Docs: https://dbml.dbdiagram.io/docs
+// The following generates my ERD on dbdiagram.io
+
+Table Queues {
+  id integer [primary key]
+  owner integer [ref: > Profiles.id]
+  collaborators integer [ref: <> Profiles.id]
+  title varchar
+  description text
+  date_created timestamp
+  last_edited timestamp
+  secret varchar
+  kind varchar
+  yt_id varchar
+}
+
+Table Entries {
+  id integer [primary key]
+  title varchar
+  p_queue integer [ref: > Queues.id]
+  video_id varchar
+  duration varchar
+  user varchar
+  _position integer
+  published bool
+  synced bool
+  kind varchar
+  yt_id varchar
+  to_delete bool
+}
+
+Table Profiles {
+  id integer [primary key]
+  name varchar
+  email email
+  is_superuser bool
+  is_staff bool
+  is_active bool
+  last_login timestamp
+  date_joined timestamp
+  credentials integer [ref: - Credentials.id]
+  youtube_channel varchar
+  youtube_handle varchar
+  secret varchar
+}
+
+Table Credentials {
+  id integer [primary key]
+  token_uri varchar
+  token varchar
+  refresh_token varchar
+  client_id varchar
+  client_secret varchar
+  scope varchar
+  universe_domain varchar
+  account varchar
+  has_tokens bool
+}
+
