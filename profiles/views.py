@@ -3,6 +3,7 @@ from django.http import HttpResponseRedirect, JsonResponse, Http404
 from .models import Profile, GuestProfile, make_user
 from utils import check_valid_redirect_action
 from queues.models import Queue, has_authorization
+from requests.exceptions import HTTPError
 from django.contrib import messages
 from errors.utils import process_path
 from django.utils.safestring import mark_safe
@@ -13,18 +14,13 @@ from yt_auth.token_auth import (
     revoke_tokens,
 )
 
-# Create your views here.
-
-
 def index(request):
-    # need to test guest without redirect
     """
     Handles the index view for the app.
     Args: request (HttpRequest)
     Returns:
     """
     path = request.get_full_path()
-    print(path)
     user = make_user(request)
     keywords = {"?state=", "&code=", "&scope=https://www.googleapis.com/auth/youtube"}
     if all(word in path for word in keywords):
@@ -45,7 +41,6 @@ def index(request):
 
 
 def profile(request):
-    # finished testing
     """
     Renders the profile page for a user.
     Args: request (HttpRequest)
@@ -105,32 +100,28 @@ def set_name(request):
 
 
 def return_from_authorization(request):
-    # not finished testing
     """
     Handles the redirect from Oauth2 authorization process.
     Args: request (HttpRequest)
     Returns: Redirects to appropriate page based on the outcome of the
     Oauth2 authorization process.
     """
-    # do I need to check here that they don't have credentials since it is checked on the front end
-    # no, but I do need to overwrite the credentials they do have since requesting new ones invalidates the current ones, I believe.
     user = make_user(request)
     if not user.is_authenticated:
-        msg = "How did you get here? I am genuinely curious."
+        msg = "How did you get here? I am genuinely curious. This"\
+              " authorization code will be discarded and you will have to try"\
+              " again after you are logged in."
         messages.add_message(request, messages.INFO, msg)
         response = HttpResponseRedirect(reverse("account_login"))
     else:
         path = request.get_full_path()
-        print(path)
         try:
             tokens = get_tokens(path)
-        # something should be done about this exceptioin
-        except Exception as e:
+        except HTTPError as e:
             print("error occurred while retrieving tokens")
             msg = "An unknown error occurred while fetching your tokens."
             msg += str(e)
             msg += "error occurred while retrieving tokens"
-            # print(e)
             msg_type = messages.ERROR
         else:
             msg = user.set_credentials(tokens)
@@ -177,8 +168,7 @@ def revoke_authorization(request):
 
 
 def redirect_action(request):
-    # finished testing
-    # Currently only one redirect action is implemented
+    # Currently, only one redirect action is implemented
     user = make_user(request)
     if check_valid_redirect_action(request):
         view_name = request.session["redirect_action"]
@@ -198,7 +188,6 @@ def redirect_action(request):
 
 
 def guest_sign_in(request):
-    # finished testing
     """
     Handles the guest sign-in process. Redirects user after sign in and
     generates a GuestProfile object.

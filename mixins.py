@@ -16,6 +16,8 @@ class ResourceID:
         # save is done after this is called in order to be explicit
         self.kind = response_item['kind']
         self.yt_id = response_item['id']
+        self.save()
+        print(self.kind, self.yt_id)
 
     def clear_resource_id(self):
         self.kind = ""

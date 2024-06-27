@@ -46,7 +46,8 @@ def create_queue(request):
 
 
 def edit_queue(request, queue_id):
-    # tested
+    # GET tested check
+    # POST tested check
     user = make_user(request)
     queue = get_object_or_404(Queue, id=queue_id)
     is_owner = user == queue.owner
@@ -100,7 +101,7 @@ def edit_queue(request, queue_id):
 
 
 def delete_queue(request, queue_id):
-    # finished testing chcek
+    # finished testing check
     """
     Checks for authorization and then deletes the queue. Deletion of playlists
     on YouTube is temporarily disabled due to API rate limits.
@@ -151,18 +152,19 @@ def unpublish(request, queue_id):
 
 
 def publish(request, queue_id):
+    #finished tests check
     user = make_user(request)
     queue = get_object_or_404(Queue, id=queue_id)
     if not queue.owner.youtube_channel:
-        msg = "There is no channel associated with this queue. It can not be published. Please connect your account to a valid YouTube account in order."
+        msg = "There is no channel associated with this queue. It can not be"\
+              "published. The queue owner must add a valid YouTube account."
         msg_type = messages.ERROR
         response = HttpResponseRedirect(reverse("edit_queue", args=[queue_id]))
     elif user == queue.owner:
         try:
             msg = queue.publish()
         except HTTPError as e:
-            print("HTTPError hit on publish")
-            msg = e
+            msg += e
             msg_type = messages.ERROR
         else:
             msg_type = messages.SUCCESS
@@ -178,6 +180,7 @@ def publish(request, queue_id):
 
 
 def sync(request, queue_id):
+    # manually testing needed
     """
     Updates the corresponding YouTube playlist to match the queue.
     Args: reques (HttpRequest)
@@ -209,8 +212,8 @@ def sync(request, queue_id):
     response = error_handler(request, response)
     return response
 
-
 def add_entry(request, queue_id, video_id):
+    # finished testing check
     """
     Adds an entry/video to the queue.
     Args: request (HttpRequest)
@@ -220,47 +223,53 @@ def add_entry(request, queue_id, video_id):
     """
     queue = get_object_or_404(Queue, id=queue_id)
     user = make_user(request)
-    
     msg_type = messages.ERROR
-    if not has_authorization(user, queue):
+    if not user.is_authenticated and not user.is_guest:
         msg = "You do not have authorization to add entries to this queue."
         msg_type = messages.INFO
         messages.add_message(request, msg_type, msg)
         response = HttpResponseRedirect(reverse("account_login"))
-    if queue.full:
-        msg = "This queue is at max capacity."
-        if user == queue.owner:
-            msg += "Remove some entries if you would like to add more."
-        else:
-            msg += "Ask the owner to remove some entries so you can add more."
-        msg_type = messages.ERROR
+    elif not has_authorization(user, queue.id):
+        msg = "You do not have authorization to add entries to this queue."
+        msg_type = messages.INFO
+        messages.add_message(request, msg_type, msg)
+        response = HttpResponseRedirect(reverse("profile"))
     else:
-        try:
-            video_data = YT(user).find_video_by_id(video_id)
-        except HTTPError as e:
-            msg = f"The following error occurred: {e}"
-            msg_type = messages.ERROR
-        except ValueError as e:
-            msg = f"There were too many videos associated with that ID. Try"
-            msg += "adding a different video."
+        if queue.full:
+            msg = "This queue is at max capacity."
+            if user == queue.owner:
+                msg += "Remove some entries if you would like to add more."
+            else:
+                msg += "Ask the owner to remove some entries so you can add more."
             msg_type = messages.ERROR
         else:
-            if video_data["status"] != "private":
-                del video_data["status"]
-                entry = Entry(**video_data)
-                entry.p_queue = queue
-                # adds entry to end of list
-                entry._position = queue.length
-                entry.user = user.nickname
-                queue.save()
-                entry.save()
-                msg = f"{entry.title} has been added to the queue."
-                msg_type = messages.SUCCESS
-            else:
-                msg = "This video is private. It cannot be added to the queue."
+            try:
+                yt = YT(user)
+                video_data = yt.find_video_by_id(video_id)
+            except HTTPError as e:
+                msg = f"The following error occurred: {e}"
                 msg_type = messages.ERROR
-    messages.add_message(request, msg_type, msg)
-    response = HttpResponseRedirect(reverse("edit_queue", args=[queue_id]))
+            except ValueError as e:
+                msg = f"There were too many videos associated with that ID. Try"
+                msg += "adding a different video."
+                msg_type = messages.ERROR
+            else:
+                if video_data["status"] != "private":
+                    del video_data["status"]
+                    entry = Entry(**video_data)
+                    entry.p_queue = queue
+                    # adds entry to end of list
+                    entry._position = queue.length
+                    entry.user = user.nickname
+                    queue.save()
+                    entry.save()
+                    msg = f"{entry.title} has been added to the queue."
+                    msg_type = messages.SUCCESS
+                else:
+                    msg = "This video is private. It cannot be added to the queue."
+                    msg_type = messages.ERROR
+        messages.add_message(request, msg_type, msg)
+        response = HttpResponseRedirect(reverse("edit_queue", args=[queue_id]))
     response = error_handler(request, response)
     return response
 
@@ -322,7 +331,7 @@ def swap(request, entry_id, other_entry_position):
 
 
 def gain_access(request, queue_secret, owner_secret):
-    # finished testing
+    # finished testing check
     """
     Handles sharing of queues to both guest users and users with an account.
     Args: request (HttpRequest)
@@ -339,7 +348,7 @@ def gain_access(request, queue_secret, owner_secret):
     
     msg = ""
     if owner_secret != queue.owner.secret:
-        msg = f"This link is not valid. Please request another one from the {queue.owner.nickname}."
+        msg += f"This link is not valid. Please request another one from the {queue.owner.nickname}."
         msg_type = messages.ERROR
         response = HttpResponseRedirect(reverse("index"))
     else:

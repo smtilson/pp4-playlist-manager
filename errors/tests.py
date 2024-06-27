@@ -71,7 +71,7 @@ class TestErrors(TestCase):
         return request
     
 
-    def _test_error_handler_200(self):
+    def test_error_handler_200(self):
         # Logged in
         response = Mock(status_code=200)
         request = self.user_request("/")
@@ -89,7 +89,7 @@ class TestErrors(TestCase):
         self.assertEqual(response.status_code, 200)
         
     
-    def _test_error_handler_302(self):
+    def test_error_handler_302(self):
         # Logged in
         response = Mock(status_code=302)
         request = self.user_request("/")
@@ -106,7 +106,7 @@ class TestErrors(TestCase):
         response = views.error_handler(request, response)
         self.assertEqual(response.status_code, 302)
 
-    def _test_error_handler_404(self):
+    def test_error_handler_404(self):
         # Logged in
         response = Mock(status_code=404)
         request = self.user_request("/")
@@ -123,7 +123,7 @@ class TestErrors(TestCase):
         response = views.error_handler(request, response)
         self.assertEqual(response.status_code, 404)
 
-    def _test_error_handler_500(self):
+    def test_error_handler_500(self):
         # Logged in
         response = Mock(status_code=500)
         request = self.user_request("/")

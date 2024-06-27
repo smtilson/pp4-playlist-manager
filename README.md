@@ -196,7 +196,7 @@ Unpublish: removes playlist from YouTube. Only available for queue owner with pa
 Delete: deletes the queue from YouTube DJs database. Only available for queue owner. This does not remove the playlist from YouTube. The user is prompted before the action takes place using a modal.
 
 ##### Search YouTube & Adding Entries
-From the Edit page, users can search YouTube for videos to add. Currently, the number of results is capped. This limit is related to the API rate limit. 
+From the Edit page, users can search YouTube for videos to add. Currently, the number of results is capped. This limit is related to the API rate limit. The previous search results are loaded by default for each queue, if they are still present in the session.
 
 Search Bar | Search Results
 :--:|:--:
