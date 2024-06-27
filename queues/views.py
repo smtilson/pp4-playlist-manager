@@ -19,7 +19,7 @@ def debug_template(request):
 
 
 def create_queue(request):
-    # finished testing
+    # finished testing check
     user = make_user(request)
     if not user.is_authenticated:
         msg = "You must be logged in to create a queue."
