@@ -118,7 +118,6 @@ def return_from_authorization(request):
         try:
             tokens = get_tokens(path)
         except HTTPError as e:
-            print("error occurred while retrieving tokens")
             msg = "An unknown error occurred while fetching your tokens."
             msg += str(e)
             msg += "error occurred while retrieving tokens"

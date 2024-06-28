@@ -1,19 +1,14 @@
 from .models import Profile, GuestProfile, make_user
 from . import views
-import google.oauth2.credentials as g_oa2_creds
 from yt_auth.models import Credentials
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.messages.storage.fallback import FallbackStorage
-from unittest.mock import patch, MagicMock, Mock
-from django.contrib.sessions.backends import db
+from unittest.mock import patch
 from django.urls import reverse
 from django.test import TestCase, RequestFactory, override_settings
 from queues.models import Queue, has_authorization
-from django.http import HttpResponseRedirect
 import os
 from django.test import RequestFactory
-import yt_auth
-from utils import check_valid_redirect_action
 
 if os.path.isfile("env.py"):
     import env
@@ -37,7 +32,7 @@ class TestProfileViews(TestCase):
     # For these tests, I had to combine two different approaches. One uses
     # RequestFactory objects to make requests that can store data. This was
     # necessary, but less convenient than the other approach, will be evident.
-    # Note: the login, logout, and sign up views are all halndled by all-auth
+    # Note: the login, logout, and sign up views are all handled by all-auth
     # and I therefore did not test them.
     def setup_users(self):
         self.user1 = Profile.objects.create_superuser(
@@ -79,7 +74,6 @@ class TestProfileViews(TestCase):
         self.setup_users()
         self.setup_queues()
         self.guest = GuestProfile(name="Guesty", email="Guesty@McTestFace.com")
-        # self.guest.queue_id = self.queue1.id
 
     def google_creds(self):
         sample_token = {
@@ -115,7 +109,7 @@ class TestProfileViews(TestCase):
         return request
 
     def test_make_user(self):
-        # Anonymous User
+        # Not logged in
         request = self.make_get_request(reverse("index"))
         user = make_user(request)
         self.assertFalse(user.is_authenticated)
@@ -135,7 +129,7 @@ class TestProfileViews(TestCase):
         self.assertFalse(user.is_guest)
 
     def test_index(self):
-        # Anonymous User
+        # Not logged in
         response = self.client.get(reverse("index"))
         self.assertEqual(response.status_code, 200)
         # Guest
@@ -157,10 +151,23 @@ class TestProfileViews(TestCase):
         self.assertEqual(response.status_code, 302)
         path = response.headers["Location"]
         self.assertEqual(path, f"/queues/edit_queue/{self.queue1.id}")
+        
         # The case of the index view being passed an Oauth 2 authorization code
         # is handled by the return_from_authorization view.    
+    
     def test_redirect_action(self):
-        # Not logged in with good redirect action ??
+        # Not logged in with redirect action
+        session = {
+            "redirect_action": "edit_queue",
+            "queue_id": self.queue2.id,
+        }
+        request = self.make_get_request("redirect_action")
+        request.session = session
+        response = views.redirect_action(request)
+        self.assertEqual(response.status_code, 302)
+        path = response.headers["Location"]
+        self.assertEqual(path, reverse("index"))
+        #self.assertEqual(path, reverse("id]))
         # Guest with good redirect action
         self.guest.queue_id = self.queue2.id
         session = {

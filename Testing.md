@@ -4,7 +4,12 @@ This document addresses the testing that was done on YouTube DJ.
 Table of contents
 
 - Manual Testing
+- - Responsiveness
+- - Navigation
 - Automatic Testing
+- - Profiles app views
+- - Queues app views
+- - Errors app views
 - Bugs Fixed
 - Bugs Left in
 
@@ -53,6 +58,16 @@ buttons hidden to non owners
 There is an issue with buttons in control panel spacing.
 Meg didn't realize that the link would take her to the edit page of the queue, add edit button next to play and share.
 
+## Automatic Testing
+I used the Django testing framework to test the views. I made use fo the Mock package from Unittest.
+
+I did not write automated tests for user creation, login, and signout as this was handled by All-Auth, but I did manually test these functions as documented above.
+
+The main purpose of this testing was to see if users were directed to the correct page based on their authentication status and permissions. Due to an inability to get Django sessions to function more kindly inside the testing framework, whenever I needed to use session data, I was unable to use the assertRedirect method of TestCase. This meant that I didn't have access to the whole redirect chain, only the first redirect. It explains some discrepancies in the style of tests. I also only tested messaging when it was the only way to check if a certain action had taken place. Otherwise, messages were tested manually.
+
+### Profiles app views
+These automated tests all passed. The index view does some heavy lifting as it is the redirect URI given to the Oauth 2 API.
+
 ## Bugs Left in
 The following bugs are things that were left in. I was either unable to find a solution because of ability, the underlying technology over which I have no control (see the first Bug listed), or I ran out of time.
 
@@ -60,4 +75,4 @@ The following bugs are things that were left in. I was either unable to find a s
 Reason for leaving in: It involves how YouTube functions, and I do not know how (it may be impossible) to force their playlist to update based on something that my web app does. This may, in fact, not be possible, even if it would be nice.
 2. Bug: When revoking authorization/credentials, the web app does not receive a 200 status code, it seems to fail.
 Reason for leaving in: Despite the status code not being 200, the credentials become invalid. This was demonstrated through manual testing in two ways. Firstly, I attempted to use those credentials to sync a playlist and received an error due to the credentials being invalid. Secondly, I checked Google's "Third party apps & services" page and did not find pp4-playlist-manager among the authorized apps. YouTube DJ also removes the credentials from its own system, and provides the user with a link to the "Third party apps & services" page to ensure that the credentials have been invalidated. I feel this is sufficient since the app no longer has the ability to modify that users YouTube account.
-3. In the automated testing I could not figure out how to have data persist past the views into the test. For example, in testing the publish view, the queue attribute `yt_id` was an empty string when tested but when printed before the end of the view function, it was not an empty string. 
+3. 

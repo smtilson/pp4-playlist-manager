@@ -1,21 +1,14 @@
 from django.test import TestCase
-import yt_auth.token_auth
-from profiles.models import Profile, GuestProfile, make_user
+from profiles.models import Profile, GuestProfile
 from . import views
-import google.oauth2.credentials as g_oa2_creds
 from yt_auth.models import Credentials
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.messages.storage.fallback import FallbackStorage
-from unittest.mock import patch, MagicMock, Mock
-from django.contrib.sessions.backends import db
+from unittest.mock import Mock
 from django.urls import reverse
 from django.test import TestCase, RequestFactory
-from queues.models import Queue, has_authorization
-from django.http import HttpResponseRedirect
 import os
 from django.test import RequestFactory
-import yt_auth
-from utils import check_valid_redirect_action
 
 if os.path.isfile("env.py"):
     import env

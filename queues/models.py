@@ -1,4 +1,5 @@
 from django.db import models
+from requests.exceptions import HTTPError
 from profiles.models import Profile, make_user
 from django.shortcuts import get_object_or_404
 from yt_query.yt_api_utils import YT
@@ -97,19 +98,25 @@ class Queue(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
         self.save()
 
     def publish(self) -> str:
-        # should this be refactored to require a key of some sort?
         if self.published:
             return f"Queue {self.title} is already uploaded to youtube."
         yt = YT(self.owner)
-        # add some error checking here.
-        response = yt.create_playlist(title=self.title, description=self.description)
-        self.set_resource_id(response)
-        for entry in self.all_entries:
-            entry.publish(yt)
-        for entry in self.deleted_entries:
-            entry.delete()
-        self.save()
-        return f"Queue {self.title} successfully added to youtube."
+        try:
+            response = yt.create_playlist(title=self.title, description=self.description)
+            self.set_resource_id(response)
+            for entry in self.all_entries:
+                entry.publish(yt)
+        except HTTPError as e:
+            msg += e
+            msg_type = messages.ERROR
+        else:
+            for entry in self.deleted_entries:
+                entry.delete()
+            self.save()
+            msg = f"Queue {self.title} successfully added to youtube."
+            msg_type = messages.SUCCESS
+        return msg, msg_type
+        
 
     
     @property
@@ -125,16 +132,20 @@ class Queue(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
             msg_type = messages.INFO
             return msg, msg_type
         yt = YT(self.owner)
-        response = yt.delete_playlist(self.yt_id)
-        self.clear_resource_id()
-        for entry in self.entries.all():
-            entry.clear_resource_id()
-        self.yt_id = ""
-        self.save()
-        print(response)
-        msg = f"{self.title} has been removed from YouTube. To delete the"
-        msg += "playlist from YouTube DJ, click the Delete button."
-        msg_type = messages.SUCCESS
+        try:
+            yt.delete_playlist(self.yt_id)
+        except HTTPError as e:
+            msg = f"The following error occurred: {e}"
+            msg_type = messages.ERROR
+        else:
+            msg = f"{self.title} has been removed from YouTube. To delete the"
+            msg += "playlist from YouTube DJ, click the Delete button."
+            msg_type = messages.SUCCESS
+            self.clear_resource_id()
+            for entry in self.entries.all():
+                entry.clear_resource_id()
+            self.yt_id = ""
+            self.save()
         return msg, msg_type
 
 
@@ -153,15 +164,23 @@ class Queue(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
 
     def sync(self):
         yt = YT(self.owner)
-        self.remove_excess(yt)
-        self.resort()
-        for entry in self.all_entries:
-            if not entry.published:
-                entry.publish(yt)
-            elif not entry.synced:
-                entry.sync(yt)
-        self.save()
-        return f"{self.title} has been synced with YouTube."
+        try:
+            self.remove_excess(yt)
+            self.resort()
+            for entry in self.all_entries:
+                if not entry.published:
+                    entry.publish(yt)
+                elif not entry.synced:
+                    entry.sync(yt)
+            self.save()
+        except HTTPError as e:
+            msg = "An error occurred while trying to sync the Queue with YouTube."
+            msg += str(e)
+            msg_type = messages.ERROR
+        else:
+            msg = f"{self.title} has been synced with YouTube."
+            msg_type = messages.SUCCESS
+        return msg, msg_type
         
    
     
@@ -181,8 +200,6 @@ class Queue(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
                     entry._position = index + pos
                     count += 1
                     entry.save()
-        print(f"Resort finished, {count} entries moved.")
-        
 
 
 class Entry(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
@@ -249,9 +266,7 @@ class Entry(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
         return self.to_dict_mixin(self.field_names(), {"p_queue"})
 
     def sync(self, yt: "YT") -> None:
-        response = yt.move_playlist_item(self)
-        # add an error check here
-        #print(response)
+        yt.move_playlist_item(self)
         self.synced = True
         self.save()
 

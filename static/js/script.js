@@ -2,8 +2,11 @@ $(document).ready(function () {
     console.log("page loaded");
     addListenersNModifyForms();
 })
+
 const DOMAIN = setDomain();
+
 console.log("DOMAIN set to:" + DOMAIN);
+
 function addListenersNModifyForms() {
     const rawHTML = $('html').html();
     if (rawHTML.includes("swap-input")) {
@@ -28,6 +31,7 @@ function addSwapListeners() {
         btn.addEventListener('click', swapEntries);
     }
 }
+
 function checkPage() {
     const location = window.location.pathname;
     console.log(location);

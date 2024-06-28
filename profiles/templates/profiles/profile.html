@@ -81,9 +81,12 @@
                             1 entry
                             {% endif %}
                         </h5>
-                        <div class="share-play-buttons btn-group" role="group" aria-label="Share and Play buttons">
+                        <div class="share-play-buttons btn-group" role="group"
+                            aria-label="Share, Edit, and Play buttons">
                             <a class="" href="{% url 'gain_access' queue.secret queue.owner.secret %}"><button
                                     type="button" class="btn btn-success">Share</button></a>
+                            <a class="" href="{% url 'edit_queue' queue.id %}"><button type="button"
+                                    class="btn btn-success">Edit</button></a>
                             {% if queue.published %}
                             <a href="{{queue.url}}" target="_blank"><button class="btn btn-ytube">Play</button></a>
                             {% endif %}
@@ -109,9 +112,13 @@
                         1 entry
                         {% endif %}
                     </h5>
-                    {% if queue.published %}
-                    <a href="{{queue.url}}" target="_blank"><button class="btn btn-ytube">Play</button></a>
-                    {% endif %}
+                    <div class="share-play-buttons btn-group" role="group" aria-label="Edit and Play buttons">
+                        <a class="" href="{% url 'edit_queue' queue.id %}"><button type="button"
+                                class="btn btn-success">Edit</button></a>
+                        {% if queue.published %}
+                        <a href="{{queue.url}}" target="_blank"><button class="btn btn-ytube">Play</button></a>
+                        {% endif %}
+                    </div>
                 </div>
                 {% endfor %}
             </div>

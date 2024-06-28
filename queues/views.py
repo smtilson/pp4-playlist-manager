@@ -137,11 +137,7 @@ def unpublish(request, queue_id):
     queue = get_object_or_404(Queue, id=queue_id)
     user = make_user(request)
     if queue.owner == user:
-        try:
-            msg, msg_type = queue.unpublish()
-        except HTTPError as e:
-            msg = f"The following error occurred: {e}"
-            msg_type = messages.ERROR
+        msg, msg_type = queue.unpublish()
     else:
         msg = "You do not have permission to delete this queue."
         msg_type = messages.ERROR
@@ -161,13 +157,7 @@ def publish(request, queue_id):
         msg_type = messages.ERROR
         response = HttpResponseRedirect(reverse("edit_queue", args=[queue_id]))
     elif user == queue.owner:
-        try:
-            msg = queue.publish()
-        except HTTPError as e:
-            msg += e
-            msg_type = messages.ERROR
-        else:
-            msg_type = messages.SUCCESS
+        msg, msg_type = queue.publish()
         response = HttpResponseRedirect(reverse("edit_queue", args=[queue_id]))
     else:
         msg = "Only the queue owner can publish the queue."
@@ -200,13 +190,7 @@ def sync(request, queue_id):
         msg = "This queue is already synced with YouTube."
         msg_type = messages.INFO
     else:
-        try:
-            msg = queue.sync()
-        except HTTPError as e:
-            msg = f"The following error occurred: {e}"
-            msg_type = messages.ERROR
-        else:
-            msg_type = messages.SUCCESS
+        msg, msg_type = queue.sync()
     messages.add_message(request, msg_type, msg)
     response = HttpResponseRedirect(reverse("edit_queue", args=[queue_id]))
     response = error_handler(request, response)
