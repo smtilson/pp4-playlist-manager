@@ -65,8 +65,7 @@ I did not write automated tests for user creation, login, and signout as this wa
 
 The main purpose of this testing was to see if users were directed to the correct page based on their authentication status and permissions. Due to an inability to get Django sessions to function more kindly inside the testing framework, whenever I needed to use session data, I was unable to use the assertRedirect method of TestCase. This meant that I didn't have access to the whole redirect chain, only the first redirect. It explains some discrepancies in the style of tests. I also only tested messaging when it was the only way to check if a certain action had taken place. Otherwise, messages were tested manually.
 
-### Profiles app views
-These automated tests all passed. The index view does some heavy lifting as it is the redirect URI given to the Oauth 2 API.
+I checked each branch of each view to see if it behaved as expected. This caused me to rethink some of my code and improve it, in my opinion.
 
 ## Bugs Left in
 The following bugs are things that were left in. I was either unable to find a solution because of ability, the underlying technology over which I have no control (see the first Bug listed), or I ran out of time.

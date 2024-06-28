@@ -283,7 +283,6 @@ Bootstrap styles.*/
 }
 
 #style-override #profile .logo-div {
-    /* check left */
     left: 6.5%;
     width: 75%;
     position: relative;
@@ -313,6 +312,10 @@ Bootstrap styles.*/
 
 #style-override .queue-buttons-div button {
     width: 120%;
+}
+
+#style-override #friends-queue-div .btn-group {
+    left: 17%;
 }
 
 /* Index Page */
@@ -379,13 +382,11 @@ Bootstrap styles.*/
 
     #style-override #queue-display .my-container {
         width: 75%;
-        /* check margin-left */
         margin-left: 7%;
     }
 
     /* Create Queue Page */
     #style-override #create-queue button {
-        /* check margin-left */
         margin-left: 29.5%;
     }
 
@@ -397,18 +398,20 @@ Bootstrap styles.*/
     #style-override #my-queue-div .logo-div,
     #style-override #friends-queue-div .logo-div {
         width: 65%;
-        /* check left */
         left: 12%;
     }
 
     #style-override .queue-buttons-div {
-        /* check left */
         left: 16%;
         gap: 20%;
     }
 
     #style-override .queue-buttons-div button {
         width: 143%;
+    }
+
+    #style-override #friends-queue-div .btn-group {
+        left: 23%;
     }
 
     /* Index Page */
@@ -490,6 +493,10 @@ Bootstrap styles.*/
 
     #style-override #both-queues-div .logo-div {
         min-height: 25%;
+    }
+
+    #style-override #friends-queue-div .btn-group {
+        left: 19%;
     }
 
     /* Create Queue Page */
@@ -616,7 +623,7 @@ Bootstrap styles.*/
     /* Profile Page */
     #style-override #profile {
         left: 11.5%;
-        width:  80%;
+        width: 80%;
     }
 
     #style-override .min-height-row .profile-top {
@@ -633,13 +640,17 @@ Bootstrap styles.*/
     }
 
     #style-override #profile #my-queue-div .logo {
-        position:relative;
-        right:16%;
+        position: relative;
+        right: 16%;
     }
 
     #style-override #profile #friends-queue-div .logo {
-        position:relative;
-        right:1%;
+        position: relative;
+        right: 1%;
+    }
+
+    #style-override #friends-queue-div .btn-group {
+        left: 16%;
     }
 
     #style-override #both-queues-div .min-height-row {
