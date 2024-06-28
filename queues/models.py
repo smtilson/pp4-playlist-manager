@@ -99,7 +99,7 @@ class Queue(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
 
     def publish(self) -> str:
         if self.published:
-            return f"Queue {self.title} is already uploaded to youtube."
+            return f"Queue {self.title} is already uploaded to YouTube."
         yt = YT(self.owner)
         try:
             response = yt.create_playlist(title=self.title, description=self.description)
@@ -113,7 +113,7 @@ class Queue(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
             for entry in self.deleted_entries:
                 entry.delete()
             self.save()
-            msg = f"Queue {self.title} successfully added to youtube."
+            msg = f"Queue {self.title} successfully added to YouTube."
             msg_type = messages.SUCCESS
         return msg, msg_type
         
@@ -144,6 +144,7 @@ class Queue(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
             self.clear_resource_id()
             for entry in self.entries.all():
                 entry.clear_resource_id()
+                entry.set_resource_id({"kind":"youtube#video",'id': entry.video_id})
             self.yt_id = ""
             self.save()
         return msg, msg_type

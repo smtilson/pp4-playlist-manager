@@ -8,7 +8,7 @@ from django.contrib.auth.models import (
 )
 from django.db import models
 from django.utils import timezone
-from utils import get_secret, format_field_name
+from utils import get_secret
 from yt_auth.models import Credentials
 from yt_query.yt_api_utils import YT
 from mixins import ToDictMixin, DjangoFieldsMixin
@@ -136,7 +136,7 @@ class Profile(AbstractBaseUser, PermissionsMixin, DjangoFieldsMixin, ToDictMixin
         self.credentials.set_credentials(new_credentials)
         if self.has_tokens and not (self.youtube_handle or self.youtube_channel):
             self.find_youtube_data()
-            msg = f"Successfully connected the youtube account {self.youtube_handle} to your profile."
+            msg = f"Successfully connected the YouTube account {self.youtube_handle} to your profile."
         else:
             msg = f"Successfully updated credentials for {self.nickname}."
         return msg
@@ -148,7 +148,7 @@ class Profile(AbstractBaseUser, PermissionsMixin, DjangoFieldsMixin, ToDictMixin
 
     def revoke_youtube_data(self):
         """
-        Removes youtube identification and credentials from system.
+        Removes YouTube identification and credentials from system.
         """
         self.youtube_channel = ""
         self.youtube_handle = ""

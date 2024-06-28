@@ -139,19 +139,13 @@ Bootstrap styles.*/
 
 
 #style-override .btn-ytube {
-    background-color: #e71a1a;
-    background-color: rgba(231, 26, 26, 0.796);
+    background-color: #e71a1acb;
     color: white;
     font-weight: 600;
     margin: 5px;
     border-radius: 10px;
 }
 
-/* I do not think this rule is necessary.
-#style-override .my-btn-group .btn {
-    border-color: #0f0f0f;
-    border-width: 1px;
-}*/
 
 /* Input Elements */
 #style-override form .js-input-background {
@@ -492,7 +486,7 @@ Bootstrap styles.*/
     }
 
     #style-override #both-queues-div .logo-div {
-        min-height: 25%;
+        min-height: 38%;
     }
 
     #style-override #friends-queue-div .btn-group {
@@ -650,7 +644,7 @@ Bootstrap styles.*/
     }
 
     #style-override #friends-queue-div .btn-group {
-        left: 16%;
+        left: 20%;
     }
 
     #style-override #both-queues-div .min-height-row {

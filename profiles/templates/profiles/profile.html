@@ -45,13 +45,9 @@
                 <!-- Name Form -->
                 <div id="name-form-div" class="row my-container profile-top">
                     {% if not user.name %}
-                    Please add a name so that your friends know who made the queue or added the videos. (Maybe they
-                    will
-                    even move
-                    it up
-                    in the queue!)
+                    Add a name so your friends know who you created the queue or added the videos.
                     {% else %}
-                    Care to update your name? (This change will be reflected in all queues.)
+                    Care to update your name?
                     {% endif %}
                     <form action="{% url 'set_name' %}" method="POST">
                         {% csrf_token %}
@@ -97,6 +93,7 @@
                             <a href="{{queue.url}}" target="_blank"><button class="btn btn-ytube">Play</button></a>
                             {% endif %}
                         </div>
+                        <p class="mt-2">Copy the "Share" button link to share.</p>
                     </div>
                 </div>
                 {% endfor %}

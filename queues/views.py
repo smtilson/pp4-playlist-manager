@@ -142,7 +142,7 @@ def unpublish(request, queue_id):
         msg = "You do not have permission to delete this queue."
         msg_type = messages.ERROR
     messages.add_message(request, msg_type, msg)
-    response = HttpResponseRedirect(reverse("profile"))
+    response = HttpResponseRedirect(reverse("edit_queue", args=[queue_id]))
     response = error_handler(request, response)
     return response
 

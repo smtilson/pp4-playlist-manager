@@ -1,10 +1,6 @@
-# Helper class and methods for interacting with youtube API
-# from profiles.models import Profile
+# Helper class and methods for interacting with YouTube API
 from googleapiclient.discovery import build
-from utils import produce_url_code
-#from env import YOUTUBE_API_KEY
 import os
-from django.shortcuts import get_object_or_404
 if os.path.isfile("env.py"):
     import env
 

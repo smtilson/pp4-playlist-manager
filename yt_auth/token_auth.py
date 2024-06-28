@@ -1,13 +1,9 @@
 # The code below borrows from the two Corey Schafer YouTube tutorials listed
 # in the references as well as the Oauth documentation.
-import google.oauth2.credentials as g_oa2_creds
 from google_auth_oauthlib.flow import Flow
-from utils import get_data_from_path, json_to_dict
-import pickle
+from utils import get_data_from_path
 import os
 import requests
-from .models import Credentials
-from profiles.models import Profile, make_user
 from google.auth.transport.requests import Request
 
 

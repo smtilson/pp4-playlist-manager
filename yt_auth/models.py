@@ -1,6 +1,6 @@
 from django.db import models
 from utils import json_to_dict
-from mixins import DjangoFieldsMixin, ToDictMixin
+from mixins import DjangoFieldsMixin
 import google.oauth2.credentials as g_oa2_creds
 
 
@@ -37,6 +37,7 @@ class Credentials(models.Model, DjangoFieldsMixin):
         Returns: g_oa2_creds.Credentials
         """
         creds_dict = self.to_dict()
+        # This prevents a particular error from occurring.
         creds_dict['scopes'] = [creds_dict['scopes'][2:-2]]
         del creds_dict["has_tokens"]
         return g_oa2_creds.Credentials(**creds_dict)

@@ -1,7 +1,7 @@
 # YouTube DJ
 ## YouTube DJ plays all YOUR hits!
 
-The key idea of this project is to make an easy UI for making collaborative playlists on youtube music.
+The key idea of this project is to make an easy UI for making collaborative playlists on YouTube music.
 
 ## Table of contents
 Introduction
@@ -9,6 +9,8 @@ Design
 Features
 Deployment
 Testing
+
+<img src="./readme_files/screenshots/responsive-img.png" alt="Landing page on different displays">
 
 ## Introduction
 Welcome to YouTube DJ, a webapp designed to enable collaborative YouTube playlist management. I was inspired to design this webapp based on an experience I had this past Easter. After Easter Brunch with my wife's immediate family, we listened to music. This was done by passing around a single phone and having family members select one song at a time. It seemed to me that it would be convenient to have a way for us to all add songs independently via our own devices. This app enables that while allowing the "owner" of the queue to maintain control. This control might be necessary to ensure that everyone gets a chance to hear a song they like, not just the person who is the fastest. Or it might be necessary if someone in the group is immature (like a 12 year old per se).
@@ -66,6 +68,7 @@ Top of Profile page     |  Mobile Queues Display | Desktop Profile page
 :-------------------------:|:---------------:|:----------:
 <img src="./readme_files/wireframes/mobile-profile-top.png" alt="Mobile Profile top of page wireframe" height="175px" width="75px">  |  <img src="./readme_files/wireframes/mobile-profile-queues-display.png" alt="Mobile Profile Queues display wireframe" height="175px" width="75px">|<img src="./readme_files/wireframes/desktop-profile-page.png" alt="Desktop Profile page wireframe" height="150px" width="155px">
 
+Note that "Home" is replaced with the text "Edit Queue" if the user is a guest.
 
 Mobile Create Queue page
 
@@ -166,7 +169,7 @@ The name is primarily cosmetic. It lets other users know who owns each queue and
 This section enumerates the queues that the user has access to. On the left are the queues owned by the user. On the right are queues owned by other users. The title of each queue is a link to the edit page for the given queue. These are in the lower half of the above image.
 
 ### Queues
-Queues is the apps version of a playlist. Videos (entries) can be added from YouTube simultaneously by multiple users (provided they have been invited to do so by the owner of the queue). While collaborators have the ability to add videos, only the owner has the ability to interact with the queue in other ways. This includes removing entries, reordering entries, publishing a queue to YouTube, unpublishing a queue (removing it from YouTube), syncing a queue (updating the playlist on YouTube to reflect any changes), deleting a queue, or sharing a queue (inviting someone to collaborate). These different actions will be discussed in detail below. Collaborators (as well as owners) are also able to open find the playlist on youtube through a link. The playlists are published to youtube as unlisted (at this stage of the project).
+Queues is the apps version of a playlist. Videos (entries) can be added from YouTube simultaneously by multiple users (provided they have been invited to do so by the owner of the queue). While collaborators have the ability to add videos, only the owner has the ability to interact with the queue in other ways. This includes removing entries, reordering entries, publishing a queue to YouTube, unpublishing a queue (removing it from YouTube), syncing a queue (updating the playlist on YouTube to reflect any changes), deleting a queue, or sharing a queue (inviting someone to collaborate). These different actions will be discussed in detail below. Collaborators (as well as owners) are also able to open find the playlist on YouTube through a link. The playlists are published to YouTube as unlisted (at this stage of the project).
 
 #### Create Queue
 Any logged in user can create a queue. There is a link on the profile page which takes users to the Create Queue page. Once their, they can enter a title (required) and a description of the queue. The description is optional and will be visible to all users. After creating, the user is redirected to the Edit Queue page for the newly created queue.
@@ -182,7 +185,7 @@ Guest Sign In
 
 <img src="./readme_files/screenshots/guest-sign-in.png" alt="Guest Sign in page" height="120px" width="100px">
 
-If the user already has an account, they can click the link to be redirected to the user login page. Upon login, they are added as a collaborator for the queue, and are redirected to the appropriate Edit page. They can then search for and add videos from youtube.
+If the user already has an account, they can click the link to be redirected to the user login page. Upon login, they are added as a collaborator for the queue, and are redirected to the appropriate Edit page. They can then search for and add videos from YouTube.
 
 If the app already has an account stored (through the "Remember me" feature from All-Auth), the user will be added as a collaborator for the queue and automatically redirected to the Edit Queue page for the associated queue.
 
@@ -254,21 +257,21 @@ There are both local and remote deployment options. We explain how to
 This will require both a Google Cloud Platform account and a Heroku account. We utilize two different sets of credentials for the YouTube Data API. The first is for read only tasks, such as searching and retrieving video ID's for search results. The second is for creating and editing YouTube playlists.
 
 
-#### Youtube API without Oauth notes
+#### YouTube API without Oauth notes
 
-1. Navigate to the "Library" of APIs from the dashboard of your project on the Google Cloud Platform. Find "Youtube Data API v3" and click "Enable."
+1. Navigate to the "Library" of APIs from the dashboard of your project on the Google Cloud Platform. Find "YouTube Data API v3" and click "Enable."
 
-2. Click on "Create Credentials." Make sure that "Youtube Data API v3" is selected under "Which API are you using?" Select "Public data" under "What data will you be accessing?"
+2. Click on "Create Credentials." Make sure that "YouTube Data API v3" is selected under "Which API are you using?" Select "Public data" under "What data will you be accessing?"
 
 3. Copy the API key and save it in your `env.py` file as `ytp_api_key`. Make sure that your `env.py` file is listed in your `.gitignore` file.
 
-#### Youtube API with Oauth notes
+#### YouTube API with Oauth notes
 
-1. Click on "Create Credentials." Make sure that "Youtube Data API v3" is selected under "Which API are you using?" Select "User data" under "What data will you be accessing?"
+1. Click on "Create Credentials." Make sure that "YouTube Data API v3" is selected under "Which API are you using?" Select "User data" under "What data will you be accessing?"
 
 2. Enter an appropriate app name, user support email, and developer contact information. Click "Save and Continue."
 
-3. Click on "Add or Remove Scopes." Add "youtube" to the filter to narrow down the options. Select ".../auth/youtube" and click on "Update" at the bottom of the screen. Click "Save and Continue."
+3. Click on "Add or Remove Scopes." Add "YouTube" to the filter to narrow down the options. Select ".../auth/youtube" and click on "Update" at the bottom of the screen. Click "Save and Continue."
 
 4. Under "Application type," select "Web application." Enter an appropriate name for your Oauth client. Add the relevant URI's for authorized Javascript origins and redirect requests (such as a local address or that of a heroku app). Click "Create."
 Make sure that when you add the URIs that you have the trailing slash there appropriately.
@@ -323,11 +326,17 @@ Do to the extensive mature of testing on this project, there is a separate docum
 ## References
 
 ### Technologies Used
-Programming languages/Frameworks: Python, Django, Javascript, Fetch, Bootstrap, HTML, CSS.
+Programming languages/Frameworks: Python, Django, Javascript, Fetch, jQuery, Bootstrap, HTML, CSS.
 
-Design Tools: dbdiagram.io (Entity Relationship Diagrams), Balsamiq (Wireframes), Snipping Tool (Windows program for cropping images), Color Pick Eyedropper (Chrome extension for finding color hex codes)
+Design Tools: dbdiagram.io (Entity Relationship Diagrams), Balsamiq (Wireframes), Snipping Tool (Windows program for cropping images), Color Pick Eyedropper (Chrome extension for finding color hex codes), [Techsini Multi-Mockup tool](https://techsini.com/multi-mockup/index.php) (Generated image of site on different devices), [Spreadsheet to Mark-Down converter](https://tabletomarkdown.com/convert-spreadsheet-to-markdown/)
 
 AI: I used the Codeium plug-in for VS Code. I used it to as for an informed auto-complete as well as to help with generating docstrings (although its suggestions were surprisingly not uniform).
+
+### Documentation
+1. [Django](https://docs.djangoproject.com/en/5.0/)
+2. [Oauth 2.0](https://oauth.net/2/)
+3. [YouTube Data API](https://developers.google.com/youtube/v3/docs)
+4. [Bootstrap](https://getbootstrap.com/docs/4.1/getting-started/introduction/)
 
 ### Individuals
 - My mentor Anthony for links to other pp4 examples, helping my focus on an mvp, and organize my priorities. 
@@ -393,11 +402,12 @@ AI: I used the Codeium plug-in for VS Code. I used it to as for an informed auto
 40. [Location in Django response object](https://stackoverflow.com/questions/7949089/how-to-find-the-location-url-in-a-django-response-object)
 41. [Remove decoration on clicked buttons in Bootstrap](https://stackoverflow.com/questions/19053181/how-to-remove-focus-around-buttons-on-click)
 
-#### Other references
+### Other references
 1. [Using Allauth and Oauth together](https://medium.com/@ksarthak4ever/django-custom-user-model-allauth-for-oauth-20c84888c318)
 2. [Django Secret Key Generator](https://djecrety.ir/)
 3. [CSS Gradient](https://cssgradient.io/)
 4. [Real Python article on Mock and Patch](https://realpython.com/python-mock-library/)
+<!--5. [Favicon Generator](https://favicon.io/favicon-generator/)-->
 
 ### YouTube tutorials
 The following tutorials were good starts. The YouTube and Oauth tutorials didn't cover a lot of what I ended up doing. Nonetheless, they were helpful.
