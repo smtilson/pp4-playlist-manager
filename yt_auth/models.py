@@ -17,10 +17,7 @@ CREDENTIALS_FIELDS = {
     "has_tokens",
 }
 
-
-class Credentials(models.Model, DjangoFieldsMixin, ToDictMixin):
-    # I think some of these fields could be removed since they do not actually
-    # change, but perhaps it is easiest to leave them in for the time being
+class Credentials(models.Model, DjangoFieldsMixin):
     token_uri = models.CharField(max_length=300, default="", null=True, blank=True)
     token = models.CharField(max_length=300, default="", null=True, blank=True)
     refresh_token = models.CharField(max_length=300, default="", null=True, blank=True)
@@ -34,20 +31,32 @@ class Credentials(models.Model, DjangoFieldsMixin, ToDictMixin):
     has_tokens = models.BooleanField(default=False)
 
     def to_google_credentials(self):
+        """
+        Converts the current instance of the Credentials model to a Google
+        Credentials object.
+        Returns: g_oa2_creds.Credentials
+        """
         creds_dict = self.to_dict()
         creds_dict['scopes'] = [creds_dict['scopes'][2:-2]]
         del creds_dict["has_tokens"]
         return g_oa2_creds.Credentials(**creds_dict)
 
+
     def to_dict(self):
-        return self.to_dict_mixin(self.field_names())
-    
-    def to_dict(self):
+        """
+        Returns a dictionary representation of the Credentials object.
+        Returns: dict
+        """
         return {
             field_name: getattr(self, field_name) for field_name in CREDENTIALS_FIELDS
         }
 
     def set_credentials(self, new_credentials:'g_oa2_creds.Credentials'=None) -> None:
+        """
+        Sets the credentials for the current instance of the Credentials model.
+        Args: new_credentials (g_oa2_creds.Credentials, optional) 
+        Returns: None
+        """
         if new_credentials is None:
             has_tokens = False
             new_credentials = Credentials().to_dict()

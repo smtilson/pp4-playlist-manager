@@ -12,6 +12,9 @@ if os.path.isfile("env.py"):
 YOUTUBE_API_KEY = os.environ.get("YOUTUBE_API_KEY")
 class YT:
     MAX_QUEUE_LENGTH = 20
+    """
+    A Class for handling interaction with the YouTube Data API.
+    """
     def __init__(self, user: "Profile") -> None:
         self.user = user
         self.api_key = YOUTUBE_API_KEY
@@ -19,43 +22,69 @@ class YT:
         self.guest_service = self.connect_simple()
 
     def connect_oauth(self) -> "Service":
+        """
+        Connects to the YouTube Data API using OAuth 2.0 authentication.
+        Returns: "Service"
+                 str
+        """
         if self.user.has_tokens:
             credentials = self.user.google_credentials
             return build("youtube", "v3", credentials=credentials)
         return ""
 
     def connect_simple(self) -> "Service":
+        """
+        Connects to the YouTube Data API using a developer key.
+        Returns: Service
+        """
         return build("youtube", "v3", developerKey=YOUTUBE_API_KEY)
 
     def find_user_youtube_data(self):
+        """
+        Fetches YouTube Channel and Handle for an authenticated user.
+        types.
+        Returns: List[str,str]
+        """
         request = self.user_service.channels().list(part="snippet", mine=True)
         response = request.execute()
         return parse_channel_result(response)
 
     def search_videos(self, query) -> list[str]:
+        """
+        Searches for videos on YouTube based on a given query. It returns their
+        id, and title.
+        Args: query (str)
+        Returns: list[str]: A list of video IDs that match the search query.           
+        """
         request = self.guest_service.search().list(
-            # maxResults=5 in order to limit API usage
             part="snippet",
             type="video",
             q=query,
-            maxResults=5,
+            maxResults=10,
         )
         response = request.execute()
-        with open("test_error_response.txt", "w", encoding="utf-8") as f:
-            f.write(str(response))
         return process_response(response)
 
     def find_video_by_id(self, video_id):
-        # check blocked status, eventually
+        """
+        Finds a video on YouTube based on the given video_id.
+        Args: video_id (str)
+        Returns: dict
+        """
         request = self.guest_service.videos().list(
             part="snippet,contentDetails,status",
             id=video_id,
         )
         response = request.execute()
-        # return response
         return process_response(response)
 
     def create_playlist(self, title, description) -> str:
+        """
+        Creates a new playlist with the given title and description.
+        Args: title (str)
+              description (str)
+        Returns: str
+        """
         body = {
             "snippet": {"title": title, "description": description},
             "status": {"privacyStatus": "unlisted"},
@@ -65,21 +94,23 @@ class YT:
         )
         response = request.execute()
         return response
-        # return process_response(response)
 
     def delete_playlist(self, playlist_id):
+        """
+        Deletes a playlist with the given playlist_id.
+        Args: playlist_id (str)
+        Returns: response (HttpResponse)
+        """
         request = self.user_service.playlists().delete(id=playlist_id)
         response = request.execute()
         return response
 
-    def get_published_playlist(self, playlist_id):
-        request = self.guest_service.playlistItems().list(
-            part="snippet,id", playlistId=playlist_id, maxResults=20
-        )
-        response = request.execute()
-        return process_response(response)
-
     def move_playlist_item(self, entry: "Entry"):
+        """
+        Updates a playlist item with the provided entry.
+        Args: entry (Entry)
+        Returns: response (HttpResponse)
+        """
         request = self.user_service.playlistItems().update(
             part="snippet,id", body=entry.body
         )
@@ -87,17 +118,33 @@ class YT:
         return process_response(response)
 
     def add_entry_to_playlist(self, body):
+        """
+        Inserts an entry into a playlist using the provided body.
+        Args: body (dict)
+        Returns: response (HttpResponse)
+        """
         request = self.user_service.playlistItems().insert(part="snippet,id", body=body)
         response = request.execute()
         return process_response(response)
 
     def remove_playlist_item(self, playlist_item_id):
+        """
+        Removes a playlist item from the user's playlist.
+        Args: playlist_item_id (str)
+        Returns: dict
+        """
         request = self.user_service.playlistItems().delete(id=playlist_item_id)
         response = request.execute()
         return response
 
     @classmethod
     def get_last_search(cls, request, queue_id):
+        """
+        Get the last search query and search results for a given queue ID.
+        Args: request (HttpRequest)
+              queue_id (str)
+        Returns: Tuple containing the last query and last search results.
+        """
         last_queue_query = request.session.get(f"queue_{queue_id}", {})
         last_query = last_queue_query.get("last_query")
         last_search = last_queue_query.get("last_search")
@@ -105,14 +152,27 @@ class YT:
 
     @classmethod
     def save_search(cls, request, queue_id, recent_search, search_results):
+        """
+        Save the recent search and search results to the session for a given
+        queue ID.
+        Args: request (HttpRequest)
+              queue_id (str)
+              recent_search (str)
+              search_results (list)
+        Returns: HttpRequest
+        """
         last_queue_query = {"last_query": recent_search, "last_search": search_results}
         request.session[f"queue_{queue_id}"] = last_queue_query
         return request
 
 
 def process_response(response: dict):
-    # how can I refactor this?
-    # there is the dictionary storing callables that I did...
+    """
+    Process the given response dictionary and return the appropriate result
+    based on its kind.
+    Args: response (dict)
+    Returns: Union[list,dict]
+    """
     kind = response["kind"]
     if kind == "youtube#searchListResponse":
         return [parse_search_result(result) for result in response["items"]]
@@ -132,6 +192,11 @@ def process_response(response: dict):
 
 
 def parse_playlist_result(response):
+    """
+    Parses the response from a playlist query and extracts the playlist items.
+    Args: response (dict)
+    Returns: list
+    """
     items = response["items"]
     if items:
         return [parse_playlist_item_result(item) for item in items]
@@ -139,6 +204,11 @@ def parse_playlist_result(response):
 
 
 def parse_playlist_item_result(item):
+    """
+    Parses the result of a playlist item query and extracts relevant information.
+    Args: item (dict)
+    Returns: dict
+    """
     snippet_keys = {"title", "playlistId", "position", "resourceId"}
     result_dict = {
         key: value for key, value in item["snippet"].items() if key in snippet_keys
@@ -148,19 +218,31 @@ def parse_playlist_item_result(item):
 
 
 def parse_channel_result(response):
+    """
+    Parses the response from a channel query and extracts the channel ID and
+    custom URL.
+    Args: response (dict)
+    Returns: tuple
+    """
     try:
         items = response["items"][0]
     except IndexError as e:
         print(response)
+        print(e)
     except KeyError as e:
         print(response)
+        print(e)
     id = items["id"]
     custom_url = items["snippet"]["customUrl"]
     return id, custom_url
 
 
 def parse_search_result(result: dict) -> dict:
-    # eventually this should return less data than the whole snippet and Id
+    """
+    Parses the search result and extracts the video ID from the input dictionary.
+    Args: result (dict)
+    Returns: dict
+    """
     id = result["id"]["videoId"]
     search_result = result["snippet"]
     search_result["id"] = id
@@ -168,6 +250,12 @@ def parse_search_result(result: dict) -> dict:
 
 
 def parse_video_result(response_item: dict) -> dict:
+    """
+    Parses the video result and extracts the relevant information from the
+    input dictionary.
+    Args: response_item (dict)
+    Returns: dict
+    """
     video_result = {
         "kind": response_item["kind"],
         "yt_id": response_item["id"],

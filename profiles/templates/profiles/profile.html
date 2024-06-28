@@ -2,6 +2,7 @@
 
 {% block content %}
 <section id="profile">
+
     <section id="info-n-control-buttons">
         <div class="row d-flex justify-content-center">
             <div id="welcome" class="col-md-6 text-center logo-div">
@@ -11,6 +12,7 @@
         <div class="row">
             <div class="col-md-6 container min-height-row">
                 <div class="my-container profile-top" id="üser-info-div">
+                    <!-- Profile Info -->
                     <div class="d-flex">
                         <ul class="">
                             {% for key, value in info_dict.items %}
@@ -19,6 +21,7 @@
                             <li class="row my-list-item">{{youtube_access}}</li>
                         </ul>
                     </div>
+                    <!-- Authorization and Create Queue Buttons -->
                     <div id="user-buttons-div" class="row text-center" role="group" aria-label="User Buttons">
                         {% if not user.has_tokens %}
                         <a href="{{authorization_url}}"><button type="button" class="btn btn-success">Give Youtube
@@ -32,12 +35,14 @@
                     </div>
                 </div>
             </div>
+            <!-- Mobile Navigation Buttons -->
             <div class="col-md-6 container min-height-row">
                 <div class="btn-group d-md-none queue-buttons-div" role="group" aria-label="Queue Buttons">
                     <a href="#my-queue-div"><button type="button" class="btn btn-secondary">My<br>Queues</button></a>
                     <a href="#friends-queue-div"><button type="button"
                             class="btn btn-secondary">Friends<br>Queues</button></a>
                 </div>
+                <!-- Name Form -->
                 <div id="name-form-div" class="row my-container profile-top">
                     {% if not user.name %}
                     Please add a name so that your friends know who made the queue or added the videos. (Maybe they
@@ -65,6 +70,7 @@
     </section>
     <section id="queue-display">
         <div class="d-flex-column d-flex-md-row row" id="both-queues-div">
+            <!-- My Queues -->
             <div id="my-queue-div" class="queue-display-divs col-md-6 d-flex-column align-items-center container">
                 <div class="logo-div text-center row no-wrap">
                     <h2 class="logo">My Queues</h2>
@@ -95,6 +101,7 @@
                 </div>
                 {% endfor %}
             </div>
+            <!-- My Friends' Queues -->
             <div id="friends-queue-div" class="queue-display-divs col-md-6 d-flex-column align-items-center container">
                 <div class="logo-div text-center row no-wrap">
                     <div class="logo">

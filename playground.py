@@ -33,3 +33,17 @@ sample = sample_token ={
 #sample_playlist_id = queue.yt_id
 
 #bad_video = yt.find_video_by_id("12333333333333kasddlmksdfkjasfdnnkwqerrfnksadfknlasdfnlkqwefekjlqwfsdf")
+users = Profile.objects.all()
+all_creds = Credentials.objects.all()
+for cred in all_creds:
+    for key in cred.to_dict():
+        val1 = cred.to_dict()[key]
+        val2 = cred.to_dict3().get(key, "doesn't have it")
+        val3 = cred.to_dict1().get(key, "doesn't have it")
+        print(key)
+        print(f"{val1=}")
+        print(f"{val2=}")
+        print(f"{val3=}")
+        print(f"{val1==val2=}")
+        print(f"{val1==val3=}")
+        input()

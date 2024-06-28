@@ -16,9 +16,10 @@ from yt_auth.token_auth import (
 
 def index(request):
     """
-    Handles the index view for the app.
+    Handles the index view for the app. Redirects user based on authentication
+    status, session data, and path.
     Args: request (HttpRequest)
-    Returns:
+    Returns: Various HttpResponseRedirects and renders the appropriate page.
     """
     path = request.get_full_path()
     user = make_user(request)
@@ -159,7 +160,6 @@ def revoke_authorization(request):
             msg += "to revoke your permissions. Look for 'pp4-playlist-manager' in"
             msg += "the list of third party apps."
             msg_type = messages.ERROR
-        # there should be a modal for this
         messages.add_message(request, msg_type, mark_safe(msg))
         response = HttpResponseRedirect(reverse("profile"))
     response = error_handler(request, response)
@@ -167,6 +167,13 @@ def revoke_authorization(request):
 
 
 def redirect_action(request):
+    """
+    Redirects the user to a specific view based on the session data. Currently,
+    only one redirect action is implemented.
+    Args: request (HttpRequest)
+    Returns: Redirect to Edit page for the given queue, if the user has
+    authorization.
+    """
     # Currently, only one redirect action is implemented
     user = make_user(request)
     if check_valid_redirect_action(request):
@@ -189,7 +196,7 @@ def redirect_action(request):
 def guest_sign_in(request):
     """
     Handles the guest sign-in process. Redirects user after sign in and
-    generates a GuestProfile object.
+    generates a GuestProfile object and stores it in the session.
     Args: request (HttpRequest)
     Returns:
     """

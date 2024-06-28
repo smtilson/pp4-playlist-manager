@@ -10,6 +10,7 @@
         {% if queue.description %}
         <p>{{queue.description}}</p>
         {% endif %}
+        <!-- Guest Sign In Form -->
         <form method="POST" action="guest_sign_in">
             {% csrf_token %}
             <label for="guest_name">Nickname:</label>
@@ -20,8 +21,10 @@
         </form>
     </div>
     <div class="text-center my-container last">
-        <h3>Have an account?</h3>
+        <h4>Have an account?</h4>
         <a href="{% url 'account_login'%}"><button class="primaryAction btn btn-secondary" type="submit">Login</button></a>
+        <h4>Want to make an account?</h4>
+        <a href="{% url 'account_signup' %}"><button class="primaryAction btn btn-secondary" type="submit">Sign Up</button></a>
     </div>
 </section>
 {% endblock content %}
