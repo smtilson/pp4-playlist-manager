@@ -322,7 +322,7 @@ Bootstrap styles.*/
     width: 80%;
 }
 
-#style-override .queue-buttons-div button {
+#style-override .queue-buttons-div a {
     width: 120%;
 }
 
@@ -423,7 +423,6 @@ Bootstrap styles.*/
     }
 
     #style-override .queue-buttons-div {
-        left: 16%;
         gap: 20%;
     }
 
