@@ -124,7 +124,6 @@ class Queue(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
             return "https://www.youtube.com/playlist?list=" + self.yt_id
         return "#"
 
-    # do not use this, it wastes resources
     def unpublish(self) -> None:
         if not self.published:
             msg = "This playlist isn't published yet."
@@ -211,7 +210,6 @@ class Entry(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
     _position = models.IntegerField(default=-1)
     published = models.BooleanField(default=False)
     synced = models.BooleanField(default=False)
-    # youtube_id = models.CharField(max_length=100,default="")
     kind = models.CharField(max_length=100, default="", null=True, blank=True)
     yt_id = models.CharField(max_length=100, default="", null=True, blank=True)
     to_delete = models.BooleanField(default=False)
@@ -258,7 +256,6 @@ class Entry(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
 
     def publish(self, yt: "YT") -> None:
         response = yt.add_entry_to_playlist(self.body)
-        # add an error check here4
         self.set_resource_id(response)
         self.published = True
         self.synced = True

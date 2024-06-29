@@ -16,7 +16,6 @@ from typing import Union
 
 
 # Create your models here.
-# I don't think these are used.
 SCOPES = ["https://www.googleapis.com/auth/youtube"]
 UNIVERSE_DOMAIN = "googleapis.com"
 TOKEN_URI = "https://oauth2.googleapis.com/token"
@@ -108,7 +107,6 @@ class Profile(AbstractBaseUser, PermissionsMixin, DjangoFieldsMixin,
     def info_dict(self):
         return {"Name": self.nickname, "Email": self.email}
 
-    # I should only have one of these maybe?
     def serialize(self):
         return self.to_dict()
 
@@ -137,7 +135,6 @@ class Profile(AbstractBaseUser, PermissionsMixin, DjangoFieldsMixin,
         with the data from new_credentials. When no object is passed, it resets
         the credentials to the default blank credentials.
         """
-        # attention: why am I not saving here.
         self.credentials.set_credentials(new_credentials)
         has_yt_data = self.youtube_handle or self.youtube_channel
         if self.has_tokens and not has_yt_data:
@@ -160,7 +157,6 @@ class Profile(AbstractBaseUser, PermissionsMixin, DjangoFieldsMixin,
         self.youtube_channel = ""
         self.youtube_handle = ""
         self.set_credentials()
-        # i think this is unnecessary
         self.save()
 
     @property
@@ -187,7 +183,6 @@ class GuestProfile(ToDictMixin):
         self.is_active = True
         self.is_guest = True
         self.is_authenticated = False
-        # maybe replace these two with some datetime stuff
         self.last_login = ""
         self.date_joined = "not applicable"
         self.credentials = ""
@@ -218,9 +213,7 @@ class GuestProfile(ToDictMixin):
 
 
 def make_user(request) -> Union["Profile", "GuestProfile"]:
-    # anonymous or authenticated
     user = request.user
-    # a dict or none
     guest = request.session.get("guest_user")
     if guest and not user.is_authenticated:
         user = GuestProfile(**guest)

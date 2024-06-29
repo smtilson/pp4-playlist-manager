@@ -381,7 +381,6 @@ class TestProfileViews(TestCase):
         # No queue in session
         response = self.client.get(reverse("guest_sign_in"), follow=True)
         self.assertEqual(response.status_code, 404)
-        # self.assertEqual(path, "404")
         # Queue in session, not logged in, GET request
         session = {"queue_id": self.queue1.id}
         request = self.make_get_request(reverse("guest_sign_in"))

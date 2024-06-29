@@ -1,16 +1,19 @@
 # YouTube DJ
 ## YouTube DJ plays all YOUR hits!
 
-The key idea of this project is to make an easy UI for making collaborative playlists on YouTube music.
-
-## Table of contents
-Introduction
-Design
-Features
-Deployment
-Testing
+Welcome to YouTube DJ! The goal of this project is to enable friends to easily make playlists together. Visit the live project [here](https://pp4-playlist-manager-67004a99f0e2.herokuapp.com/).
 
 <img src="./readme_files/screenshots/responsive-img.png" alt="Landing page on different displays">
+
+
+## Table of contents
+- Introduction
+- Design
+- Features
+- Deployment
+- Testing
+- References
+
 
 ## Introduction
 Welcome to YouTube DJ, a webapp designed to enable collaborative YouTube playlist management. I was inspired to design this webapp based on an experience I had this past Easter. After Easter Brunch with my wife's immediate family, we listened to music. This was done by passing around a single phone and having family members select one song at a time. It seemed to me that it would be convenient to have a way for us to all add songs independently via our own devices. This app enables that while allowing the "owner" of the queue to maintain control. This control might be necessary to ensure that everyone gets a chance to hear a song they like, not just the person who is the fastest. Or it might be necessary if someone in the group is immature (like a 12 year old per se).
@@ -43,7 +46,6 @@ I used Color Pick Eyeydropper (a chrome extension) to sample different colors fr
 I made various wireframes during my work on this project. At times, the final project differed from these wireframes. This is because I either felt the I liked what was displayed on screen better than my initial design with the wireframe or because there may have been an issue getting the page to look 100% how I wanted with the wireframe. As I am new to wireframes and Balsamiq, they do not include the best assets, like rounded buttons or containers.
 
 I used Balsamiq to make all of the wireframes.
-
 
 Mobile and Desktop Landing pages
 
@@ -80,7 +82,6 @@ Mobile Create Queue page
 <img src="./readme_files/wireframes/mobile-create-queue.png" alt="Mobile Create Queue page wireframe" height="175px" width="75px">  
 
 The mobile and desktop Create Queue pages differ only in the size and the nav elements so I did not make a wireframe for the desktop version.
-
 
 
 Mobile Edit Queue page
@@ -134,6 +135,7 @@ Without Credentials | With Credentials | Error Message
 <img src="./readme_files/screenshots/without-credentials.png" alt="Info panel without credentials">|<img src="./readme_files/screenshots/with-credentials.png" alt="Info panel with credentials">|<img src="./readme_files/screenshots/revoke-error-message.png" alt="Error message after 'Revoke Credentials' button is clicked">
 
 The button changes depending on whether or not the user has successfully paired a YouTube account.
+
 ### Navigation
 There is a navigation bar which allows the user to visit different parts of the site. In mobile, this is an accordion/dropdown style menu. The Options for navigation depend on whether or not the user is logged in. When not logged in, the user can navigate to the Home, Login, or Sign Up page. When Logged in, the user can navigate to the Home, Profile, Logout, or Create Queue page.
 
@@ -325,7 +327,7 @@ After these are set, use the Heroku CLI to login to the project by entering `her
 Clone the GitHub repository. After setting up the above config vars, select the python buildpack. Navigate to the Deployment page. Associate a Heroku project with your GitHub account. Connect the Heroku app to the cloned GitHub repository. Scroll down to manual (or automatic) deploy, select the main branch and click deploy.
 
 ## Testing
-Do to the extensive mature of testing on this project, there is a separate document that addresses this portion of the readme, it can be found here: Link
+Do to the extensive mature of testing on this project, there is a separate document that addresses this portion of the readme, it can be found in Testing.md in this same directory.
 
 ## References
 

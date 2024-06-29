@@ -582,7 +582,7 @@ class TestQueueViews(TestCase):
         queue = Queue.objects.get(id=self.queue1.id)
         queue_length += 1
         self.assertEqual(queue.length, queue_length)
-        # video private
+        # Video private
         fake_video["status"] = "private"
         with patch("queues.views.YT.find_video_by_id") as mock_find_video:
             mock_find_video.return_value = fake_video
