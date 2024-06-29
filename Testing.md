@@ -4,19 +4,9 @@ This document addresses the testing that was done on YouTube DJ.
 Table of contents
 
 - Manual Testing
-- - Responsiveness
-- - Navigation
 - Automatic Testing
-- - Profiles app views
-- - Queues app views
-- - Errors app views
 - Validation
-- - Python
-- - JavaScript
-- - HTML
-- - CSS
-- Bugs Fixed
-- Bugs Left in
+- Bugs
 
 ## Manual Testing
 Extensive manual testing was done throughout the development of this project.
