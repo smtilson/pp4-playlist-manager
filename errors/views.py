@@ -1,10 +1,8 @@
-from profiles.models import make_user
-from django.http import HttpResponseRedirect, HttpResponse, Http404
+from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import reverse
 from django.contrib import messages
 from .utils import process_response
 
-# Create your views here.
 
 def error_handler(request, response):
     status, msg, msg_type = process_response(response)
@@ -20,4 +18,3 @@ def error_handler(request, response):
         return HttpResponseRedirect(reverse("profile"))
     else:
         return HttpResponseRedirect(reverse("index"))
-    

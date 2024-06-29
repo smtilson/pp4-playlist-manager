@@ -10,18 +10,23 @@
         {% if queue.description %}
         <p>{{queue.description}}</p>
         {% endif %}
+        <!-- Guest Sign In Form -->
         <form method="POST" action="guest_sign_in">
             {% csrf_token %}
             <label for="guest_name">Nickname:</label>
             <input id="guest_name" type="text" name="guest_name" required>
             <label for="guest_email">Email:</label>
             <input id="guest_email" type="text" name="guest_email" placeholder="(Optional)">
-            <button type="submit" class="primaryAction mt-2 btn btn-secondary">Proceed to {{queue.title}}</button>
+            <button type="submit" class="primaryAction actual-button mt-2 btn btn-secondary">Proceed to {{queue.title}}</button>
         </form>
     </div>
     <div class="text-center my-container last">
-        <h3>Have an account?</h3>
-        <a href="{% url 'account_login'%}"><button class="primaryAction btn btn-secondary" type="submit">Login</button></a>
+        <h2 class="h3">Have an account? &nbsp; 
+            <a href="{% url 'account_login'%}">Login</a>
+        </h2>
+        <h2 class="h3 mt-2 signup-question">Want to make an account? &nbsp; 
+            <a href="{% url 'account_signup' %}">Sign Up</a>
+        </h2>
     </div>
 </section>
 {% endblock content %}

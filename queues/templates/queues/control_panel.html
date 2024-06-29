@@ -4,19 +4,19 @@
 <div class="my-container text-center d-md-none">
     <h3>Control Panel</h3>
     <div class="btn-group" role="group" aria-label="Control Queue Buttons 1">
-        <a href="{% url 'edit_queue' queue.id %}"><button type="button" class="btn btn-success">Refresh</button></a>
+        <form method="get"  style="display: inline" action="{% url 'edit_queue' queue.id %}"><button type="button" class="btn btn-success">Refresh</button></form>
         {% if is_owner %}
         <a href="{% url 'gain_access' queue.secret queue.owner.secret %}"><button
-                class="btn btn-success">Share</button></a>
+                class="btn btn-success">Share</button></form>
         {% if not queue.synced %}
-        <a href=" {% url 'sync' queue.id %}"><button class="btn btn-success">Sync</button></a>
+        <a href=" {% url 'sync' queue.id %}"><button class="btn btn-success">Sync</button></form>
         {% endif %}
         {% endif %}
     </div>
     <div class="btn-group" role="group" aria-label="Control Queue Buttons 2">
         {% if user.has_tokens %}
         {% if not queue.published %}
-        <a href="{% url 'publish' queue.id %}"><button class="btn btn-success">Publish</button></a>
+        <a href="{% url 'publish' queue.id %}"><button class="btn btn-success">Publish</button></form>
         {% else %}
         <!-- Unpublish Modal Trigger -->
         <button type="button" data-bs-toggle="modal" data-bs-target="#unpublishModal"
@@ -63,7 +63,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <a href="{% url 'delete_queue' queue.id %}"><button class="btn btn-danger">Delete</button></a>
+                        <a href="{% url 'delete_queue' queue.id %}"><button class="btn btn-danger">Delete</button></form>
                     </div>
                 </div>
             </div>
@@ -76,17 +76,17 @@
 <div class="my-container text-center">
     <h3>Control Panel</h3>
     <div class="btn-group d-none d-md-block" role="group" aria-label="Control Queue Buttons">
-        <a href="{% url 'edit_queue' queue.id %}"><button type="button" class="btn btn-success">Refresh</button></a>
+        <a href="{% url 'edit_queue' queue.id %}"><button type="button" class="btn btn-success">Refresh</button></form>
         {% if is_owner %}
         <a href="{% url 'gain_access' queue.secret queue.owner.secret %}"><button
-                class="btn btn-success">Share</button></a>
+                class="btn btn-success">Share</button></form>
         {% if not queue.synced %}
-        <a href=" {% url 'sync' queue.id %}"><button class="btn btn-success">Sync</button></a>
+        <a href=" {% url 'sync' queue.id %}"><button class="btn btn-success">Sync</button></form>
         {% endif %}
         {% endif %}
         {% if user.has_tokens %}
         {% if not queue.published %}
-        <a href="{% url 'publish' queue.id %}"><button class="btn btn-success">Publish</button></a>
+        <a href="{% url 'publish' queue.id %}"><button class="btn btn-success">Publish</button></form>
         {% else %}
         <!-- Unpublish Modal Trigger -->
         <button type="button" data-bs-toggle="modal" data-bs-target="#unpublishModal"
@@ -133,7 +133,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <a href="{% url 'delete_queue' queue.id %}"><button class="btn btn-danger">Delete</button></a>
+                        <a href="{% url 'delete_queue' queue.id %}"><button class="btn btn-danger">Delete</button></form>
                     </div>
                 </div>
             </div>
@@ -148,11 +148,11 @@
 <div class="my-container text-center">
     <h3>Control Panel</h3>
     <div class="btn-group d-none d-md-block" role="group" aria-label="Control Queue Buttons">
-        <a href="{% url 'edit_queue' queue.id %}"><button type="button" class="btn btn-success">Refresh</button></a>
+        <a href="{% url 'edit_queue' queue.id %}"><button type="button" class="btn btn-success">Refresh</button></form>
         <a href="{% url 'gain_access' queue.secret queue.owner.secret %}"><button
-                class="btn btn-success">Share</button></a>
-        <a href=" {% url 'sync' queue.id %}"><button class="btn btn-success">Sync</button></a>
-        <a href="{% url 'publish' queue.id %}"><button class="btn btn-success">Publish</button></a>
+                class="btn btn-success">Share</button></form>
+        <a href=" {% url 'sync' queue.id %}"><button class="btn btn-success">Sync</button></form>
+        <a href="{% url 'publish' queue.id %}"><button class="btn btn-success">Publish</button></form>
         <!-- Unpublish Modal Trigger -->
         <button type="button" data-bs-toggle="modal" data-bs-target="#unpublishModal"
             class="btn btn-danger">Unpublish</button>
@@ -194,7 +194,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <a href="{% url 'delete_queue' queue.id %}"><button class="btn btn-danger">Delete</button></a>
+                        <a href="{% url 'delete_queue' queue.id %}"><button class="btn btn-danger">Delete</button></form>
                     </div>
                 </div>
             </div>

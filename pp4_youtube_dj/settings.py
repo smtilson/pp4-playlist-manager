@@ -47,15 +47,11 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    # "cloudinary_storage",
     "django.contrib.sites",
     "corsheaders",
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
-    "crispy_forms",
-    "crispy_bootstrap5",
-    # "cloudinary",
     "profiles",
     "errors",
     "yt_auth",
@@ -90,8 +86,8 @@ CORS_ORIGIN_WHITELIST = [
     "https://pp4-playlist-manager-67004a99f0e2.herokuapp.com",
 ]
 
-CORS_ALLOW_HEADERS = ['*'] 
-'''[
+CORS_ALLOW_HEADERS = ["*"]
+"""[
     "accept",
     "accept-encoding",
     "authorization",
@@ -101,7 +97,7 @@ CORS_ALLOW_HEADERS = ['*']
     "user-agent",
     "x-csrftoken",
     "x-requested-with",
-]'''
+]"""
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -119,7 +115,6 @@ MIDDLEWARE = [
 
 # this needs to be changed to include the relevant addresses I believe.
 CSRF_TRUSTED_ORIGINS = [
-    "https://8000-smtilson-pp4playlistman-ym3t1koq57f.ws.codeinstitute-ide.net",
     "https://*.herokuapp.com",
     "http://*.127.0.0.1:8000",
     "http://localhost:8000",
@@ -154,6 +149,7 @@ WSGI_APPLICATION = "pp4_youtube_dj.wsgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
+DB_URL = os.environ.get("DATABASE_URL")
 LOCAL = os.environ.get("LOCAL")
 if LOCAL:
     DATABASES = {
@@ -163,11 +159,11 @@ if LOCAL:
         }
     }
 else:
-    DATABASES = {"default": dj_database_url.parse(os.environ.get("DATABASE_URL"))}
+    DATABASES = {"default": dj_database_url.parse(DB_URL)}
 
-if 'test' in sys.argv:
-    DATABASES['default']['ENGINE'] = 'django.db.backends.sqlite3'
-    
+if "test" in sys.argv:
+    DATABASES["default"]["ENGINE"] = "django.db.backends.sqlite3"
+
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
 
@@ -186,10 +182,8 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-# attention: Maybe remove this later
 ACCOUNT_EMAIL_VERIFICATION = "none"
 
-# OATUH2_PROVIDER =
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/

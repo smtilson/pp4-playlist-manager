@@ -1,12 +1,3 @@
-/*
-Black color: 0F0F0F
-Red color: FF0000
-Grey :272727
-White: FFFFFF
-other grey: AAAAAA
-lighter grey from darkreader: 303436
-border color from dark reader 877D6F
-*/
 /* Base Styles */
 html,
 body {
@@ -136,6 +127,10 @@ Bootstrap styles.*/
     font-weight: 700;
 }
 
+#style-override .signup-question {
+    margin-bottom: 0%;
+}
+
 #style-override .my-brand {
     color: white;
     background-color: rgba(231, 26, 26, 0.796);
@@ -146,21 +141,13 @@ Bootstrap styles.*/
     border-width: 1px;
 }
 
-
 #style-override .btn-ytube {
-    background-color: #e71a1a;
-    background-color: rgba(231, 26, 26, 0.796);
+    background-color: #e71a1acb;
     color: white;
     font-weight: 600;
     margin: 5px;
     border-radius: 10px;
 }
-
-/* I do not think this rule is necessary.
-#style-override .my-btn-group .btn {
-    border-color: #0f0f0f;
-    border-width: 1px;
-}*/
 
 /* Input Elements */
 #style-override form .js-input-background {
@@ -215,16 +202,23 @@ Bootstrap styles.*/
     background-color: #303436
 }
 
+#style-override .js-form-label {
+    padding-bottom:-1%;
+    margin-bottom: 0%;
+    height:10%;
+    margin-top:3px;
+}
+
 #style-override #set-name-form-label {
-    /* check margin-left */
-    margin-left: 2%
+    margin-left: 2%;
 }
 
 #style-override #set-name-form-button {
-    left: 31%;
     position: relative;
     margin-top: 8%;
+    width: fit-content;
     margin-bottom: -2%;
+    left:29%;
 }
 
 /* Ensures footer doesn't cover content.*/
@@ -292,7 +286,6 @@ Bootstrap styles.*/
 }
 
 #style-override #profile .logo-div {
-    /* check left */
     left: 6.5%;
     width: 75%;
     position: relative;
@@ -309,19 +302,32 @@ Bootstrap styles.*/
     font-weight: 600;
 }
 
+#style-override #user-buttons-div {
+    width: 85%;
+    position: relative;
+    left: 14%;
+}
+
+#style-override #user-buttons-div button {
+    width: fit-content;
+}
+
 #style-override #both-queues-div {
     margin-left: -3%;
 }
 
 #style-override .queue-buttons-div {
-    /* check left */
-    left: 10%;
+    left: 5%;
     gap: 12%;
     width: 80%;
 }
 
-#style-override .queue-buttons-div button {
+#style-override .queue-buttons-div a {
     width: 120%;
+}
+
+#style-override #friends-queue-div .btn-group {
+    left: 17%;
 }
 
 /* Index Page */
@@ -388,13 +394,11 @@ Bootstrap styles.*/
 
     #style-override #queue-display .my-container {
         width: 75%;
-        /* check margin-left */
         margin-left: 7%;
     }
 
     /* Create Queue Page */
     #style-override #create-queue button {
-        /* check margin-left */
         margin-left: 29.5%;
     }
 
@@ -403,21 +407,31 @@ Bootstrap styles.*/
         left: -5%;
     }
 
+    #style-override #user-buttons-div {
+        width: 60%;
+        left: 25%;
+    }
+
+    #style-override #set-name-form-button {
+        left: 36%;
+    }
+
     #style-override #my-queue-div .logo-div,
     #style-override #friends-queue-div .logo-div {
         width: 65%;
-        /* check left */
         left: 12%;
     }
 
     #style-override .queue-buttons-div {
-        /* check left */
-        left: 16%;
         gap: 20%;
     }
 
     #style-override .queue-buttons-div button {
         width: 143%;
+    }
+
+    #style-override #friends-queue-div .btn-group {
+        left: 23%;
     }
 
     /* Index Page */
@@ -498,7 +512,11 @@ Bootstrap styles.*/
     }
 
     #style-override #both-queues-div .logo-div {
-        min-height: 25%;
+        min-height: 38%;
+    }
+
+    #style-override #friends-queue-div .btn-group {
+        left: 19%;
     }
 
     /* Create Queue Page */
@@ -562,6 +580,10 @@ Bootstrap styles.*/
     }
 
     /* Other styles */
+    #style-override .title-navbar {
+        width: 25%;
+    }
+
     #style-override .last {
         margin-bottom: 20%;
     }
@@ -625,30 +647,30 @@ Bootstrap styles.*/
     /* Profile Page */
     #style-override #profile {
         left: 11.5%;
-        width:  80%;
+        width: 80%;
     }
 
     #style-override .min-height-row .profile-top {
         min-height: 90%;
     }
 
-    #style-override #set-name-form-button {
-        /* check left */
-        left: 38%;
-    }
 
     #style-override #both-queues-div .logo-div {
         min-height: 8em;
     }
 
     #style-override #profile #my-queue-div .logo {
-        position:relative;
-        right:16%;
+        position: relative;
+        right: 16%;
     }
 
     #style-override #profile #friends-queue-div .logo {
-        position:relative;
-        right:1%;
+        position: relative;
+        right: 1%;
+    }
+
+    #style-override #friends-queue-div .btn-group {
+        left: 20%;
     }
 
     #style-override #both-queues-div .min-height-row {
@@ -752,5 +774,160 @@ Bootstrap styles.*/
 
     #style-override .footer {
         padding-top: 0.8em;
+    }
+}
+
+/* Boosted Orange Styles */
+/* The following were gotten from 
+https://boosted.orange.com/docs/5.3/getting-started/contents/#css-files 
+in order to change the appearance of certain headers while still respecting 
+certain accessibility issues. */
+
+#style-override [class*=display-],
+#style-override h4,
+#style-override .h4,
+#style-override .card-title,
+#style-override h5,
+#style-override .h5,
+#style-override h6,
+#style-override .h6,
+#style-override .card-subtitle,
+#style-override h2,
+#style-override .h2,
+#style-override h3,
+#style-override .h3,
+#style-override h1,
+#style-override .h1 {
+    margin-top: 0;
+    margin-bottom: 1.25rem;
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 1.125;
+    color: var(--bs-heading-color);
+    /* rtl:remove */
+    letter-spacing: -0.00625rem;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizelegibility;
+}
+
+#style-override h1,
+#style-override .h1 {
+    font-size: 1.25rem;
+    line-height: 1.1;
+    /* rtl:remove */
+    letter-spacing: -0.025rem;
+}
+
+#style-override h2,
+#style-override .h2,
+#style-override h3,
+#style-override .h3 {
+    font-size: 1.125rem;
+    line-height: 1.1111111111;
+    /* rtl:remove */
+    letter-spacing: -0.0125rem;
+}
+
+#style-override h1,
+#style-override .h1,
+#style-override .display-2,
+#style-override .display-3 {
+    font-size: 1.5rem;
+    line-height: 1.0833333333;
+    /* rtl:remove */
+    letter-spacing: -0.0375rem;
+}
+
+/* rtl:end:remove */
+#style-override h2,
+#style-override .h2,
+#style-override .display-4 {
+    font-size: 1.125rem;
+    line-height: 1.1111111111;
+    /* rtl:remove */
+    letter-spacing: -0.0125rem;
+}
+
+@media (min-width: 480px) {
+
+    #style-override h1,
+    #style-override .h1,
+    #style-override .display-1,
+    #style-override .display-2,
+    #style-override .display-3 {
+        line-height: 1;
+    }
+
+    #style-override h1,
+    #style-override .h1,
+    #style-override .display-3 {
+        font-size: 2.125rem;
+        /* rtl:remove */
+        letter-spacing: -0.0625rem;
+    }
+
+    #style-override h2,
+    #style-override .h2,
+    #style-override h3,
+    #style-override .h3,
+    #style-override .display-4 {
+        font-size: 1.5rem;
+        line-height: 1.0833333333;
+        /* rtl:remove */
+        letter-spacing: -0.03125rem;
+    }
+
+    #style-override h4,
+    #style-override .h4,
+    #style-override .card-title,
+    #style-override h5,
+    #style-override .h5,
+    #style-override h6,
+    #style-override .h6,
+    #style-override .card-subtitle {
+        font-size: 1.125rem;
+        line-height: 1.1111111111;
+        /* rtl:remove */
+        letter-spacing: -0.0125rem;
+    }
+}
+
+@media (min-width: 1024px) {
+
+    #style-override h2,
+    #style-override .h2 {
+        font-size: 1.875rem;
+        line-height: 1.0666666667;
+        /* rtl:remove */
+        letter-spacing: -0.05rem;
+    }
+
+    #style-override h3,
+    #style-override .h3 {
+        font-size: 1.5rem;
+        line-height: 1.0833333333;
+        /* rtl:remove */
+        letter-spacing: -0.03125rem;
+    }
+
+    #style-override h4,
+    #style-override .h4,
+    #style-override .card-title {
+        font-size: 1.25rem;
+        line-height: 1.1;
+        /* rtl:remove */
+        letter-spacing: -0.025rem;
+    }
+
+    #style-override h5,
+    #style-override .h5,
+    #style-override h6,
+    #style-override .h6,
+    #style-override .card-subtitle {
+        font-size: 1.125rem;
+        line-height: 1.1111111111;
+        /* rtl:remove */
+        letter-spacing: -0.0125rem;
     }
 }

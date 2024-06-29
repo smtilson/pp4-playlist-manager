@@ -1,12 +1,12 @@
 from django.shortcuts import render, reverse, get_object_or_404
-from django.http import HttpResponseRedirect, JsonResponse, Http404
-from .models import Profile, GuestProfile, make_user
+from django.http import HttpResponseRedirect, Http404
+from django.utils.safestring import mark_safe
+from django.contrib import messages
+from requests.exceptions import HTTPError
+from .models import GuestProfile, make_user
 from utils import check_valid_redirect_action
 from queues.models import Queue, has_authorization
-from requests.exceptions import HTTPError
-from django.contrib import messages
 from errors.utils import process_path
-from django.utils.safestring import mark_safe
 from errors.views import error_handler
 from yt_auth.token_auth import (
     get_authorization_url,
@@ -14,15 +14,18 @@ from yt_auth.token_auth import (
     revoke_tokens,
 )
 
+
 def index(request):
     """
-    Handles the index view for the app.
+    Handles the index view for the app. Redirects user based on authentication
+    status, session data, and path.
     Args: request (HttpRequest)
-    Returns:
+    Returns: Various HttpResponseRedirects and renders the appropriate page.
     """
     path = request.get_full_path()
     user = make_user(request)
-    keywords = {"?state=", "&code=", "&scope=https://www.googleapis.com/auth/youtube"}
+    keywords = {"?state=", "&code=",
+                "&scope=https://www.googleapis.com/auth/youtube"}
     if all(word in path for word in keywords):
         response = return_from_authorization(request)
     elif "error" in path:
@@ -33,7 +36,8 @@ def index(request):
     elif check_valid_redirect_action(request):
         response = HttpResponseRedirect(reverse("redirect_action"))
     elif user.is_guest and user.queue_id:
-        response = HttpResponseRedirect(reverse("edit_queue", args=[user.queue_id]))
+        response = HttpResponseRedirect(reverse("edit_queue",
+                                                args=[user.queue_id]))
     else:
         response = render(request, "profiles/index.html")
     response = error_handler(request, response)
@@ -60,7 +64,8 @@ def profile(request):
                 f"Youtube DJ has access to {user.youtube_handle}."
             )
         else:
-            youtube_permission_status = "Profile has no associated youtube account."
+            youtube_permission_status = "Profile has no associated youtube"\
+                                        "account."
         context = {
             "user": user,
             "authorization_url": get_authorization_url(),
@@ -118,7 +123,6 @@ def return_from_authorization(request):
         try:
             tokens = get_tokens(path)
         except HTTPError as e:
-            print("error occurred while retrieving tokens")
             msg = "An unknown error occurred while fetching your tokens."
             msg += str(e)
             msg += "error occurred while retrieving tokens"
@@ -154,13 +158,13 @@ def revoke_authorization(request):
             msg = "Credentials successfully revoked for " + user.youtube_handle
             msg_type = messages.SUCCESS
         else:
-            address = '<a href="https://myaccount.google.com/permissions">Third party apps and services</a>'
-            msg = "An error occurred. Your credentials have been wiped from our "
-            msg += f"system. To be on the safe side, please visit {address}"
-            msg += "to revoke your permissions. Look for 'pp4-playlist-manager' in"
-            msg += "the list of third party apps."
+            address = '<a href="https://myaccount.google.com/permissions">"'\
+                      'Third party apps and services</a>'
+            msg = "An error occurred. Your credentials have been wiped from"\
+                  " our system. To be on the safe side, please visit"\
+                  f" {address} to revoke your permissions. Look for "\
+                  "'pp4-playlist-manager' in the list of third party apps."
             msg_type = messages.ERROR
-        # there should be a modal for this
         messages.add_message(request, msg_type, mark_safe(msg))
         response = HttpResponseRedirect(reverse("profile"))
     response = error_handler(request, response)
@@ -168,6 +172,13 @@ def revoke_authorization(request):
 
 
 def redirect_action(request):
+    """
+    Redirects the user to a specific view based on the session data. Currently,
+    only one redirect action is implemented.
+    Args: request (HttpRequest)
+    Returns: Redirect to Edit page for the given queue, if the user has
+    authorization.
+    """
     # Currently, only one redirect action is implemented
     user = make_user(request)
     if check_valid_redirect_action(request):
@@ -190,14 +201,15 @@ def redirect_action(request):
 def guest_sign_in(request):
     """
     Handles the guest sign-in process. Redirects user after sign in and
-    generates a GuestProfile object.
+    generates a GuestProfile object and stores it in the session.
     Args: request (HttpRequest)
     Returns:
     """
     user = make_user(request)
     queue_id = request.session.get("queue_id")
     if queue_id is None:
-        raise Http404("A queue must be associated with this particular request.")
+        raise Http404("A queue must be associated with this particular"
+                      "request.")
     else:
         queue = get_object_or_404(Queue, id=request.session["queue_id"])
     if user.is_authenticated or user.is_guest:

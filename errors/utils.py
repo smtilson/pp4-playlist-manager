@@ -13,10 +13,11 @@ def process_path(path: str) -> str:
     return error_msg
 
 
-
 ERROR_DICTIONARY = {
-    "access_denied": "In order to utilize the app fully, you will need to give it write permissions for a youtube account."
+    "access_denied": "In order to utilize the app fully, you will need to"
+                     " give it write permissions for a YouTube account."
 }
+
 
 def process_response(response):
     status_code = response.status_code

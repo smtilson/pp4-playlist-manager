@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<section id="edit-queue">
+<div id="edit-queue">
     <section id="queue-info" class="container">
         <div class="row d-flex justify-content-center">
             <div class="col text-center logo-div">
@@ -10,40 +10,37 @@
         </div>
         <div class="queue-data my-container container row">
             <div class="col d-flex-column align-items-center">
-                <h4>Owned by {{queue.owner.nickname}}</h4>
-                <h5>Description:</h5>
+                <h2 class="h4">Owned by {{queue.owner.nickname}}</h2>
+                <h3 class="h5">Description:</h3>
                 <p>{{queue.description}}</p>
-                <span class="row text-center">
+                <div class="row text-center">
                     <p class="no-wrap"><span id="queueLength">{{queue.length}}</span> {{ num_entries }}
                     </p>
-                </span>
+                </div>
                 {% if queue.published %}
                 <div class="text-center">
-                    <a href="{{queue.url}}" target="_blank"><button class="btn btn-ytube">Play on
-                            YouTube</button></a>
+                    <a href="{{queue.url}}" target="_blank" class="btn btn-ytube">Play on
+                        YouTube</a>
                 </div>
                 {% endif %}
             </div>
         </div>
         <section id="control-panel">
-            <!-- Control Panel Mobile -->
-            <div class="my-container text-center d-md-none">
-                <h3>Control Panel</h3>
+            <!-- Control Panel -->
+            <div class="my-container text-center">
+                <h2 class="h3">Control Panel</h2>
                 <div class="btn-group" role="group" aria-label="Control Queue Buttons 1">
-                    <a href="{% url 'edit_queue' queue.id %}"><button type="button"
-                            class="btn btn-success">Refresh</button></a>
+                    <a href="{% url 'edit_queue' queue.id %}" class="btn btn-success">Refresh</a>
                     {% if is_owner %}
-                    <a href="{% url 'gain_access' queue.secret queue.owner.secret %}"><button
-                            class="btn btn-success">Share</button></a>
-                    {% if not queue.synced %}
-                    <a href=" {% url 'sync' queue.id %}"><button class="btn btn-success">Sync</button></a>
-                    {% endif %}
+                    <a href="{% url 'gain_access' queue.secret queue.owner.secret %}" class="btn btn-success">Share</a>
+                    <a href=" {% url 'sync' queue.id %}" class="btn btn-success">Sync</a>
                     {% endif %}
                 </div>
+                <br>
                 <div class="btn-group" role="group" aria-label="Control Queue Buttons 2">
                     {% if user.has_tokens %}
                     {% if not queue.published %}
-                    <a href="{% url 'publish' queue.id %}"><button class="btn btn-success">Publish</button></a>
+                    <a href="{% url 'publish' queue.id %}" class="btn btn-success">Publish</a>
                     {% else %}
                     <!-- Unpublish Modal Trigger -->
                     <button type="button" data-bs-toggle="modal" data-bs-target="#unpublishModal"
@@ -65,8 +62,7 @@
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary"
                                         data-bs-dismiss="modal">Close</button>
-                                    <a href="{% url 'unpublish' queue.id %}"><button type="button"
-                                            class="btn btn-danger">Unpublish</button></a>
+                                    <a href="{% url 'unpublish' queue.id %}" class="btn btn-danger">Unpublish</a>
                                 </div>
                             </div>
                         </div>
@@ -95,8 +91,7 @@
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary"
                                         data-bs-dismiss="modal">Close</button>
-                                    <a href="{% url 'delete_queue' queue.id %}"><button
-                                            class="btn btn-danger">Delete</button></a>
+                                    <a href="{% url 'delete_queue' queue.id %}" class="btn btn-danger">Delete</a>
                                 </div>
                             </div>
                         </div>
@@ -104,87 +99,12 @@
 
                     {% endif %}
                 </div>
-            </div>
-            <!-- Control Panel Desktop -->
-            <div class="my-container text-center d-none d-md-block">
-                <h3>Control Panel</h3>
-                <div class="btn-group" role="group" aria-label="Control Queue Buttons">
-                    <a href="{% url 'edit_queue' queue.id %}"><button type="button"
-                            class="btn btn-success">Refresh</button></a>
-                    {% if is_owner %}
-                    <a href="{% url 'gain_access' queue.secret queue.owner.secret %}"><button
-                            class="btn btn-success">Share</button></a>
-                    {% if not queue.synced %}
-                    <a href=" {% url 'sync' queue.id %}"><button class="btn btn-success">Sync</button></a>
-                    {% endif %}
-                    {% endif %}
-                    {% if user.has_tokens %}
-                    {% if not queue.published %}
-                    <a href="{% url 'publish' queue.id %}"><button class="btn btn-success">Publish</button></a>
-                    {% else %}
-                    <!-- Unpublish Modal Trigger -->
-                    <button type="button" data-bs-toggle="modal" data-bs-target="#unpublishModal"
-                        class="btn btn-danger">Unpublish</button>
-                    <!-- Unpublish Modal -->
-                    <div class="modal fade" id="unpublishModal" tabindex="-1" aria-labelledby="unpublishModalLabel"
-                        aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="unpublishModalLabel">Unpublish {{queue.title}}</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                        aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    Are you sure you want to unpublish?
-                                    This will remove the playlist from YouTube, but not delete the Queue on YouTube DJ.
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary"
-                                        data-bs-dismiss="modal">Close</button>
-                                    <button type="button" class="btn btn-danger">Unpublish</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {% endif %}
-                    {% endif %}
-                    {% if is_owner %}
-                    <!-- Delete Modal Trigger -->
-                    <button type="button" data-bs-toggle="modal" data-bs-target="#deleteModal"
-                        class="btn btn-danger">Delete</button>
-                    <!-- Delete Modal -->
-                    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel"
-                        aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="deleteModalLabel">Delete {{queue.title}}</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                        aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    Are you sure you want to Delete queue.title?
-                                    This will delete the queue from YouTube DJ, but not delete the playlist from
-                                    YouTube.
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary"
-                                        data-bs-dismiss="modal">Close</button>
-                                    <a href="{% url 'delete_queue' queue.id %}"><button
-                                            class="btn btn-danger">Delete</button></a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {% endif %}
-                </div>
+                <br>
+                <p>Copy the "Share" button link to share.</p>
             </div>
         </section>
     </section>
-    <section id="search-youtube" class>
+    <section id="search-youtube">
         {% if queue.full %}
         <div class="logo my-container text-center col-8 offset-2 ">
             <h3 class="logo">The queue is full.</h3>
@@ -195,7 +115,7 @@
             <form id="searchForm" method="POST" class="container d-flex-col justify-content-center text-center">
                 {% csrf_token %}
                 <label class="form-label row" for="searchQuery">
-                    <h4 class="col">Search for videos or songs to add:</h4>
+                    <span class="h4 col">Search for videos or songs to add:</span>
                 </label>
                 <input type="text" id="searchQuery" name="searchQuery" class="search-bar row" value="{{recent_search}}"
                     placeholder="Search YouTube">
@@ -219,8 +139,8 @@
                                 <p><a href="http://youtu.be/{{result.id}}" target="_blank">{{result.title}}</a></p>
                             </div>
                             <div class="col-3 col-md-2">
-                                <a href="{% url 'add_entry' queue_id=queue.id video_id=result.id %}"><button
-                                        class="btn btn-sm btn-success">Add</button></a>
+                                <a href="{% url 'add_entry' queue_id=queue.id video_id=result.id %}"
+                                    class="btn btn-sm btn-success">Add</a>
                             </div>
                         </div>
                     </li>
@@ -232,7 +152,7 @@
         {% if queue.length != 0 %}
         <section id="queue-entries" class="col-12 col-md-6">
             <div class="logo-div my-container d-flex justify-content-center ">
-                <h3>Queue Entries</h3>
+                <h2 class="h3">Queue Entries</h2>
             </div>
             {% if not queue.all_entries %}
             <div class="text-center">
@@ -247,9 +167,9 @@
                         <div id="div-{{entry.position}}" class="queue-entries my-list-item">
                             <div class="row d-flex align-items-center">
                                 <div class="{% if is_owner %}col-9{% else %}col-12{% endif %} col-md-8">
-                                    <h5 class="entry-display">{{entry.position}}. {{entry.title_abv}} </h5>
+                                    <h3 class="h5 entry-display">{{entry.position}}. {{entry.title_abv}} </h3>
                                     <div class="nickname-buttons">
-                                        <h5 class="no-wrap">{{entry.username}} </h5>
+                                        <h4 class="h5 no-wrap">{{entry.username}} </h4>
                                         {% if is_owner %}
                                         <div class="btn-group my-btn-border" role="group"
                                             aria-label="Position Control Buttons">
@@ -263,11 +183,9 @@
                                                 data-direction="-">Down</button>
                                             <input id="new-position-{{entry.id}}" type="number"
                                                 class="swap-input d-none d-md-inline form-control">
-                                            <button type="button"
-                                                class="btn btn-sm d-md-block btn-warning swap-button d-none"
-                                                data-queue="{{queue.id}}"><label for="new-position-{{entry.id}}"
-                                                    id="label-{{entry.id}}" class="d-md-block js-form-label d-none"
-                                                    data-entry="{{entry.id}}">Swap</label></button>
+                                            <label for="new-position-{{entry.id}}" id="label-{{entry.id}}"
+                                                class="js-form-label btn btn-sm d-md-block btn-warning swap-button d-none"
+                                                data-entry="{{entry.id}}" data-queue="{{queue.id}}">Swap</label>
                                         </div>
                                         {% endif %}
 
@@ -276,15 +194,15 @@
                                 {%if is_owner %}
                                 <div class="col-3 col-md-2 remove-button">
                                     <!-- Remove Entry Modal Trigger-->
-                                    <button type="button" data-bs-toggle="modal" data-bs-target="#removeEntryModal"
+                                    <button type="button" data-bs-toggle="modal" data-bs-target="#removeEntryModal-{{entry.id}}"
                                         class="btn btn-sm btn-danger">Remove</button>
                                     <!-- Remove Entry Modal-->
-                                    <div class="modal fade" id="removeEntryModal" tabindex="-1"
-                                        aria-labelledby="removeEntryModalLabel" aria-hidden="true">
+                                    <div class="modal fade" id="removeEntryModal-{{entry.id}}" tabindex="-1"
+                                        aria-labelledby="removeEntryModalLabel-{{entry.id}}" aria-hidden="true">
                                         <div class="modal-dialog">
                                             <div class="modal-content">
                                                 <div class="modal-header">
-                                                    <h5 class="modal-title" id="removeEntryModalLabel">Remove
+                                                    <h5 class="modal-title" id="removeEntryModalLabel-{{entry.id}}">Remove
                                                         {{entry.title}}
                                                     </h5>
                                                     <button type="button" class="btn-close" data-bs-dismiss="modal"
@@ -297,9 +215,8 @@
                                                 <div class="modal-footer">
                                                     <button type="button" class="btn btn-secondary"
                                                         data-bs-dismiss="modal">Close</button>
-                                                    <a
-                                                        href="{% url 'delete_entry' queue_id=queue.id entry_id=entry.id %}"><button
-                                                            type="button" class="btn btn-danger">Remove</button></a>
+                                                    <a href="{% url 'delete_entry' queue_id=queue.id entry_id=entry.id %}"
+                                                        class="btn btn-danger">Remove</a>
                                                 </div>
                                             </div>
                                         </div>
@@ -317,6 +234,6 @@
         {% endif %}
     </section>
     <!-- Pushes Content above footer -->
-    <div class="last">&nbsp</div>
-</section>
+    <div class="last">&nbsp;</div>
+</div>
 {% endblock content %}
