@@ -5,4 +5,4 @@ from django import forms
 class QueueForm(forms.ModelForm):
     class Meta:
         model = Queue
-        fields = ('title','description')
+        fields = ('title', 'description')

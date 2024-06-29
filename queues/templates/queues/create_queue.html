@@ -2,18 +2,19 @@
 
 {% block content %}
 <section id="create-queue">
-<div class="logo-div my-container text-center">
-<h2 class="no-wrap">Create a New<br>Queue</h2>
-</div>
-<div class="container my-container last">
-<form id="queue-form" class="text-center" method="POST" action="{% url 'create_queue' %}">
-    {% csrf_token %}
-    <label for="queue-title" class="form-label">Title:</label>
-    <input type="text" id="queue-title" class="form-control" name="queue-title" required>
-    <label for="queue-description" class="form-label">Description:</label>
-    <input type="textarea" class="form-control" id="queue-description" name="queue-description">
-    <button id="submitButton" type="submit" class="btn btn-success btn-sm create-queue-button">Create Queue</button>
-</form>
-</div>
+    <div class="logo-div my-container text-center">
+        <h1 class="no-wrap">Create a New<br>Queue</h1>
+    </div>
+    <div class="container my-container last">
+        <form id="queue-form" class="text-center" method="POST" action="{% url 'create_queue' %}">
+            {% csrf_token %}
+            <label for="queue-title" class="form-label">Title:</label>
+            <input type="text" id="queue-title" class="form-control" name="queue-title" required>
+            <label for="queue-description" class="form-label">Description:</label>
+            <input type="text" class="form-control" id="queue-description" name="queue-description">
+            <button id="submitButton" type="submit" class="btn btn-success btn-sm create-queue-button">Create
+                Queue</button>
+        </form>
+    </div>
 </section>
 {% endblock content %}

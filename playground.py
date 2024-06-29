@@ -17,19 +17,6 @@ playlist_url = "https://www.youtube.com/playlist?list=PLaPvip_wdwX0etylKbQJBY2Pm
 playlist_id = "PLaPvip_wdwX0Z2KhcrSAZokbY8V_8eIRc"
 yt = YT(me)
 
-sample = sample_token ={
-            "universe_domain": "googleapis.com",
-            "client_id": "secre.client.id.apps.googleusercontent.com",
-            "token_uri": "https://oauth2.googleapis.com/token",
-            "scopes": "['https://www.googleapis.com/auth/youtube']",
-            "refresh_token": "1//refresh_token",
-            "account": "",
-            "client_secret": "client_secret",
-            "has_tokens": True,
-            "token": "token",
-        }
 
-#sample_video_id1 = entry.video_id
-#sample_playlist_id = queue.yt_id
+users = Profile.objects.all()
 
-#bad_video = yt.find_video_by_id("12333333333333kasddlmksdfkjasfdnnkwqerrfnksadfknlasdfnlkqwefekjlqwfsdf")

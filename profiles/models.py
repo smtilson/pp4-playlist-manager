@@ -8,7 +8,7 @@ from django.contrib.auth.models import (
 )
 from django.db import models
 from django.utils import timezone
-from utils import get_secret, format_field_name
+from utils import get_secret
 from yt_auth.models import Credentials
 from yt_query.yt_api_utils import YT
 from mixins import ToDictMixin, DjangoFieldsMixin
@@ -24,7 +24,8 @@ TOKEN_URI = "https://oauth2.googleapis.com/token"
 
 class ProfileManager(BaseUserManager):
     # This class and the accompanying methods were taken from the above link.
-    def _create_profile(self, email, password, is_staff, is_superuser, **kwargs):
+    def _create_profile(self, email, password, is_staff, is_superuser,
+                        **kwargs):
         if not email:
             raise ValueError("An email is necessary to create a profile.")
         now = timezone.now()
@@ -49,9 +50,11 @@ class ProfileManager(BaseUserManager):
         return self._create_profile(email, password, True, True, **kwargs)
 
 
-class Profile(AbstractBaseUser, PermissionsMixin, DjangoFieldsMixin, ToDictMixin):
+class Profile(AbstractBaseUser, PermissionsMixin, DjangoFieldsMixin,
+              ToDictMixin):
     # The basis of this class was taken from the article.
-    # The methods and many of the fields are original work and not taken from the article..
+    # The methods and many of the fields are original work and not taken from
+    # the article.
     name = models.CharField(max_length=50, null=True, blank=True)
     email = models.EmailField(max_length=100, unique=True)
     is_superuser = models.BooleanField(default=False)
@@ -66,8 +69,10 @@ class Profile(AbstractBaseUser, PermissionsMixin, DjangoFieldsMixin, ToDictMixin
         blank=True,
         related_name="user",
     )
-    youtube_channel = models.CharField(max_length=100, null=True, blank=True, default="")
-    youtube_handle = models.CharField(max_length=100, null=True, blank=True, default="")
+    youtube_channel = models.CharField(max_length=100, null=True,
+                                       blank=True, default="")
+    youtube_handle = models.CharField(max_length=100, null=True,
+                                      blank=True, default="")
     secret = models.CharField(max_length=20, unique=True, default=get_secret)
 
     # These three variables are taken from the article.
@@ -125,7 +130,7 @@ class Profile(AbstractBaseUser, PermissionsMixin, DjangoFieldsMixin, ToDictMixin
         my_queue_ids = {queue.id for queue in self.my_queues.all()}
         other_queue_ids = {queue.id for queue in self.other_queues.all()}
         return my_queue_ids.union(other_queue_ids)
-    
+
     def set_credentials(self, new_credentials=None):
         """
         new_credentials is a google Credentials object. Updates credentials to
@@ -134,9 +139,11 @@ class Profile(AbstractBaseUser, PermissionsMixin, DjangoFieldsMixin, ToDictMixin
         """
         # attention: why am I not saving here.
         self.credentials.set_credentials(new_credentials)
-        if self.has_tokens and not (self.youtube_handle or self.youtube_channel):
+        has_yt_data = self.youtube_handle or self.youtube_channel
+        if self.has_tokens and not has_yt_data:
             self.find_youtube_data()
-            msg = f"Successfully connected the youtube account {self.youtube_handle} to your profile."
+            msg = "Successfully connected the YouTube account"\
+                  f"{self.youtube_handle} to your profile."
         else:
             msg = f"Successfully updated credentials for {self.nickname}."
         return msg
@@ -148,7 +155,7 @@ class Profile(AbstractBaseUser, PermissionsMixin, DjangoFieldsMixin, ToDictMixin
 
     def revoke_youtube_data(self):
         """
-        Removes youtube identification and credentials from system.
+        Removes YouTube identification and credentials from system.
         """
         self.youtube_channel = ""
         self.youtube_handle = ""
@@ -201,13 +208,13 @@ class GuestProfile(ToDictMixin):
     @property
     def all_queue_ids(self):
         return [self.queue_id]
-    
+
     def convert_to_profile(self):
         pass
+
     @property
     def info_dict(self):
         return {"Name": self.nickname, "Email": self.email}
-
 
 
 def make_user(request) -> Union["Profile", "GuestProfile"]:

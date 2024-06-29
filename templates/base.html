@@ -11,33 +11,34 @@
 
 <head>
     <title>YouTube DJ</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-    <!-- Google Fonts CSS -->
-    <link rel="preconnect" href="https://fonts.gstatic.com">
-    <!--<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;700&display=swap" rel="stylesheet">-->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <!-- Font Awesome CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
-        type="text/css" />
-    <!--<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">-->
+        type="text/css">
 
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+
+    <!-- Favicon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+    <!--<link rel="manifest" href="../site.webmanifest">-->
+
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
 </head>
 
 <body id="style-override" class="d-flex flex-column h-100 main-bg">
     <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark fixed-top pb-2 pb-md-1 pt-2 pt-md-1 ">
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top pb-2 pb-md-1 pt-2 pt-md-1 ">
         <div class="container-fluid">
-            <span class="
-            row"> <a class="navbar-brand col-3" href="{% url 'index' %}">YouTube DJ</a>
+            <span class="row title-navbar"> <a class="navbar-brand col-3" href="{% url 'index' %}">YouTube DJ</a>
                 {% if user.is_authenticated %}
-                <div class="div-user-nickname">{{user.nickname}}</div>
+                <span>{{user.nickname}}</span>
                 {% endif %}
             </span>
             <!-- Navbar Toggler -->
@@ -47,10 +48,10 @@
             </button>
             <!-- Mobile Navbar -->
             <div class="collapse navbar-collapse pb-2" id="navbarText">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0 mt-lg-2">
+                <ul class="navbar-nav me-auto mb-2 mb-md-0 mt-md-2">
                     <li class="nav-item">
                         <a class="nav-link {% if request.path == index_url %}active" aria-current="page{% endif %}"
-                            href="{% url 'index' %}">Home</a>
+                            href="{% url 'index' %}">{% if not user.is_guest %}Home{% else %}Edit Queue{% endif %} </a>
                     </li>
                     {% if user.is_authenticated %}
                     <li class="nav-item">
@@ -62,7 +63,7 @@
                             href="{% url 'profile' %}">Profile</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {% if request.path == create_queue_url %}active"
+                        <a class="nav-link no-wrap {% if request.path == create_queue_url %}active"
                             aria-current="page{% endif %}" href="{% url 'create_queue' %}">Create Queue</a>
                     </li>
                     {% else %}
@@ -81,6 +82,7 @@
                     YouTube DJ plays YOUR hits!
                 </span>
             </div>
+        </div>
     </nav>
 
     <!-- displaying Django messages -->
@@ -100,20 +102,18 @@
     <main>
         <div class="container-fluid ">
 
-                {% block content %}
-                <!-- Content Goes here -->
-                <p>No Content Loaded.</p>
-                {% endblock content %}
+            {% block content %}
+            <!-- Content Goes here -->
+            <p>No Content Loaded.</p>
+            {% endblock content %}
         </div>
     </main>
 
     <!-- Footer -->
     <footer class="footer fixed-bottom">
         <div class="container text-center btn-grooup" role="group" aria-label="YouTube Buttons">
-            <a href="https://youtube.com" target="_blank"><button class="btn btn-ytube white"
-                    type="button">YouTube</button></a>
-            <a href="https://music.youtube.com" target="_blank"><button class="btn btn-ytube white"
-                    type="button">YTMusic</button></a>
+            <a href="https://youtube.com" target="_blank" class="btn btn-ytube actual-button white">YouTube</a>
+            <a href="https://music.youtube.com" target="_blank" class="btn btn-ytube actual-button white">YTMusic</a>
         </div>
         <div class="text-center">
             <p>Copyright Sean Tilson &copy; 2024</p>
@@ -125,9 +125,6 @@
     <script src="https://code.jquery.com/jquery-3.2.1.js"
         integrity="sha256-DZAnKJ/6XZ9si04Hgrsxu/8s717jcIzLy3oi35EouyE=" crossorigin="anonymous"></script>
     <script src="{% static 'js/script.js' %}"></script>
-    {% block extras %}
-    {% endblock %}
-    <script src></script>
 </body>
 
 </html>

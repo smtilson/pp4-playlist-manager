@@ -1,40 +1,83 @@
 $(document).ready(function () {
     console.log("page loaded");
-    initSwapInputs();
-    initialize();
-    formStyle();
-})
+    addListenersNModifyForms();
+});
 
-const sampleDomain = window.location.hostname;
-console.log("The current sample domain is " + sampleDomain);
-//const DOMAIN = "http://localhost:8000/";
-const DOMAIN = "https://pp4-playlist-manager-67004a99f0e2.herokuapp.com/";
-console.log("The current domain is " + DOMAIN);
-function initialize() {
-    const moveBtns = $('.move-btn');
-    for (let btn of moveBtns) {
-        btn.addEventListener('click', moveEntry);
+const DOMAIN = setDomain();
+
+console.log("DOMAIN set to:" + DOMAIN);
+
+/**
+ * Adds event listeners and modifies forms based on the presence of specific
+ * HTML elements.
+ *
+ * @return {void} This function does not return a value.
+ */
+function addListenersNModifyForms() {
+    const rawHTML = $('html').html();
+    if (rawHTML.includes("swap-input")) {
+        setSwapPlaceHolderText();
+        addSwapListeners();
+        console.log("swap-input class present. Listeners added.");
     }
+    if (rawHTML.includes("move-btn")) {
+        addMoveListeners();
+        console.log("move-btn class present. Listeners added.");
+    }
+    if (rawHTML.includes("<form")) {
+        formStyle();
+        console.log("Classes added to form elements.");
+    }
+
+}
+
+/**
+ * Adds event listeners to the swap buttons and attaches the 'swapEntries'
+ * function as the event handler.
+ *
+ * @return {void} This function does not return a value.
+ */
+function addSwapListeners() {
     const swapBtns = $('.swap-button');
-    console.log("adding listeners to swap buttons");
     for (let btn of swapBtns) {
         btn.addEventListener('click', swapEntries);
     }
 }
 
-function getQueueLength() {
-    const length = $('#queueLength').text();
-    return length;
+/**
+ * Returns the domain URL based on the current hostname.
+ *
+ * @return {string} The domain URL.
+ */
+function setDomain() {
+    const hostname = window.location.hostname;
+    if (hostname === "localhost") {
+        return "http://localhost:8000/";
+    } else {
+        return "https://pp4-playlist-manager-67004a99f0e2.herokuapp.com/";
+    }
 }
 
-function initSwapInputs() {
-    console.log("initializing swap inputs");
-    const queueLength = getQueueLength();
-    setSwapPlaceHolderText(queueLength);
+/**
+ * Adds event listeners to the move buttons and attaches the 'moveEntry' 
+ * function as the event handler.
+ *
+ * @return {void} This function does not return a value.
+ */
+function addMoveListeners() {
+    const moveBtns = $('.move-btn');
+    for (let btn of moveBtns) {
+        btn.addEventListener('click', moveEntry);
+    }
 }
 
+/**
+ * Asynchronous function to move an entry based on the provided event data.
+ *
+ * @param {Event} event - The event triggering the move operation.
+ * @return {void} This function does not return a value.
+ */
 async function moveEntry(event) {
-    // how do I give feedback in this set up?
     const entryId = event.target.getAttribute("data-entry");
     const direction = event.target.getAttribute("data-direction");
     const otherPosition = event.target.getAttribute("data-position");
@@ -45,8 +88,6 @@ async function moveEntry(event) {
         console.log("out of bounds -");
         return;
     }
-    //const address = DOMAIN + `queues/swap/${entryId}/${otherPosition}`;
-    //console.log(address);
     const response = await fetch(DOMAIN + `queues/swap/${entryId}/${otherPosition}`, {
         method: 'GET',
         headers: {
@@ -64,6 +105,13 @@ async function moveEntry(event) {
     console.log("entry 2 written");
 }
 
+/**
+ * Asynchronous function to swap two entries in the queue based on the
+ * provided event data.
+ *
+ * @param {Event} event - The event triggering the swap operation.
+ * @return {Promise<void>} This function does not return a value.
+ */
 async function swapEntries(event) {
     console.log("swap triggered");
     const entryId = event.target.getAttribute("data-entry");
@@ -88,10 +136,21 @@ async function swapEntries(event) {
     writeEntryData(entry2);
 }
 
+/**
+ * Updates the HTML elements with the data from the given entryData object.
+ *
+ * @param {Object} entryData - The data object containing information about an
+ * entry.
+ * @param {number} entryData.position - The position of the entry in the queue.
+ * @param {string} entryData.title - The title of the entry.
+ * @param {string} entryData.user - The user who added the entry.
+ * @param {string} entryData.id - The ID of the entry.
+ * @return {void} This function does not return a value.
+ */
 function writeEntryData(entryData) {
     position = entryData.position;
     positionDiv = $(`#div-${position}`);
-    positionSpan = positionDiv.find('h4')[0];
+    positionSpan = positionDiv.find('.entry-display')[0];
     positionSpan.innerText = entryData.position + ". " + entryData.title + " added by " + entryData.user;
     for (let button of positionDiv.find('.move-btn')) {
         button.setAttribute("data-entry", entryData.id);
@@ -109,37 +168,37 @@ function writeEntryData(entryData) {
     label.setAttribute("id", `label-${entryData.id}`);
 }
 
-function setSwapPlaceHolderText(queueLength) {
+/**
+ * A function to get the queue length.
+ *
+ * @return {number} The parsed integer value of the queue length.
+ */
+function getQueueLength() {
+    const queueLength = $('#queueLength').text();
+    return parseInt(queueLength);
+}
+
+/**
+ * Sets the placeholder text of all elements with the class 'swap-input' to a
+ * range from 1 to the current queue length.
+ *
+ * @return {void} This function does not return a value.
+ */
+function setSwapPlaceHolderText() {
+    const queueLength = getQueueLength();
     const placeholderText = `1-${queueLength}`;
     swapInputs = $('.swap-input');
     for (let input of swapInputs) {
-        console.log("setting value");
+        console.log("Setting placeholder text.");
         input.setAttribute('placeholder', placeholderText);
     }
 }
 
-function addSwapListeners() {
-    swapInputs = $('.swap-input');
-    for (let input of swapInputs) {
-        input.addEventListener('input', validateSwapInputs);
-    }
-}
-
-function initSwapForms() {
-    forms = $(".swapForm");
-    for (let form of forms) {
-        form.addEventListener('submit', validateSwapInputs);
-    }
-}
-
-function validateSwapInputs(entryId) {
-    // get input for that particular entry
-    // check if input is valid
-    // if not valid, display error
-    // if valid, display button
-    console.log("validate triggered");
-}
-
+/**
+ * Applies styling to form inputs and labels.
+ *
+ * @return {void} This function does not return a value.
+ */
 function formStyle() {
     const inputs = $('input');
     const labels = $('label');
@@ -148,9 +207,11 @@ function formStyle() {
     }
     for (let input of inputs) {
         input.classList.add("js-input-background");
-        if (input.id !== searchQuery) {
+        if (input.id !== "id_remember") {
             input.classList.add("form-control");
+        } else {
+            input.classList.add("form-check-input");
         }
-        console.log("form style done");
     }
 }
+
