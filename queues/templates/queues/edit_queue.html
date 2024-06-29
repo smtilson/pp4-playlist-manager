@@ -5,13 +5,13 @@
     <section id="queue-info" class="container">
         <div class="row d-flex justify-content-center">
             <div class="col text-center logo-div">
-                <h2 class="logo">Edit {{queue.title}}</h2>
+                <h1 class="logo">Edit {{queue.title}}</h1>
             </div>
         </div>
         <div class="queue-data my-container container row">
             <div class="col d-flex-column align-items-center">
-                <h4>Owned by {{queue.owner.nickname}}</h4>
-                <h5>Description:</h5>
+                <h2 class="h4">Owned by {{queue.owner.nickname}}</h2>
+                <h3 class="h5">Description:</h3>
                 <p>{{queue.description}}</p>
                 <span class="row text-center">
                     <p class="no-wrap"><span id="queueLength">{{queue.length}}</span> {{ num_entries }}
@@ -28,7 +28,7 @@
         <section id="control-panel">
             <!-- Control Panel -->
             <div class="my-container text-center">
-                <h3>Control Panel</h3>
+                <h2 class="h3">Control Panel</h2>
                 <div class="btn-group" role="group" aria-label="Control Queue Buttons 1">
                     <a href="{% url 'edit_queue' queue.id %}"><button type="button"
                             class="btn btn-success">Refresh</button></a>
@@ -53,7 +53,7 @@
                         <div class="modal-dialog">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <h5 class="modal-title" id="unpublishModalLabel">Unpublish {{queue.title}}</h5>
+                                    <h5 class="h5 modal-title" id="unpublishModalLabel">Unpublish {{queue.title}}</h5>
                                     <button type="button" class="btn-close" data-bs-dismiss="modal"
                                         aria-label="Close"></button>
                                 </div>

@@ -28,6 +28,11 @@ Ideally, a user with an account will create a queue and then send the share link
 
 ## Design
 
+### Development Process
+I attempted to use the Agile methodology to develop this project. I used the Kanban board in the Projects section of GitHub. I found this useful for organizing my thoughts and prioritizing tasks. At times it was frustrating how much time the documentation was taking.
+
+I had three issue types: User Stories, Bugs, and Tasks. The first two are self explanatory while the third is for tasks that did not fit a user story framework (in my opinion, as I am still new to Agile). Some of these were not completed. They have been listed under the Next Iteration column. The bugs there have been documented in the Testing.md document.
+
 ### Design Layout and Scaling
 I have tried to lay the website out in a way that is visually acceptable to me. I have a visual disability which means that I view things zoomed in and in a dark color scheme. This makes it difficult to address responsiveness as in chrome dev tools there is not only the slider for controlling the size of the display but something to also control how zoomed in the display is. I decided to use what ever default zoom chrome presented me with as this is not something I can control on the user end. This may explain some of my design choices in terms of positioning and scaling.
 
@@ -321,7 +326,6 @@ Clone the GitHub repository. After setting up the above config vars, select the 
 
 ## Testing
 Do to the extensive mature of testing on this project, there is a separate document that addresses this portion of the readme, it can be found here: Link
-
 
 ## References
 

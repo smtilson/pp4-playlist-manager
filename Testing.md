@@ -116,7 +116,13 @@ The main purpose of this testing was to see if users were directed to the correc
 
 I checked each branch of each view to see if it behaved as expected. This caused me to rethink some of my code and improve it, in my opinion.
 
-## Bugs Left in
+## Bugs
+I used the Kanban board to document bugs that I encountered during development. I did not list every time something seemed to be off in position. I have documented these bugs and their fixes below.
+
+### Bugs Addressed
+
+
+### Bugs Left in
 The following bugs are things that were left in. I was either unable to find a solution because of ability, the underlying technology over which I have no control (see the first Bug listed), or I ran out of time.
 
 1. Bug: When a Queue is synced with a published YouTube playlist, the playlist only reflects these updates after the current video finishes and when the next video begins (check which next video plays, I forgot). 

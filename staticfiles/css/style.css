@@ -1,12 +1,3 @@
-/*
-Black color: 0F0F0F
-Red color: FF0000
-Grey :272727
-White: FFFFFF
-other grey: AAAAAA
-lighter grey from darkreader: 303436
-border color from dark reader 877D6F
-*/
 /* Base Styles */
 html,
 body {
@@ -148,19 +139,13 @@ Bootstrap styles.*/
 
 
 #style-override .btn-ytube {
-    background-color: #e71a1a;
-    background-color: rgba(231, 26, 26, 0.796);
+    background-color: #e71a1acb;
     color: white;
     font-weight: 600;
     margin: 5px;
     border-radius: 10px;
 }
 
-/* I do not think this rule is necessary.
-#style-override .my-btn-group .btn {
-    border-color: #0f0f0f;
-    border-width: 1px;
-}*/
 
 /* Input Elements */
 #style-override form .js-input-background {
@@ -292,7 +277,6 @@ Bootstrap styles.*/
 }
 
 #style-override #profile .logo-div {
-    /* check left */
     left: 6.5%;
     width: 75%;
     position: relative;
@@ -322,6 +306,10 @@ Bootstrap styles.*/
 
 #style-override .queue-buttons-div button {
     width: 120%;
+}
+
+#style-override #friends-queue-div .btn-group {
+    left: 17%;
 }
 
 /* Index Page */
@@ -388,13 +376,11 @@ Bootstrap styles.*/
 
     #style-override #queue-display .my-container {
         width: 75%;
-        /* check margin-left */
         margin-left: 7%;
     }
 
     /* Create Queue Page */
     #style-override #create-queue button {
-        /* check margin-left */
         margin-left: 29.5%;
     }
 
@@ -406,18 +392,20 @@ Bootstrap styles.*/
     #style-override #my-queue-div .logo-div,
     #style-override #friends-queue-div .logo-div {
         width: 65%;
-        /* check left */
         left: 12%;
     }
 
     #style-override .queue-buttons-div {
-        /* check left */
         left: 16%;
         gap: 20%;
     }
 
     #style-override .queue-buttons-div button {
         width: 143%;
+    }
+
+    #style-override #friends-queue-div .btn-group {
+        left: 23%;
     }
 
     /* Index Page */
@@ -498,7 +486,11 @@ Bootstrap styles.*/
     }
 
     #style-override #both-queues-div .logo-div {
-        min-height: 25%;
+        min-height: 38%;
+    }
+
+    #style-override #friends-queue-div .btn-group {
+        left: 19%;
     }
 
     /* Create Queue Page */
@@ -625,7 +617,7 @@ Bootstrap styles.*/
     /* Profile Page */
     #style-override #profile {
         left: 11.5%;
-        width:  80%;
+        width: 80%;
     }
 
     #style-override .min-height-row .profile-top {
@@ -642,13 +634,17 @@ Bootstrap styles.*/
     }
 
     #style-override #profile #my-queue-div .logo {
-        position:relative;
-        right:16%;
+        position: relative;
+        right: 16%;
     }
 
     #style-override #profile #friends-queue-div .logo {
-        position:relative;
-        right:1%;
+        position: relative;
+        right: 1%;
+    }
+
+    #style-override #friends-queue-div .btn-group {
+        left: 20%;
     }
 
     #style-override #both-queues-div .min-height-row {

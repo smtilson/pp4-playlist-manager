@@ -8,7 +8,7 @@
     </div>
     <!-- About YouTube DJ -->
     <div class="my-container">
-        <h4 class="text-center">Make playlists with your friends!</h4>
+        <h2 class="text-center">Make playlists with your friends!</h2>
         <ul>
             <li class="my-list-item"><a href="{% url 'create_queue' %}">Create</a> a new queue!</li>
             <li class="my-list-item"><a href="{% url 'edit_queue' 1 %}">Add</a> videos to an existing queue.
@@ -18,8 +18,14 @@
             <li class="my-list-item">Sync a queue to update the playlist.</li>
         </ul>
     </div>
+    <div class="text-center my-container">
+        <h3 class="h4">Have an account?</h2>
+        <a href="{% url 'account_login'%}"><button class="primaryAction btn btn-secondary" type="submit">Login</button></a>
+        <h3 class="h4">Want to make an account?</h2>
+        <a href="{% url 'account_signup' %}"><button class="primaryAction btn btn-secondary" type="submit">Sign Up</button></a>
+    </div>
     <div class="my-container last">
-        <h4 class="text-center">How we use your Data</h4>
+        <h2 class="text-center">How we use your Data</h2>
         <p>We use your YouTube Data to create and edit playlists. You can revoke these permissions at any
             time from the
             <a href="{% url 'profile' %}">Profile</a> page. You can also visit <a
