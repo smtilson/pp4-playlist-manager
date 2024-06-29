@@ -1,11 +1,8 @@
 $(document).ready(function () {
-    console.log("page loaded");
     addListenersNModifyForms();
 });
 
 const DOMAIN = setDomain();
-
-console.log("DOMAIN set to:" + DOMAIN);
 
 /**
  * Adds event listeners and modifies forms based on the presence of specific
@@ -18,15 +15,12 @@ function addListenersNModifyForms() {
     if (rawHTML.includes("swap-input")) {
         setSwapPlaceHolderText();
         addSwapListeners();
-        console.log("swap-input class present. Listeners added.");
     }
     if (rawHTML.includes("move-btn")) {
         addMoveListeners();
-        console.log("move-btn class present. Listeners added.");
     }
     if (rawHTML.includes("<form")) {
         formStyle();
-        console.log("Classes added to form elements.");
     }
 
 }
@@ -82,10 +76,8 @@ async function moveEntry(event) {
     const direction = event.target.getAttribute("data-direction");
     const otherPosition = event.target.getAttribute("data-position");
     if (otherPosition <= 0 && direction === "+") {
-        console.log("out of bounds +");
         return;
     } else if (otherPosition > getQueueLength() && direction == "-") {
-        console.log("out of bounds -");
         return;
     }
     const response = await fetch(DOMAIN + `queues/swap/${entryId}/${otherPosition}`, {
@@ -98,11 +90,8 @@ async function moveEntry(event) {
     const data = await response.json();
     const entry1 = data.entry1;
     const entry2 = data.entry2;
-    console.log("going to write entry data");
     writeEntryData(entry1);
-    console.log("entry 1 written");
     writeEntryData(entry2);
-    console.log("entry 2 written");
 }
 
 /**
@@ -113,13 +102,9 @@ async function moveEntry(event) {
  * @return {Promise<void>} This function does not return a value.
  */
 async function swapEntries(event) {
-    console.log("swap triggered");
     const entryId = event.target.getAttribute("data-entry");
-    console.log(entryId);
     const newPosition = $(`#new-position-${entryId}`).val();
-    console.log(newPosition);
     if (newPosition < 1 || newPosition > getQueueLength()) {
-        console.log("out of bounds");
         return;
     }
     const response = await fetch(DOMAIN + `queues/swap/${entryId}/${newPosition}`, {
@@ -189,7 +174,6 @@ function setSwapPlaceHolderText() {
     const placeholderText = `1-${queueLength}`;
     swapInputs = $('.swap-input');
     for (let input of swapInputs) {
-        console.log("Setting placeholder text.");
         input.setAttribute('placeholder', placeholderText);
     }
 }

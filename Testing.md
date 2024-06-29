@@ -178,6 +178,110 @@ I used the Kanban board to document bugs that I encountered during development. 
 
 ### Bugs Addressed
 
+- Bug: The superuser was unable to log in due to a CSRF token issue. There is a long error message that is in the bug report on GitHub.
+
+Fix: I found a [StackOverflow answer](https://stackoverflow.com/questions/10388033/csrf-verification-failed-request-aborted) that addressed the issue. The solution was to add a list of trusted origins to the settings file.
+
+- Bug: When obtaining credentials using Oauth, the operation stalled at the last step and would not complete.
+
+Fix: This ended up happening because I was using Gitpod. The problem disappeared completely when I started using my local machine as the development environment.
+
+- Bug: Getting 302 status code instead of 200 when trying to revoke tokens.
+
+Fix: I needed to import the requests library in order to handle part of the procedure.
+
+- Bug: There were too many credential objects being created.
+
+Fix: The code was just creating new credential objects instead of updating the existing one. The code was easy to fix. The methods set_credentials was implemented to address this.
+
+- Bug: The up and down buttons for moving entries on the Edit Queue page weren't working correctly. The down button wasn't moving the entry and the up button was moving it up two spots.
+
+Fix: I missed some instances of some attributes when refactoring. Being careful was enough to spot the errors.
+
+- Bug: Delete button disappeared after syncing.
+
+Fix: Carefully inspecting the template logic in the control panel section fixed the issue.
+
+- Bug: Sync was sending invalid positions for playlist items to YouTube.
+
+Fix: I was storing positions inappropriately earlier. I fixed this but didn't change the initial assignment of the position. It was easily addressed.
+
+- Bug: The search stopped working. I was searching each time the page reloaded which used too many PAI resources. I tried to fix this and broke search completely.
+
+Fix: The value I was setting `recent_search` to was Falsy for some reason. Changing this fixed the issue.
+
+- Bug: Move up button on queue entries not working.
+
+Fix: The function name I was using was already in use by Django. There was also a logical issue. Changing from </> to <=/>= addressed the logical issue. For the other I simply changed the name of the method.
+
+- Bug: Creating Queue throws JSON non-serializeable error.
+
+Fix: I was attempting to attach a queue object to a session, and that was causing this error. I instead used a to_dict method. I believe now I just use the queue's id.
+
+- Bug: Adding entries to queue did not increase its length.
+
+Fix: This was occurring when I was increasing the length manually, when adding entries, as opposed to referencing `queue.entries.all()`. The initial issue was that I had not copied the relevant code to the view. Since then, I have switched to using `queue.entries.all()`.
+
+- Bug: When trying to log in a super user an exception was thrown saying: "'Manager' object has no attribute 'get_by_natural_key' error in Django?"
+
+Fix: I used an article to help build my custom user model. I thought the manager code was superfluous so I deleted it. It was necessary and adding it back addressed this error.
+
+- Bug: After sign in of a new account, there is an error because the profile object doesn't exist yet.
+
+Fix: The issues was related to the creation of the credentials object. I let the credentials object be null at the time of profile creation. I then add default credentials when they first visit the profile page if they do not have any.
+
+- Bug: Signout link in navbar is not working.
+
+Fix: This was from when my account related pages where inheriting from the default all-auth base, not my base.html template. Adjusting this addressed the issue.
+
+Bug: After access token has expires the refresh process is failing because an exception is being thrown.
+
+Fix: The issue was cuased by translating between my credentials object and Googles Credentials object. Because I was going from JSON to a dictionary to a field in a database, then back to a dict then a google credentials instance, some extraneous characters were introduced. In particular, the scopes value of `["http://..."]` becomes `'["http://..."]'`, and then some extra characters get introduced. I changed the value being passed to my method which produces an instance of the google credentials object.
+
+- Bug: I was getting "too many redirect" errors. I added some logic to try and catch bad responses. I was not careful enough when doing this.
+
+Fix: Carefully fixing the logic of the views addressed this.
+
+- Bug: When attempting to move entries around, the actual entry changes. This appears to be rectified if the page is refreshed, so it is an issue with the JS function.
+
+Fix: In the JS file, I hardcoded the domain. So it was fetching data from the wrong backend. Now, JS gets the domain from the window object.
+
+- Bug: None of the movement buttons are working on the deployed site.
+
+Fix: It was similar to the above. And then there was a redirect that was getting triggered because the request object that fetch gives to django is an anonymous user and so it will always trigger the user!=owner condition. Removed that redirect from the swap view. Also added headers to the fetch requests and changed the URL for the view since the queue id is not relevant. Then there was the issue of static files being disabled.
+
+- Bug: With the deployed and local versions of the app, the redirect uri isn't matching.
+
+Fix: I changed how the redirect uri is set so it now depends on some environment variables.
+
+- Bug: The position buttons are not appearing for a queue owner.
+
+Fix: Adjusted logic in the template.
+
+- Bug: When a guest visits the edit queue page, owner buttons are appearing.
+
+Fix: Adjust the logic in the template.
+
+- Bug: Publish was throwing an error.
+
+Fix: The user didn't yet have tokens. I adjusted the logic in the template so the button is hidden in that case. Error handling has also been added on the back end to catch this.
+
+- Bug: Search is throwing an error on the deployed site.
+
+Fix: Removed the quotes around the value of the YOUTUBE_API_KEY config var on Heroku.
+
+- Bug: When I remove an entry from the queue it should cause the queue to no longer register as synced.
+
+Fix: I changed which iterator is used t determine if the queue is synced or not.
+
+- Bug: When I have published a queue and then add an entry and sync it, the new song is added at the end.
+
+Fix: Sync did not yet remove items from the playlist. Implementing Sync completely fixed this bug.
+
+- Bug: Two entries on the same playlist had the same position.
+
+Fix: I added a resort method which is called and prevents this from persisting.
+
 
 ### Bugs Left in
 The following bugs are things that were left in. I was either unable to find a solution because of ability, the underlying technology over which I have no control (see the first Bug listed), or I ran out of time.

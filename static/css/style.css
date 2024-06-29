@@ -262,7 +262,6 @@ Bootstrap styles.*/
 }
 
 #style-override #edit-queue .my-container {
-    /* check margin-left */
     margin-left: 5%;
 }
 
@@ -275,7 +274,6 @@ Bootstrap styles.*/
 }
 
 #style-override #queue-length {
-    /* check margin-left */
     margin-left: 40%;
 }
 
@@ -522,7 +520,6 @@ Bootstrap styles.*/
     /* Create Queue Page */
     #style-override #create-queue .my-container {
         width: 50%;
-        /* check margin-left */
         margin-left: 22.5%;
     }
 
@@ -550,7 +547,6 @@ Bootstrap styles.*/
 
     #style-override #searchQuery {
         width: 26em;
-        /* check margin-left */
         margin-left: 5.8em;
     }
 
@@ -709,7 +705,6 @@ Bootstrap styles.*/
 
     #style-override #create-queue button {
         margin-top: 2%;
-        /* check margin-left */
         margin-left: 35%;
     }
 

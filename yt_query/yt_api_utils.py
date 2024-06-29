@@ -1,11 +1,14 @@
 # Helper class and methods for interacting with YouTube API
 from googleapiclient.discovery import build
+from requests.exceptions import HTTPError
 import os
 if os.path.isfile("env.py"):
     import env
 
 
 YOUTUBE_API_KEY = os.environ.get("YOUTUBE_API_KEY")
+
+
 class YT:
     MAX_QUEUE_LENGTH = 20
     """
@@ -50,7 +53,7 @@ class YT:
         Searches for videos on YouTube based on a given query. It returns their
         id, and title.
         Args: query (str)
-        Returns: list[str]: A list of video IDs that match the search query.           
+        Returns: list[str]: A list of video IDs that match the search query.
         """
         request = self.guest_service.search().list(
             part="snippet",
@@ -210,7 +213,8 @@ def parse_playlist_item_result(item):
     """
     snippet_keys = {"title", "playlistId", "position", "resourceId"}
     result_dict = {
-        key: value for key, value in item["snippet"].items() if key in snippet_keys
+        key: value for key, value in item["snippet"].items()
+        if key in snippet_keys
     }
     result_dict.update({"kind": item["kind"], "id": item["id"]})
     return result_dict
@@ -225,12 +229,10 @@ def parse_channel_result(response):
     """
     try:
         items = response["items"][0]
-    except IndexError as e:
-        print(response)
-        print(e)
-    except KeyError as e:
-        print(response)
-        print(e)
+    except IndexError:
+        raise HTTPError(400)
+    except KeyError:
+        raise HTTPError(400)
     id = items["id"]
     custom_url = items["snippet"]["customUrl"]
     return id, custom_url
