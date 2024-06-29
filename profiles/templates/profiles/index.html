@@ -19,10 +19,12 @@
         </ul>
     </div>
     <div class="text-center my-container">
-        <h3 class="h4">Have an account?</h2>
-        <a href="{% url 'account_login'%}"><button class="primaryAction btn btn-secondary" type="submit">Login</button></a>
-        <h3 class="h4">Want to make an account?</h2>
-        <a href="{% url 'account_signup' %}"><button class="primaryAction btn btn-secondary" type="submit">Sign Up</button></a>
+        <h3 class="h4">Have an account? &nbsp; 
+            <a href="{% url 'account_login'%}">Login</a>
+        </h3>
+        <h3 class="h4 mt-2 signup-question">Want to make an account? &nbsp; 
+            <a href="{% url 'account_signup' %}">Sign Up</a>
+        </h3>
     </div>
     <div class="my-container last">
         <h2 class="text-center">How we use your Data</h2>

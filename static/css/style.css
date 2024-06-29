@@ -127,6 +127,10 @@ Bootstrap styles.*/
     font-weight: 700;
 }
 
+#style-override .signup-question {
+    margin-bottom: 0%;
+}
+
 #style-override .my-brand {
     color: white;
     background-color: rgba(231, 26, 26, 0.796);
@@ -137,7 +141,6 @@ Bootstrap styles.*/
     border-width: 1px;
 }
 
-
 #style-override .btn-ytube {
     background-color: #e71a1acb;
     color: white;
@@ -145,7 +148,6 @@ Bootstrap styles.*/
     margin: 5px;
     border-radius: 10px;
 }
-
 
 /* Input Elements */
 #style-override form .js-input-background {
@@ -206,9 +208,9 @@ Bootstrap styles.*/
 }
 
 #style-override #set-name-form-button {
-    left: 31%;
     position: relative;
     margin-top: 8%;
+    width: fit-content;
     margin-bottom: -2%;
 }
 
@@ -293,12 +295,21 @@ Bootstrap styles.*/
     font-weight: 600;
 }
 
+#style-override #user-buttons-div {
+    width: 85%;
+    position: relative;
+    left: 14%;
+}
+
+#style-override #user-buttons-div button {
+    width: fit-content;
+}
+
 #style-override #both-queues-div {
     margin-left: -3%;
 }
 
 #style-override .queue-buttons-div {
-    /* check left */
     left: 10%;
     gap: 12%;
     width: 80%;
@@ -387,6 +398,11 @@ Bootstrap styles.*/
     /* Profile Page */
     #style-override #profile #welcome {
         left: -5%;
+    }
+
+    #style-override #user-buttons-div {
+        width: 81%;
+        left: 12%;
     }
 
     #style-override #my-queue-div .logo-div,
@@ -554,6 +570,10 @@ Bootstrap styles.*/
     }
 
     /* Other styles */
+    #style-override .title-navbar {
+        width: 25%;
+    }
+
     #style-override .last {
         margin-bottom: 20%;
     }
@@ -624,10 +644,6 @@ Bootstrap styles.*/
         min-height: 90%;
     }
 
-    #style-override #set-name-form-button {
-        /* check left */
-        left: 38%;
-    }
 
     #style-override #both-queues-div .logo-div {
         min-height: 8em;

@@ -405,6 +405,7 @@ AI: I used the Codeium plug-in for VS Code. I used it to as for an informed auto
 39. [Content on a single line in Bootstrap](https://stackoverflow.com/questions/42311110/keep-content-in-one-line-in-bootstrap)
 40. [Location in Django response object](https://stackoverflow.com/questions/7949089/how-to-find-the-location-url-in-a-django-response-object)
 41. [Remove decoration on clicked buttons in Bootstrap](https://stackoverflow.com/questions/19053181/how-to-remove-focus-around-buttons-on-click)
+42. [Buttons inside anchor links](https://stackoverflow.com/questions/6393827/can-i-nest-a-button-element-inside-an-a-using-html5)
 
 ### Other references
 1. [Using Allauth and Oauth together](https://medium.com/@ksarthak4ever/django-custom-user-model-allauth-for-oauth-20c84888c318)

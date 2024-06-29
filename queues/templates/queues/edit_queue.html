@@ -19,8 +19,8 @@
                 </span>
                 {% if queue.published %}
                 <div class="text-center">
-                    <a href="{{queue.url}}" target="_blank"><button class="btn btn-ytube">Play on
-                            YouTube</button></a>
+                    <a href="{{queue.url}}" target="_blank" class="btn btn-ytube">Play on
+                        YouTube</a>
                 </div>
                 {% endif %}
             </div>
@@ -30,19 +30,17 @@
             <div class="my-container text-center">
                 <h2 class="h3">Control Panel</h2>
                 <div class="btn-group" role="group" aria-label="Control Queue Buttons 1">
-                    <a href="{% url 'edit_queue' queue.id %}"><button type="button"
-                            class="btn btn-success">Refresh</button></a>
+                    <a href="{% url 'edit_queue' queue.id %}" type="button" class="btn btn-success">Refresh</a>
                     {% if is_owner %}
-                    <a href="{% url 'gain_access' queue.secret queue.owner.secret %}"><button
-                            class="btn btn-success">Share</button></a>
-                    <a href=" {% url 'sync' queue.id %}"><button class="btn btn-success">Sync</button></a>
+                    <a href="{% url 'gain_access' queue.secret queue.owner.secret %}" class="btn btn-success">Share</a>
+                    <a href=" {% url 'sync' queue.id %}" class="btn btn-success">Sync</a>
                     {% endif %}
                 </div>
                 <br>
                 <div class="btn-group" role="group" aria-label="Control Queue Buttons 2">
                     {% if user.has_tokens %}
                     {% if not queue.published %}
-                    <a href="{% url 'publish' queue.id %}"><button class="btn btn-success">Publish</button></a>
+                    <a href="{% url 'publish' queue.id %}" class="btn btn-success">Publish</a>
                     {% else %}
                     <!-- Unpublish Modal Trigger -->
                     <button type="button" data-bs-toggle="modal" data-bs-target="#unpublishModal"
@@ -64,8 +62,8 @@
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary"
                                         data-bs-dismiss="modal">Close</button>
-                                    <a href="{% url 'unpublish' queue.id %}"><button type="button"
-                                            class="btn btn-danger">Unpublish</button></a>
+                                    <a href="{% url 'unpublish' queue.id %}" type="button"
+                                        class="btn btn-danger">Unpublish</a>
                                 </div>
                             </div>
                         </div>
@@ -94,8 +92,8 @@
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary"
                                         data-bs-dismiss="modal">Close</button>
-                                    <a href="{% url 'delete_queue' queue.id %}"><button
-                                            class="btn btn-danger">Delete</button></a>
+                                    <a href="{% url 'delete_queue' queue.id %}"
+                                            class="btn btn-danger">Delete</a>
                                 </div>
                             </div>
                         </div>
@@ -144,7 +142,7 @@
                             </div>
                             <div class="col-3 col-md-2">
                                 <a href="{% url 'add_entry' queue_id=queue.id video_id=result.id %}"><button
-                                        class="btn btn-sm btn-success">Add</button></a>
+                                        class="btn btn-sm btn-success">Add</a>
                             </div>
                         </div>
                     </li>
@@ -223,7 +221,7 @@
                                                         data-bs-dismiss="modal">Close</button>
                                                     <a
                                                         href="{% url 'delete_entry' queue_id=queue.id entry_id=entry.id %}"><button
-                                                            type="button" class="btn btn-danger">Remove</button></a>
+                                                            type="button" class="btn btn-danger">Remove</button></form>
                                                 </div>
                                             </div>
                                         </div>
