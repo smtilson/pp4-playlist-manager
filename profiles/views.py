@@ -1,18 +1,19 @@
 from django.shortcuts import render, reverse, get_object_or_404
-from django.http import HttpResponseRedirect, JsonResponse, Http404
-from .models import Profile, GuestProfile, make_user
+from django.http import HttpResponseRedirect, Http404
+from django.utils.safestring import mark_safe
+from django.contrib import messages
+from requests.exceptions import HTTPError
+from .models import GuestProfile, make_user
 from utils import check_valid_redirect_action
 from queues.models import Queue, has_authorization
-from requests.exceptions import HTTPError
-from django.contrib import messages
 from errors.utils import process_path
-from django.utils.safestring import mark_safe
 from errors.views import error_handler
 from yt_auth.token_auth import (
     get_authorization_url,
     get_tokens,
     revoke_tokens,
 )
+
 
 def index(request):
     """
@@ -23,7 +24,8 @@ def index(request):
     """
     path = request.get_full_path()
     user = make_user(request)
-    keywords = {"?state=", "&code=", "&scope=https://www.googleapis.com/auth/youtube"}
+    keywords = {"?state=", "&code=",
+                "&scope=https://www.googleapis.com/auth/youtube"}
     if all(word in path for word in keywords):
         response = return_from_authorization(request)
     elif "error" in path:
@@ -34,7 +36,8 @@ def index(request):
     elif check_valid_redirect_action(request):
         response = HttpResponseRedirect(reverse("redirect_action"))
     elif user.is_guest and user.queue_id:
-        response = HttpResponseRedirect(reverse("edit_queue", args=[user.queue_id]))
+        response = HttpResponseRedirect(reverse("edit_queue",
+                                                args=[user.queue_id]))
     else:
         response = render(request, "profiles/index.html")
     response = error_handler(request, response)
@@ -61,7 +64,8 @@ def profile(request):
                 f"Youtube DJ has access to {user.youtube_handle}."
             )
         else:
-            youtube_permission_status = "Profile has no associated youtube account."
+            youtube_permission_status = "Profile has no associated youtube"\
+                                        "account."
         context = {
             "user": user,
             "authorization_url": get_authorization_url(),
@@ -154,11 +158,12 @@ def revoke_authorization(request):
             msg = "Credentials successfully revoked for " + user.youtube_handle
             msg_type = messages.SUCCESS
         else:
-            address = '<a href="https://myaccount.google.com/permissions">Third party apps and services</a>'
-            msg = "An error occurred. Your credentials have been wiped from our "
-            msg += f"system. To be on the safe side, please visit {address}"
-            msg += "to revoke your permissions. Look for 'pp4-playlist-manager' in"
-            msg += "the list of third party apps."
+            address = '<a href="https://myaccount.google.com/permissions">"'\
+                      'Third party apps and services</a>'
+            msg = "An error occurred. Your credentials have been wiped from"\
+                  " our system. To be on the safe side, please visit"\
+                  f" {address} to revoke your permissions. Look for "\
+                  "'pp4-playlist-manager' in the list of third party apps."
             msg_type = messages.ERROR
         messages.add_message(request, msg_type, mark_safe(msg))
         response = HttpResponseRedirect(reverse("profile"))
@@ -203,7 +208,8 @@ def guest_sign_in(request):
     user = make_user(request)
     queue_id = request.session.get("queue_id")
     if queue_id is None:
-        raise Http404("A queue must be associated with this particular request.")
+        raise Http404("A queue must be associated with this particular"
+                      "request.")
     else:
         queue = get_object_or_404(Queue, id=request.session["queue_id"])
     if user.is_authenticated or user.is_guest:

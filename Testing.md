@@ -10,6 +10,11 @@ Table of contents
 - - Profiles app views
 - - Queues app views
 - - Errors app views
+- Validation
+- - Python
+- - JavaScript
+- - HTML
+- - CSS
 - Bugs Fixed
 - Bugs Left in
 
@@ -115,6 +120,39 @@ I did not write automated tests for user creation, login, and signout as this wa
 The main purpose of this testing was to see if users were directed to the correct page based on their authentication status and permissions. Due to an inability to get Django sessions to function more kindly inside the testing framework, whenever I needed to use session data, I was unable to use the assertRedirect method of TestCase. This meant that I didn't have access to the whole redirect chain, only the first redirect. It explains some discrepancies in the style of tests. I also only tested messaging when it was the only way to check if a certain action had taken place. Otherwise, messages were tested manually.
 
 I checked each branch of each view to see if it behaved as expected. This caused me to rethink some of my code and improve it, in my opinion.
+
+## Validation
+
+### Python
+I used flake8 to validate my Python code. I ran flake8 on:
+the files
+- utils.py
+- mixins.py
+the directories
+- yt_query
+- yt_auth
+- queues
+- profiles
+- errors
+- pp4_youtube_dj
+
+I did not address the following errors for the stated reason:
+
+1. I did not address any issues that showed up in any of Django's migration files. They were usually that the line was too long.
+
+2. "F401 'env' imported but unused," It is used, but flake8 can not detect that.
+
+3. "E501 line too long" for lines in the settings file of the man app. These involved package names and I didn't want to split them up.
+
+### JavaScript
+I used JSHint to validate my JavaScript.
+
+I got the following errors that I did not address:
+1. 'async functions' is only available in ES8 (use 'esversion: 8').
+
+2. `position`, `positionDiv`, `positionSpan`, and `swapInputs` are undefined. They are well-defined but JSHint can not verify that.
+
+### CSS
 
 ## Bugs
 I used the Kanban board to document bugs that I encountered during development. I did not list every time something seemed to be off in position. I have documented these bugs and their fixes below.

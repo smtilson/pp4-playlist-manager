@@ -1,14 +1,13 @@
-from django.test import TestCase
+from django.contrib.auth.models import AnonymousUser
+from django.contrib.messages.storage.fallback import FallbackStorage
+from django.urls import reverse
+from django.test import TestCase, RequestFactory
+from unittest.mock import Mock
+import os
 from profiles.models import Profile, GuestProfile
 from . import views
 from yt_auth.models import Credentials
-from django.contrib.auth.models import AnonymousUser
-from django.contrib.messages.storage.fallback import FallbackStorage
-from unittest.mock import Mock
-from django.urls import reverse
-from django.test import TestCase, RequestFactory
-import os
-from django.test import RequestFactory
+
 
 if os.path.isfile("env.py"):
     import env
@@ -34,8 +33,8 @@ class TestErrors(TestCase):
         self.user.credentials = credentials
         self.user.save()
         self.guest = GuestProfile(name="Guesty", email="Guesty@McTestFace.com")
-        self.anon_user  = AnonymousUser()
-    
+        self.anon_user = AnonymousUser()
+
     def user_request(self, path):
         request = RequestFactory().get(path)
         setattr(request, "session", "session")
@@ -44,7 +43,7 @@ class TestErrors(TestCase):
         request.user = self.user
         request.session = {}
         return request
-    
+
     def anon_request(self, path):
         request = RequestFactory().get(path)
         setattr(request, "session", "session")
@@ -53,7 +52,7 @@ class TestErrors(TestCase):
         request.user = AnonymousUser()
         request.session = {}
         return request
-    
+
     def guest_request(self, path):
         request = RequestFactory().get(path)
         setattr(request, "session", "session")
@@ -62,7 +61,6 @@ class TestErrors(TestCase):
         request.user = AnonymousUser()
         request.session = {"guest_user": self.guest.serialize()}
         return request
-    
 
     def test_error_handler_200(self):
         # Logged in
@@ -80,8 +78,7 @@ class TestErrors(TestCase):
         request = self.anon_request("/")
         response = views.error_handler(request, response)
         self.assertEqual(response.status_code, 200)
-        
-    
+
     def test_error_handler_302(self):
         # Logged in
         response = Mock(status_code=302)

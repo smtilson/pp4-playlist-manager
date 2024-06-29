@@ -1,10 +1,10 @@
 # The code below borrows from the two Corey Schafer YouTube tutorials listed
-# in the references as well as the Oauth documentation.
+# in the references as well as the Oauth documentation. Corey used a different
+# type of flow, but I found it helpful nonetheless.
 from google_auth_oauthlib.flow import Flow
 from utils import get_data_from_path
 import os
 import requests
-from google.auth.transport.requests import Request
 
 
 if os.path.isfile("env.py"):
@@ -48,7 +48,8 @@ def get_tokens(authorization_path):
     Returns: google.oauth2.credentials.Credentials
     """
     state = get_data_from_path(authorization_path)[0]
-    flow = Flow.from_client_secrets_file("oauth_creds.json", scopes=SCOPES, state=state)
+    flow = Flow.from_client_secrets_file("oauth_creds.json", scopes=SCOPES,
+                                         state=state)
     flow.redirect_uri = REDIRECT_URI
     authorization_response = REDIRECT_URI + authorization_path
     flow.fetch_token(authorization_response=authorization_response)
@@ -64,12 +65,17 @@ def revoke_tokens(user):
     Returns: status_code: The status code of the token revocation request.
     """
     if not user.has_tokens:
-        return f"This app does not currently have authorization for {user.nickname}"
-    else:        
+        msg = "This app does not currently have authorization for"\
+              f"{user.nickname}"
+        return msg
+    else:
         credentials = user.google_credentials
-        requests.post('https://oauth2.googleapis.com/revoke',
-    params={'token': credentials.token},
-    headers = {'content-type': 'application/x-www-form-urlencoded'})
+        header_content_type = "application/x-www-form-urlencoded"
+        requests.post(
+            "https://oauth2.googleapis.com/revoke",
+            params={"token": credentials.token},
+            headers={"content-type": header_content_type},
+        )
     revoke = requests.post(
         "https://oauth2.googleapis.com/revoke",
         params={"token": credentials.token},
@@ -77,11 +83,3 @@ def revoke_tokens(user):
     )
     status_code = getattr(revoke, "status_code")
     return status_code
-    
-
-# Not used in production
-def refresh_tokens(user):
-    credentials = user.google_credentials
-    credentials.refresh(Request())
-    user.set_credentials(credentials)
-

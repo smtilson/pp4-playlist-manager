@@ -53,7 +53,7 @@
                         <div class="modal-dialog">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <h5 class="h5 modal-title" id="unpublishModalLabel">Unpublish {{queue.title}}</h5>
+                                    <h5 class="modal-title" id="unpublishModalLabel">Unpublish {{queue.title}}</h5>
                                     <button type="button" class="btn-close" data-bs-dismiss="modal"
                                         aria-label="Close"></button>
                                 </div>
@@ -119,7 +119,7 @@
             <form id="searchForm" method="POST" class="container d-flex-col justify-content-center text-center">
                 {% csrf_token %}
                 <label class="form-label row" for="searchQuery">
-                    <h4 class="col">Search for videos or songs to add:</h4>
+                    <h3 class="h4 col">Search for videos or songs to add:</h3>
                 </label>
                 <input type="text" id="searchQuery" name="searchQuery" class="search-bar row" value="{{recent_search}}"
                     placeholder="Search YouTube">
@@ -156,7 +156,7 @@
         {% if queue.length != 0 %}
         <section id="queue-entries" class="col-12 col-md-6">
             <div class="logo-div my-container d-flex justify-content-center ">
-                <h3>Queue Entries</h3>
+                <h2 class="h3">Queue Entries</h2>
             </div>
             {% if not queue.all_entries %}
             <div class="text-center">
@@ -171,9 +171,9 @@
                         <div id="div-{{entry.position}}" class="queue-entries my-list-item">
                             <div class="row d-flex align-items-center">
                                 <div class="{% if is_owner %}col-9{% else %}col-12{% endif %} col-md-8">
-                                    <h5 class="entry-display">{{entry.position}}. {{entry.title_abv}} </h5>
+                                    <h3 class="h5 entry-display">{{entry.position}}. {{entry.title_abv}} </h3>
                                     <div class="nickname-buttons">
-                                        <h5 class="no-wrap">{{entry.username}} </h5>
+                                        <h4 class="h5 no-wrap">{{entry.username}} </h4>
                                         {% if is_owner %}
                                         <div class="btn-group my-btn-border" role="group"
                                             aria-label="Position Control Buttons">

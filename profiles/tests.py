@@ -1,14 +1,14 @@
+from django.contrib.auth.models import AnonymousUser
+from django.contrib.messages.storage.fallback import FallbackStorage
+from django.urls import reverse
+from django.test import TestCase, RequestFactory, override_settings
+from unittest.mock import patch
+import os
+from queues.models import Queue, has_authorization
 from .models import Profile, GuestProfile, make_user
 from . import views
 from yt_auth.models import Credentials
-from django.contrib.auth.models import AnonymousUser
-from django.contrib.messages.storage.fallback import FallbackStorage
-from unittest.mock import patch
-from django.urls import reverse
-from django.test import TestCase, RequestFactory, override_settings
-from queues.models import Queue, has_authorization
-import os
-from django.test import RequestFactory
+
 
 if os.path.isfile("env.py"):
     import env
@@ -19,8 +19,9 @@ if LOCAL:
 else:
     REDIRECT_URI = "https://pp4-playlist-manager-67004a99f0e2.herokuapp.com/"
 
-sample_code = "?state=BJn&code=4Eg&scope=https://www.googleapis.com/auth/youtube"
-sample_error = "?error=access_denied&state=random_state_string"
+s_code = "?state=BJn&code=4Eg&scope=https://www.googleapis.com/auth/youtube"
+s_error = "?error=access_denied&state=random_state_string"
+
 
 @override_settings(
     MIDDLEWARE_CLASSES=(
@@ -151,10 +152,10 @@ class TestProfileViews(TestCase):
         self.assertEqual(response.status_code, 302)
         path = response.headers["Location"]
         self.assertEqual(path, f"/queues/edit_queue/{self.queue1.id}")
-        
+
         # The case of the index view being passed an Oauth 2 authorization code
-        # is handled by the return_from_authorization view.    
-    
+        # is handled by the return_from_authorization view.
+
     def test_redirect_action(self):
         # Not logged in with redirect action
         session = {
@@ -167,7 +168,6 @@ class TestProfileViews(TestCase):
         self.assertEqual(response.status_code, 302)
         path = response.headers["Location"]
         self.assertEqual(path, reverse("index"))
-        #self.assertEqual(path, reverse("id]))
         # Guest with good redirect action
         self.guest.queue_id = self.queue2.id
         session = {
@@ -213,7 +213,7 @@ class TestProfileViews(TestCase):
         self.assertEqual(path, reverse("index"))
 
     def test_index_error_code(self):
-        url = REDIRECT_URI + sample_error
+        url = REDIRECT_URI + s_error
         # Not logged In
         request = self.make_get_request(url)
         response = views.index(request)
@@ -297,26 +297,26 @@ class TestProfileViews(TestCase):
 
     def test_return_from_auth(self):
         # Not logged in
-        request = self.make_get_request(REDIRECT_URI + sample_code)
+        request = self.make_get_request(REDIRECT_URI + s_code)
         response = views.return_from_authorization(request)
         path = response.headers["Location"]
         self.assertEqual(path, reverse("account_login"))
         self.assertEqual(response.status_code, 302)
         # Guest
         session = {"guest_user": self.guest.serialize()}
-        request = self.make_get_request(sample_code)
+        request = self.make_get_request(s_code)
         request.session = session
         response = views.return_from_authorization(request)
         self.assertEqual(response.status_code, 302)
         path = response.headers["Location"]
         self.assertEqual(path, reverse("account_login"))
         # Logged in, approve access
-        request = self.make_get_request(REDIRECT_URI + sample_code)
+        request = self.make_get_request(REDIRECT_URI + s_code)
         request.user = self.user1
         with patch("profiles.views.get_tokens") as mock_get_tokens:
             mock_get_tokens.return_value = self.google_creds()
-            with patch("profiles.models.YT.find_user_youtube_data") as mock_yt_data:
-                mock_yt_data.return_value = "test_channel", "test_handle"
+            with patch("profiles.models.YT.find_user_youtube_data") as m_yt_d:
+                m_yt_d.return_value = "test_channel", "test_handle"
                 response = views.return_from_authorization(request)
                 path = response.headers["Location"]
         self.assertEqual(path, reverse("profile"))
@@ -330,7 +330,8 @@ class TestProfileViews(TestCase):
 
     def test_revoke_auth(self):
         # Not logged in
-        response = self.client.get(reverse("revoke_authorization"), follow=True)
+        response = self.client.get(reverse("revoke_authorization"),
+                                   follow=True)
         self.assertRedirects(
             response,
             reverse("account_login"),
@@ -349,13 +350,13 @@ class TestProfileViews(TestCase):
         self.assertEqual(response.status_code, 302)
         # Logged in
         # Acquire tokens
-        request1 = self.make_get_request(REDIRECT_URI + sample_code)
+        request1 = self.make_get_request(REDIRECT_URI + s_code)
         request1.user = self.user1
         with patch("profiles.views.get_tokens") as mock_get_tokens:
             mock_get_tokens.return_value = self.google_creds()
-            with patch("profiles.models.YT.find_user_youtube_data") as mock_yt_data:
-                mock_yt_data.return_value = "test_channel", "test_handle"
-                response1 = views.return_from_authorization(request1)
+            with patch("profiles.models.YT.find_user_youtube_data") as m_yt_d:
+                m_yt_d.return_value = "test_channel", "test_handle"
+                views.return_from_authorization(request1)
         data = {
             self.user1.has_tokens,
             self.user1.youtube_handle,
@@ -399,7 +400,8 @@ class TestProfileViews(TestCase):
         path = response.headers["Location"]
         self.assertEqual(path, reverse("edit_queue", args=[self.queue1.id]))
         # Queue in session, guest
-        session = {"queue_id": self.queue1.id, "guest_user": self.guest.serialize()}
+        session = {"queue_id": self.queue1.id,
+                   "guest_user": self.guest.serialize()}
         request = self.make_get_request(reverse("guest_sign_in"))
         request.session = session
         response = views.guest_sign_in(request)
@@ -413,7 +415,8 @@ class TestProfileViews(TestCase):
         self.assertEqual(response.status_code, 404)
         # Queue in session
         session = {"queue_id": self.queue1.id}
-        data = {"guest_name": "guest_test_name", "guest_email": "guest_test_email"}
+        data = {"guest_name": "guest_test_name",
+                "guest_email": "guest_test_email"}
         request = self.make_post_request(reverse("guest_sign_in"), data)
         request.session = session
         response = views.guest_sign_in(request)

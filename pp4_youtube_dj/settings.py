@@ -115,7 +115,6 @@ MIDDLEWARE = [
 
 # this needs to be changed to include the relevant addresses I believe.
 CSRF_TRUSTED_ORIGINS = [
-    "https://8000-smtilson-pp4playlistman-ym3t1koq57f.ws.codeinstitute-ide.net",
     "https://*.herokuapp.com",
     "http://*.127.0.0.1:8000",
     "http://localhost:8000",
@@ -150,6 +149,7 @@ WSGI_APPLICATION = "pp4_youtube_dj.wsgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
+DB_URL = os.environ.get("DATABASE_URL")
 LOCAL = os.environ.get("LOCAL")
 if LOCAL:
     DATABASES = {
@@ -159,7 +159,7 @@ if LOCAL:
         }
     }
 else:
-    DATABASES = {"default": dj_database_url.parse(os.environ.get("DATABASE_URL"))}
+    DATABASES = {"default": dj_database_url.parse(DB_URL)}
 
 if "test" in sys.argv:
     DATABASES["default"]["ENGINE"] = "django.db.backends.sqlite3"
@@ -182,10 +182,8 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-# attention: Maybe remove this later
 ACCOUNT_EMAIL_VERIFICATION = "none"
 
-# OATUH2_PROVIDER =
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/

@@ -411,6 +411,9 @@ AI: I used the Codeium plug-in for VS Code. I used it to as for an informed auto
 2. [Django Secret Key Generator](https://djecrety.ir/)
 3. [CSS Gradient](https://cssgradient.io/)
 4. [Real Python article on Mock and Patch](https://realpython.com/python-mock-library/)
+5. [JSHint for JS validation](jshint.com)
+6. [flake8 for Python validation](https://flake8.pycqa.org/en/latest/)
+7. [W3C Jigsaw to validate CSS](https://jigsaw.w3.org/css-validator/)
 <!--5. [Favicon Generator](https://favicon.io/favicon-generator/)-->
 
 ### YouTube tutorials

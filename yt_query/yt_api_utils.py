@@ -11,13 +11,13 @@ class YT:
     """
     A Class for handling interaction with the YouTube Data API.
     """
-    def __init__(self, user: "Profile") -> None:
+    def __init__(self, user) -> None:
         self.user = user
         self.api_key = YOUTUBE_API_KEY
         self.user_service = self.connect_oauth()
         self.guest_service = self.connect_simple()
 
-    def connect_oauth(self) -> "Service":
+    def connect_oauth(self):
         """
         Connects to the YouTube Data API using OAuth 2.0 authentication.
         Returns: "Service"
@@ -28,7 +28,7 @@ class YT:
             return build("youtube", "v3", credentials=credentials)
         return ""
 
-    def connect_simple(self) -> "Service":
+    def connect_simple(self):
         """
         Connects to the YouTube Data API using a developer key.
         Returns: Service
@@ -101,7 +101,7 @@ class YT:
         response = request.execute()
         return response
 
-    def move_playlist_item(self, entry: "Entry"):
+    def move_playlist_item(self, entry):
         """
         Updates a playlist item with the provided entry.
         Args: entry (Entry)
@@ -119,7 +119,8 @@ class YT:
         Args: body (dict)
         Returns: response (HttpResponse)
         """
-        request = self.user_service.playlistItems().insert(part="snippet,id", body=body)
+        request = self.user_service.playlistItems().insert(part="snippet,id",
+                                                           body=body)
         response = request.execute()
         return process_response(response)
 
@@ -157,7 +158,8 @@ class YT:
               search_results (list)
         Returns: HttpRequest
         """
-        last_queue_query = {"last_query": recent_search, "last_search": search_results}
+        last_queue_query = {"last_query": recent_search,
+                            "last_search": search_results}
         request.session[f"queue_{queue_id}"] = last_queue_query
         return request
 
@@ -201,7 +203,8 @@ def parse_playlist_result(response):
 
 def parse_playlist_item_result(item):
     """
-    Parses the result of a playlist item query and extracts relevant information.
+    Parses the result of a playlist item query and extracts relevant
+    information.
     Args: item (dict)
     Returns: dict
     """
@@ -235,7 +238,8 @@ def parse_channel_result(response):
 
 def parse_search_result(result: dict) -> dict:
     """
-    Parses the search result and extracts the video ID from the input dictionary.
+    Parses the search result and extracts the video ID from the input
+    dictionary.
     Args: result (dict)
     Returns: dict
     """
