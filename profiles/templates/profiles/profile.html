@@ -27,10 +27,10 @@
                         <a href="{{authorization_url}}" class="btn actual-button btn-success">Give Youtube
                                 DJ permissions</a>
                         {% else %}
-                        <a href="{% url 'revoke_authorization' %}" type="button" class="btn btn-danger actual-button">Revoke
+                        <a href="{% url 'revoke_authorization' %}" class="btn btn-danger actual-button">Revoke
                                 Credentials</a>
                         {% endif %}
-                        <a href="{% url 'create_queue' %}" type="button" class="btn btn-success actual-button">Create New
+                        <a href="{% url 'create_queue' %}" class="btn btn-success actual-button">Create New
                                 Queue</a>
                     </div>
                 </div>

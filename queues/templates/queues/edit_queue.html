@@ -30,7 +30,7 @@
             <div class="my-container text-center">
                 <h2 class="h3">Control Panel</h2>
                 <div class="btn-group" role="group" aria-label="Control Queue Buttons 1">
-                    <a href="{% url 'edit_queue' queue.id %}" type="button" class="btn btn-success">Refresh</a>
+                    <a href="{% url 'edit_queue' queue.id %}" class="btn btn-success">Refresh</a>
                     {% if is_owner %}
                     <a href="{% url 'gain_access' queue.secret queue.owner.secret %}" class="btn btn-success">Share</a>
                     <a href=" {% url 'sync' queue.id %}" class="btn btn-success">Sync</a>
@@ -62,8 +62,7 @@
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary"
                                         data-bs-dismiss="modal">Close</button>
-                                    <a href="{% url 'unpublish' queue.id %}" type="button"
-                                        class="btn btn-danger">Unpublish</a>
+                                    <a href="{% url 'unpublish' queue.id %}" class="btn btn-danger">Unpublish</a>
                                 </div>
                             </div>
                         </div>
@@ -92,8 +91,7 @@
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary"
                                         data-bs-dismiss="modal">Close</button>
-                                    <a href="{% url 'delete_queue' queue.id %}"
-                                            class="btn btn-danger">Delete</a>
+                                    <a href="{% url 'delete_queue' queue.id %}" class="btn btn-danger">Delete</a>
                                 </div>
                             </div>
                         </div>
@@ -219,9 +217,8 @@
                                                 <div class="modal-footer">
                                                     <button type="button" class="btn btn-secondary"
                                                         data-bs-dismiss="modal">Close</button>
-                                                    <a
-                                                        href="{% url 'delete_entry' queue_id=queue.id entry_id=entry.id %}"><button
-                                                            type="button" class="btn btn-danger">Remove</button></form>
+                                                    <a href="{% url 'delete_entry' queue_id=queue.id entry_id=entry.id %}"
+                                                        class="btn btn-danger">Remove</a>
                                                 </div>
                                             </div>
                                         </div>
