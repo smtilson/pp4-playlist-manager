@@ -1,7 +1,7 @@
 $(document).ready(function () {
     console.log("page loaded");
     addListenersNModifyForms();
-})
+});
 
 const DOMAIN = setDomain();
 

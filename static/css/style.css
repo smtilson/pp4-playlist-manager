@@ -824,6 +824,7 @@ certain accessibility issues. */
 }
 
 @media (min-width: 480px) {
+
     #style-override h1,
     #style-override .h1,
     #style-override .display-1,
@@ -867,6 +868,7 @@ certain accessibility issues. */
 }
 
 @media (min-width: 1024px) {
+
     #style-override h2,
     #style-override .h2 {
         font-size: 1.875rem;

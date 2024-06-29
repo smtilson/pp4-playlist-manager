@@ -153,6 +153,12 @@ I got the following errors that I did not address:
 2. `position`, `positionDiv`, `positionSpan`, and `swapInputs` are undefined. They are well-defined but JSHint can not verify that.
 
 ### CSS
+I used W3C Jigsaw to validate my CSS, no errors were found.
+
+### HTML
+I used W3C's Markup validator to validate my HTML. I copied the source from chrome for the following pages and pasted it into the validator.
+
+
 
 ## Bugs
 I used the Kanban board to document bugs that I encountered during development. I did not list every time something seemed to be off in position. I have documented these bugs and their fixes below.

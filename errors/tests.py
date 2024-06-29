@@ -135,3 +135,11 @@ class TestErrors(TestCase):
         self.assertEqual(response.status_code, 302)
         path = response.headers["Location"]
         self.assertEqual(path, reverse("index"))
+
+    def test_404_view(self):
+        response = self.client.get("/404")
+        self.assertEqual(response.status_code, 404)
+        response = self.client.get("/asdfg")
+        self.assertEqual(response.status_code, 404)
+        response = self.client.get("/asdfg", follow=True)
+        self.assertEqual(response.status_code, 404)

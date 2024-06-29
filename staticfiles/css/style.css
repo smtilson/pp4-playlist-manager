@@ -750,3 +750,158 @@ Bootstrap styles.*/
         padding-top: 0.8em;
     }
 }
+
+/* Boosted Orange Styles */
+/* The following were gotten from 
+https://boosted.orange.com/docs/5.3/getting-started/contents/#css-files 
+in order to change the appearance of certain headers while still respecting 
+certain accessibility issues. */
+
+#style-override [class*=display-],
+#style-override h4,
+#style-override .h4,
+#style-override .card-title,
+#style-override h5,
+#style-override .h5,
+#style-override h6,
+#style-override .h6,
+#style-override .card-subtitle,
+#style-override h2,
+#style-override .h2,
+#style-override h3,
+#style-override .h3,
+#style-override h1,
+#style-override .h1 {
+    margin-top: 0;
+    margin-bottom: 1.25rem;
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 1.125;
+    color: var(--bs-heading-color);
+    /* rtl:remove */
+    letter-spacing: -0.00625rem;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizelegibility;
+}
+
+#style-override h1,
+#style-override .h1 {
+    font-size: 1.25rem;
+    line-height: 1.1;
+    /* rtl:remove */
+    letter-spacing: -0.025rem;
+}
+
+#style-override h2,
+#style-override .h2,
+#style-override h3,
+#style-override .h3 {
+    font-size: 1.125rem;
+    line-height: 1.1111111111;
+    /* rtl:remove */
+    letter-spacing: -0.0125rem;
+}
+
+#style-override h1,
+#style-override .h1,
+#style-override .display-2,
+#style-override .display-3 {
+    font-size: 1.5rem;
+    line-height: 1.0833333333;
+    /* rtl:remove */
+    letter-spacing: -0.0375rem;
+}
+
+/* rtl:end:remove */
+#style-override h2,
+#style-override .h2,
+#style-override .display-4 {
+    font-size: 1.125rem;
+    line-height: 1.1111111111;
+    /* rtl:remove */
+    letter-spacing: -0.0125rem;
+}
+
+@media (min-width: 480px) {
+
+    #style-override h1,
+    #style-override .h1,
+    #style-override .display-1,
+    #style-override .display-2,
+    #style-override .display-3 {
+        line-height: 1;
+    }
+
+    #style-override h1,
+    #style-override .h1,
+    #style-override .display-3 {
+        font-size: 2.125rem;
+        /* rtl:remove */
+        letter-spacing: -0.0625rem;
+    }
+
+    #style-override h2,
+    #style-override .h2,
+    #style-override h3,
+    #style-override .h3,
+    #style-override .display-4 {
+        font-size: 1.5rem;
+        line-height: 1.0833333333;
+        /* rtl:remove */
+        letter-spacing: -0.03125rem;
+    }
+
+    #style-override h4,
+    #style-override .h4,
+    #style-override .card-title,
+    #style-override h5,
+    #style-override .h5,
+    #style-override h6,
+    #style-override .h6,
+    #style-override .card-subtitle {
+        font-size: 1.125rem;
+        line-height: 1.1111111111;
+        /* rtl:remove */
+        letter-spacing: -0.0125rem;
+    }
+}
+
+@media (min-width: 1024px) {
+
+    #style-override h2,
+    #style-override .h2 {
+        font-size: 1.875rem;
+        line-height: 1.0666666667;
+        /* rtl:remove */
+        letter-spacing: -0.05rem;
+    }
+
+    #style-override h3,
+    #style-override .h3 {
+        font-size: 1.5rem;
+        line-height: 1.0833333333;
+        /* rtl:remove */
+        letter-spacing: -0.03125rem;
+    }
+
+    #style-override h4,
+    #style-override .h4,
+    #style-override .card-title {
+        font-size: 1.25rem;
+        line-height: 1.1;
+        /* rtl:remove */
+        letter-spacing: -0.025rem;
+    }
+
+    #style-override h5,
+    #style-override .h5,
+    #style-override h6,
+    #style-override .h6,
+    #style-override .card-subtitle {
+        font-size: 1.125rem;
+        line-height: 1.1111111111;
+        /* rtl:remove */
+        letter-spacing: -0.0125rem;
+    }
+}
