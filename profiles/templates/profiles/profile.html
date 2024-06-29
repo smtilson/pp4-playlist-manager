@@ -6,7 +6,7 @@
     <section id="info-n-control-buttons">
         <div class="row d-flex justify-content-center">
             <div id="welcome" class="col-md-6 text-center logo-div">
-                <h1 class="logo">Welcome {{user.nickname}}</h1>
+                <h2 class="logo">Welcome {{user.nickname}}</h2>
             </div>
         </div>
         <div class="row">
@@ -16,7 +16,7 @@
                     <div class="d-flex">
                         <ul>
                             {% for key, value in info_dict.items %}
-                            <li class="row my-list-item">{{key}}:&nbsp &nbsp {{value}}</li>
+                            <li class="row my-list-item">{{key}}:&nbsp; &nbsp; {{value}}</li>
                             {% endfor %}
                             <li class="row my-list-item">{{youtube_access}}</li>
                         </ul>
@@ -38,8 +38,8 @@
             <!-- Mobile Navigation Buttons -->
             <div class="col-md-6 container min-height-row">
                 <div class="btn-group d-md-none queue-buttons-div" role="group" aria-label="Queue Buttons">
-                    <a href="#my-queue-div"  type="button" class="btn btn-secondary actual-button">My<br>Queues</a>
-                    <a href="#friends-queue-div"  type="button"
+                    <a href="#my-queue-div"  class="btn btn-secondary actual-button">My<br>Queues</a>
+                    <a href="#friends-queue-div"
                             class="btn btn-secondary actual-button">Friends<br>Queues</a>
                 </div>
                 <!-- Name Form -->
@@ -69,20 +69,20 @@
             <!-- My Queues -->
             <div id="my-queue-div" class="queue-display-divs col-md-6 d-flex-column align-items-center container">
                 <div class="logo-div text-center row no-wrap">
-                    <h1 class="h2 logo">My Queues</h1>
+                    <h2 class="h2 logo">My Queues</h2>
                 </div>
                 {% for queue in my_queues %}
                 <div class="my-container text-center row min-height-row">
                     <div class="col">
-                        <h2 class="h4"><a href="{% url 'edit_queue' queue.id %}">Edit: {{queue.title}}</a></h2>
+                        <h3 class="h4"><a href="{% url 'edit_queue' queue.id %}">Edit: {{queue.title}}</a></h3>
 
-                        <h3 class="h5">
+                        <h4 class="h5">
                             {% if queue.length != 1 %}
                             {{queue.length}} entries
                             {% else %}
                             1 entry
                             {% endif %}
-                        </h3>
+                        </h4>
                         <div class="btn-group" role="group"
                             aria-label="Share and Play buttons">
                             <a href="{% url 'gain_access' queue.secret queue.owner.secret %}"
@@ -100,8 +100,8 @@
             <div id="friends-queue-div" class="queue-display-divs col-md-6 d-flex-column align-items-center container">
                 <div class="logo-div text-center row no-wrap">
                     <div class="logo">
-                        <h1 class="h2">Friends'</h1>
-                        <h1 class="h2">Queues</h1>
+                        <h2>Friends'</h2>
+                        <h2>Queues</h2>
                     </div>
                 </div>
                 {% for queue in other_queues %}
@@ -125,6 +125,6 @@
         </div>
     </section>
     <!-- Pushes Content above footer -->
-    <div class="last">&nbsp</div>
+    <div class="last">&nbsp;</div>
 </section>
 {% endblock content %}

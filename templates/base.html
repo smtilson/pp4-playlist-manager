@@ -38,7 +38,7 @@
         <div class="container-fluid">
             <span class="row title-navbar"> <a class="navbar-brand col-3" href="{% url 'index' %}">YouTube DJ</a>
                 {% if user.is_authenticated %}
-                <div class="div-user-nickname">{{user.nickname}}</div>
+                <span>{{user.nickname}}</span>
                 {% endif %}
             </span>
             <!-- Navbar Toggler -->

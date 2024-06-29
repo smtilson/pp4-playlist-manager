@@ -202,9 +202,15 @@ Bootstrap styles.*/
     background-color: #303436
 }
 
+#style-override .js-form-label {
+    padding-bottom:-1%;
+    margin-bottom: 0%;
+    height:10%;
+    margin-top:3px;
+}
+
 #style-override #set-name-form-label {
-    /* check margin-left */
-    margin-left: 2%
+    margin-left: 2%;
 }
 
 #style-override #set-name-form-button {
@@ -212,6 +218,7 @@ Bootstrap styles.*/
     margin-top: 8%;
     width: fit-content;
     margin-bottom: -2%;
+    left:29%;
 }
 
 /* Ensures footer doesn't cover content.*/
@@ -310,7 +317,7 @@ Bootstrap styles.*/
 }
 
 #style-override .queue-buttons-div {
-    left: 10%;
+    left: 5%;
     gap: 12%;
     width: 80%;
 }
@@ -401,8 +408,12 @@ Bootstrap styles.*/
     }
 
     #style-override #user-buttons-div {
-        width: 81%;
-        left: 12%;
+        width: 60%;
+        left: 25%;
+    }
+
+    #style-override #set-name-form-button {
+        left: 36%;
     }
 
     #style-override #my-queue-div .logo-div,

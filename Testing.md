@@ -79,7 +79,8 @@ This tests how Publish, Unpublish and Sync interact with YouTube.
 | Feature            | Action                                                   | Expected Result                                                                                         | Success |
 | ------------------ | -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- | ------- |
 | Publish to YouTube | Click Publish button                                     | Creates playlist on YouTube with videos in correct order. Publish button disappears. Unpublish appears. | Yes     |
-| Unpublish          | Click Unpublish button                                   | Deletes YouTube playlist. Unpublish disappears, Publish appears                                         | Yes     |
+| Unpublish          | Click Unpublish button                                   | Opens "Are you sure?" modal                                          | Yes     |
+|                    | Click Unpublish button in modal | Deletes YouTube playlist. Unpublish disappears, Publish appears | Yes 
 | Sync with Youtube  |                                                          |                                                                                                         |         |
 | after Add          | Click Sync button after adding an entry                  | Entry is added on youtube playlist at the end                                                           | Yes     |
 | after Remove       | Click Sync button after removing entry                   | Entry is removed from the playlist and positions are adjusted accordingly                               | Yes     |
@@ -91,9 +92,11 @@ This tests that the buttons for manipulating queues internally function as expec
 | Feature      | Action                                                         | Expected Result                                                      | Success |
 | ------------ | -------------------------------------------------------------- | -------------------------------------------------------------------- | ------- |
 | Create Queue | Fill out form and click Create Queue button                    | Redirected to Edit Queue page for new queue                          | Yes     |
-| Delete       | Click Delete button                                            | Deletes Queue                                                        | Yes     |
+| Delete       | Click Delete button                                            | Opens "Are you sure?" modal                                                        | Yes     |
+|               | Click Delete button in modal | Deletes queue | Yes |
 | Add Entry    | Click Add button next to search result                         | Adds search result to queue at the end                               | Yes     |
-| Remove Entry | Click Remove button next to entry                              | Entry is removed from list of entries in the queue                   | Yes     |
+| Remove Entry | Click Remove button next to entry                              | Opens "Are you sure?" modal                   | Yes     |
+|               | Click Remove button in modal | Entry is removed from list of entries in the queue| Yes|
 | Move Entries |                                                                |                                                                      |         |
 | Up           | Click Up button                                                | Entry swaps places with entry above (if possible, otherwise nothing) | Yes     |
 | Down         | Click Down buttons                                             | Entry swaps places with entry below (if possibile, otherwise nothing | Yes     |
@@ -156,7 +159,17 @@ I got the following errors that I did not address:
 I used W3C Jigsaw to validate my CSS, no errors were found.
 
 ### HTML
-I used W3C's Markup validator to validate my HTML. I copied the source from chrome for the following pages and pasted it into the validator.
+I used W3C's Markup validator to validate my HTML. I copied the source from chrome for the following pages and pasted it into the validator. 
+- Landing page
+- Create Queue
+- Profile
+- Edit Queue
+- Guest sign in
+- Sign up
+- Login
+- Logout
+
+There were errors from certain nesting of element tags that isn't allowed, but these were fixed. There were warning about using h2-h6 at the beginning of section elements. I used sections for organizational purposes, to distinguish from divs, and so I ignored this warning.
 
 
 
