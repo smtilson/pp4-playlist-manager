@@ -20,7 +20,9 @@ I used All-auth to handle sign up, login, and logout.
 ### Queue CRUD
 
 
-## Bugs Left in
+
+
+### Bugs Left in
 The following bugs are things that were left in. I was either unable to find a solution because of ability, the underlying technology over which I have no control (see the first Bug listed), or I ran out of time.
 
 1. Bug: When a Queue is synced with a published YouTube playlist, the playlist only reflects these updates after the current video finishes and when the next video begins (check which next video plays, I forgot). 
