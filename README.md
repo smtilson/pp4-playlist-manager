@@ -1,7 +1,7 @@
 # YouTube DJ
 ## YouTube DJ plays all YOUR hits!
 
-Welcome to YouTube DJ! The goal of this project is to enable friends to easily make playlists together. Visit the live project [here](https://pp4-playlist-manager-67004a99f0e2.herokuapp.com/).
+Welcome to YouTube DJ! The goal of this project is to enable friends to easily make playlists together. The live project is not currently functional due to various issues. What remains, can be found [here](https://pp4-playlist-manager-67004a99f0e2.herokuapp.com/). To experience the project in full, you can follow the deployment instructions below.
 
 <img src="./readme_files/screenshots/responsive-img.png" alt="Landing page on different displays">
 
