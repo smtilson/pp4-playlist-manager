@@ -13,7 +13,7 @@ def json_to_dict(json) -> dict:
 
 def get_secret():
     """
-    Generates a random secret string of length 20 using.
+    Generates a random secret string of length 20 using random modulepyt.
     Returns: str
     """
     return get_random_string(20)
@@ -27,7 +27,7 @@ def trigger(object):
     Returns: None
     """
     print(f"trigger function hit for {object.id}"
-          f"{object.getattr("name", "")}{object.getattr("title", "")}.")
+          f"{object.getattr('name', '')}{object.getattr('title', '')}.")
 
 
 def get_data_from_path(path: str) -> tuple[str]:
