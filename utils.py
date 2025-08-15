@@ -26,8 +26,10 @@ def trigger(object):
     Args: object
     Returns: None
     """
-    print(f"trigger function hit for {object.id}"
-          f"{object.getattr('name', '')}{object.getattr('title', '')}.")
+    print(
+        f"trigger function hit for {object.id}"
+        f"{object.getattr('name', '')}{object.getattr('title', '')}."
+    )
 
 
 def get_data_from_path(path: str) -> tuple[str]:
@@ -63,5 +65,5 @@ def abbreviate(string: str, cutoff: int) -> str:
     Returns: str
     """
     if len(string) > cutoff:
-        return string[:cutoff]+"..."
+        return string[:cutoff] + "..."
     return string

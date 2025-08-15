@@ -24,8 +24,7 @@ def index(request):
     """
     path = request.get_full_path()
     user = make_user(request)
-    keywords = {"?state=", "&code=",
-                "&scope=https://www.googleapis.com/auth/youtube"}
+    keywords = {"?state=", "&code=", "&scope=https://www.googleapis.com/auth/youtube"}
     if all(word in path for word in keywords):
         response = return_from_authorization(request)
     elif "error" in path:
@@ -36,8 +35,7 @@ def index(request):
     elif check_valid_redirect_action(request):
         response = HttpResponseRedirect(reverse("redirect_action"))
     elif user.is_guest and user.queue_id:
-        response = HttpResponseRedirect(reverse("edit_queue",
-                                                args=[user.queue_id]))
+        response = HttpResponseRedirect(reverse("edit_queue", args=[user.queue_id]))
     else:
         response = render(request, "profiles/index.html")
     response = error_handler(request, response)
@@ -51,11 +49,10 @@ def profile(request):
     Returns: Redirects to the "login" page if the user is not authenticated,
         otherwise renders the appropriate "profile" page.
     """
-    user = make_user(request)
-    if not user.is_authenticated:
-        msg = "You must be logged in to view your profile."
-        messages.add_message(request, messages.INFO, msg)
-        response = HttpResponseRedirect(reverse("account_login"))
+    msg = "You must be logged in to view your profile."
+    user, auth_status, redirect_response = check_authenticated(request, msg)
+    if not auth_status:
+        return redirect_response
     else:
         if not user.credentials:
             user.initialize()
@@ -64,8 +61,7 @@ def profile(request):
                 f"Youtube DJ has access to {user.youtube_handle}."
             )
         else:
-            youtube_permission_status = "Profile has no associated youtube"\
-                                        "account."
+            youtube_permission_status = "Profile has no associated youtube" "account."
         context = {
             "user": user,
             "authorization_url": get_authorization_url(),
@@ -86,11 +82,10 @@ def set_name(request):
     Returns: Redirects to the "profile" page if the name is successfully set.
     Redirects to the "account_login" page if the user is not authenticated.
     """
-    user = make_user(request)
-    if not user.is_authenticated:
-        msg = "You must be logged in to set your name."
-        messages.add_message(request, messages.INFO, msg)
-        response = HttpResponseRedirect(reverse("account_login"))
+    msg = "You must be logged in to set your name."
+    user, auth_status, redirect_response = check_authenticated(request, msg)
+    if not auth_status:
+        return redirect_response
     elif request.method != "POST":
         msg = "Invalid request method."
         messages.add_message(request, messages.INFO, msg)
@@ -111,13 +106,14 @@ def return_from_authorization(request):
     Returns: Redirects to appropriate page based on the outcome of the
     Oauth2 authorization process.
     """
-    user = make_user(request)
-    if not user.is_authenticated:
-        msg = "How did you get here? I am genuinely curious. This"\
-              " authorization code will be discarded and you will have to try"\
-              " again after you are logged in."
-        messages.add_message(request, messages.INFO, msg)
-        response = HttpResponseRedirect(reverse("account_login"))
+    msg = (
+        "How did you get here? I am genuinely curious. This"
+        " authorization code will be discarded and you will have to try"
+        " again after you are logged in."
+    )
+    user, auth_status, redirect_response = check_authenticated(request, msg)
+    if not auth_status:
+        return redirect_response
     else:
         path = request.get_full_path()
         try:
@@ -144,11 +140,10 @@ def revoke_authorization(request):
     Args: request (HttpRequest)
     Returns: Redirect to the "profile" page.
     """
-    user = make_user(request)
-    if not user.is_authenticated:
-        msg = "You must be logged in to revoke your authorization."
-        messages.add_message(request, messages.INFO, msg)
-        response = HttpResponseRedirect(reverse("account_login"))
+    msg = "You must be logged in to revoke your authorization."
+    user, auth_status, redirect_response = check_authenticated(request, msg)
+    if not auth_status:
+        return redirect_response
     else:
         # This error code is never 200, but sometimes the credentials are
         # invalidated on Google's end as well.
@@ -158,12 +153,16 @@ def revoke_authorization(request):
             msg = "Credentials successfully revoked for " + user.youtube_handle
             msg_type = messages.SUCCESS
         else:
-            address = '<a href="https://myaccount.google.com/permissions">"'\
-                      'Third party apps and services</a>'
-            msg = "An error occurred. Your credentials have been wiped from"\
-                  " our system. To be on the safe side, please visit"\
-                  f" {address} to revoke your permissions. Look for "\
-                  "'pp4-playlist-manager' in the list of third party apps."
+            address = (
+                '<a href="https://myaccount.google.com/permissions">"'
+                "Third party apps and services</a>"
+            )
+            msg = (
+                "An error occurred. Your credentials have been wiped from"
+                " our system. To be on the safe side, please visit"
+                f" {address} to revoke your permissions. Look for "
+                "'pp4-playlist-manager' in the list of third party apps."
+            )
             msg_type = messages.ERROR
         messages.add_message(request, msg_type, mark_safe(msg))
         response = HttpResponseRedirect(reverse("profile"))
@@ -208,10 +207,10 @@ def guest_sign_in(request):
     user = make_user(request)
     queue_id = request.session.get("queue_id")
     if queue_id is None:
-        raise Http404("A queue must be associated with this particular"
-                      "request.")
+        raise Http404("A queue must be associated with this particular" "request.")
     else:
         queue = get_object_or_404(Queue, id=request.session["queue_id"])
+    # I don't understand this or statement.
     if user.is_authenticated or user.is_guest:
         msg = f"You are already logged in {user.nickname}."
         msg_type = messages.INFO
@@ -238,3 +237,42 @@ def guest_sign_in(request):
         response = HttpResponseRedirect(reverse("index"))
     response = error_handler(request, response)
     return response
+
+
+# this should be a delete http method, not a get or a post.
+# check the status codes that are being returned
+def delete_profile(request):
+    """
+    Handles the account deletion process. Removes user data from the session
+    and revokes YouTube API credentials.
+    Args: request (HttpRequest)
+    Returns: Redirects to the index page with a success message.
+    """
+    msg = "You must be logged in to delete your account."
+    user, auth_status, redirect_response = check_authenticated(request, msg)
+    if not auth_status:
+        return redirect_response
+    else:
+        # Revoke YouTube API credentials
+        revoke_tokens(user)
+        user.delete()
+        messages.add_message(
+            request, messages.SUCCESS, "Your account has been deleted."
+        )
+    response = HttpResponseRedirect(reverse("account_signup"))
+    response = error_handler(request, response)
+    return response
+
+
+def check_authenticated(request, msg: str) -> bool:
+    """
+    Check if the user has valid credentials.
+    Args: user (User)
+    Returns: bool
+    """
+    user = make_user(request)
+    if not user.is_authenticated:
+        messages.add_message(request, messages.INFO, msg)
+        response = HttpResponseRedirect(reverse("account_login"))
+        return user, False, response
+    return user, True, None

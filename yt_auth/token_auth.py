@@ -48,8 +48,7 @@ def get_tokens(authorization_path):
     Returns: google.oauth2.credentials.Credentials
     """
     state = get_data_from_path(authorization_path)[0]
-    flow = Flow.from_client_secrets_file("oauth_creds.json", scopes=SCOPES,
-                                         state=state)
+    flow = Flow.from_client_secrets_file("oauth_creds.json", scopes=SCOPES, state=state)
     flow.redirect_uri = REDIRECT_URI
     authorization_response = REDIRECT_URI + authorization_path
     flow.fetch_token(authorization_response=authorization_response)
@@ -65,21 +64,13 @@ def revoke_tokens(user):
     Returns: status_code: The status code of the token revocation request.
     """
     if not user.has_tokens:
-        msg = "This app does not currently have authorization for"\
-              f"{user.nickname}"
-        return msg
-    else:
-        credentials = user.google_credentials
-        header_content_type = "application/x-www-form-urlencoded"
-        requests.post(
-            "https://oauth2.googleapis.com/revoke",
-            params={"token": credentials.token},
-            headers={"content-type": header_content_type},
-        )
+        return f"This app does not currently have authorization for {user.nickname}"
+    credentials = user.google_credentials
+    header_content_type = "application/x-www-form-urlencoded"
     revoke = requests.post(
         "https://oauth2.googleapis.com/revoke",
         params={"token": credentials.token},
-        headers={"content-type": "application/x-www-form-urlencoded"},
+        headers={"content-type": header_content_type},
     )
     status_code = getattr(revoke, "status_code")
     return status_code

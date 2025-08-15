@@ -426,3 +426,69 @@ class TestProfileViews(TestCase):
         self.assertEqual(user.name, data["guest_name"])
         self.assertEqual(user.email, data["guest_email"])
         self.assertTrue(has_authorization(user, self.queue1.id))
+
+    def test_delete_profile_not_logged_in(self):
+        """
+        Tests that an unauthenticated user is correctly redirected from the
+        delete profile view.
+        """
+        initial_user_count = Profile.objects.count()
+        response = self.client.get(reverse("delete_profile"), follow=True)
+        # Verify the user is redirected to the login page
+        self.assertRedirects(response, reverse("account_login"))
+        # Verify no user was deleted
+        self.assertEqual(Profile.objects.count(), initial_user_count)
+
+    def test_delete_profile_authenticated(self):
+        """
+        Tests that an authenticated user's account is correctly deleted
+        and they are redirected to the signup page.
+        """
+        # Log in the user you want to delete
+        self.client.login(email="Testy1@McTestFace.com", password="myPassword")
+        initial_user_count = Profile.objects.count()
+        # Mock the revoke_tokens function to avoid real API calls
+        with patch("profiles.views.revoke_tokens") as mock_revoke_tokens:
+            mock_revoke_tokens.return_value = "Mock revoke success"
+
+            # Use the .post() method, as a delete action should not be a GET request
+            response = self.client.post(reverse("delete_profile"))
+
+            # Assert that revoke_tokens was called
+            mock_revoke_tokens.assert_called_once_with(self.user1)
+
+        # Verify the user has been deleted from the database
+        current_user_count = Profile.objects.count()
+        self.assertFalse(Profile.objects.filter(email=self.user1.email).exists())
+        self.assertTrue(current_user_count + 1 == initial_user_count)
+        # Verify the redirect to the signup page
+        self.assertRedirects(response, reverse("account_signup"), 302, 200)
+        # Verify a success message was added
+        messages = list(response.context["messages"])
+        self.assertEqual(len(messages), 1)
+        self.assertEqual(str(messages[0]), "Your account has been deleted.")
+
+    def test_delete_profile_authenticated_with_no_tokens(self):
+        """
+        Tests account deletion for an authenticated user who has no API tokens.
+        """
+        # Create a user with no credentials attached
+        user_no_tokens = Profile.objects.create_superuser(
+            email="NoTokenTest@McTestFace.com",
+            password="myPassword",
+        )
+        self.client.login(email="NoTokenTest@McTestFace.com", password="myPassword")
+
+        with patch("profiles.views.revoke_tokens") as mock_revoke_tokens:
+            mock_revoke_tokens.return_value = "Mock revoke success"
+
+            response = self.client.post(reverse("delete_profile"))
+
+            # The revoke_tokens function should still be called
+            mock_revoke_tokens.assert_called_once_with(user_no_tokens)
+
+        # Verify the user is deleted
+        self.assertFalse(Profile.objects.filter(email=user_no_tokens.email).exists())
+
+        # Verify the redirect
+        self.assertRedirects(response, reverse("account_signup"), 302, 200)
