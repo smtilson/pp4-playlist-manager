@@ -39,5 +39,8 @@
    },
    "[css]": {
       "editor.defaultFormatter": "vscode.css-language-features"
+   },
+   "[django-html]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode"
    }
 }

@@ -330,8 +330,7 @@ class TestProfileViews(TestCase):
 
     def test_revoke_auth(self):
         # Not logged in
-        response = self.client.get(reverse("revoke_authorization"),
-                                   follow=True)
+        response = self.client.get(reverse("revoke_authorization"), follow=True)
         self.assertRedirects(
             response,
             reverse("account_login"),
@@ -340,6 +339,7 @@ class TestProfileViews(TestCase):
             msg_prefix="",
             fetch_redirect_response=True,
         )
+
         # Guest
         session = {"guest_user": self.guest.serialize()}
         request = self.make_get_request(reverse("revoke_authorization"))
@@ -348,6 +348,7 @@ class TestProfileViews(TestCase):
         path = response.headers["Location"]
         self.assertEqual(path, reverse("account_login"))
         self.assertEqual(response.status_code, 302)
+
         # Logged in
         # Acquire tokens
         request1 = self.make_get_request(REDIRECT_URI + s_code)
@@ -399,8 +400,7 @@ class TestProfileViews(TestCase):
         path = response.headers["Location"]
         self.assertEqual(path, reverse("edit_queue", args=[self.queue1.id]))
         # Queue in session, guest
-        session = {"queue_id": self.queue1.id,
-                   "guest_user": self.guest.serialize()}
+        session = {"queue_id": self.queue1.id, "guest_user": self.guest.serialize()}
         request = self.make_get_request(reverse("guest_sign_in"))
         request.session = session
         response = views.guest_sign_in(request)
@@ -414,8 +414,7 @@ class TestProfileViews(TestCase):
         self.assertEqual(response.status_code, 404)
         # Queue in session
         session = {"queue_id": self.queue1.id}
-        data = {"guest_name": "guest_test_name",
-                "guest_email": "guest_test_email"}
+        data = {"guest_name": "guest_test_name", "guest_email": "guest_test_email"}
         request = self.make_post_request(reverse("guest_sign_in"), data)
         request.session = session
         response = views.guest_sign_in(request)
