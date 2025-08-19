@@ -13,13 +13,12 @@ MAX_QUEUE_LENGTH = YT.MAX_QUEUE_LENGTH
 
 
 class Queue(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
-    owner = models.ForeignKey(Profile, on_delete=models.CASCADE,
-                              related_name="my_queues", default=1)
-    collaborators = models.ManyToManyField(Profile,
-                                           related_name="other_queues")
+    owner = models.ForeignKey(
+        Profile, on_delete=models.CASCADE, related_name="my_queues"
+    )
+    collaborators = models.ManyToManyField(Profile, related_name="other_queues")
     title = models.CharField(max_length=100, default="")
-    description = models.TextField(max_length=400, null=True,
-                                   blank=True, default="")
+    description = models.TextField(max_length=400, null=True, blank=True, default="")
     date_created = models.DateTimeField(auto_now_add=True)
     last_edited = models.DateTimeField(auto_now=True)
     secret = models.CharField(max_length=20, unique=True, default=get_secret)
@@ -61,8 +60,7 @@ class Queue(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
 
     def serialize(self):
         q_dict = self.to_dict_mixin(
-            self.field_names(), {"entries", "owner",
-                                 "date_created", "last_edited"}
+            self.field_names(), {"entries", "owner", "date_created", "last_edited"}
         )
         q_dict["owner"] = self.owner.serialize()
         q_dict["date_created"] = str(self.date_created)
@@ -101,8 +99,9 @@ class Queue(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
             return f"Queue {self.title} is already uploaded to YouTube."
         yt = YT(self.owner)
         try:
-            response = yt.create_playlist(title=self.title,
-                                          description=self.description)
+            response = yt.create_playlist(
+                title=self.title, description=self.description
+            )
             self.set_resource_id(response)
             for entry in self.all_entries:
                 entry.publish(yt)
@@ -142,8 +141,7 @@ class Queue(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
             self.clear_resource_id()
             for entry in self.entries.all():
                 entry.clear_resource_id()
-                entry.set_resource_id({"kind": "youtube#video",
-                                       'id': entry.video_id})
+                entry.set_resource_id({"kind": "youtube#video", "id": entry.video_id})
             self.yt_id = ""
             self.save()
         return msg, msg_type
@@ -173,8 +171,7 @@ class Queue(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
                     entry.sync(yt)
             self.save()
         except HTTPError as e:
-            msg = "An error occurred while trying to sync the Queue with"\
-                  " YouTube."
+            msg = "An error occurred while trying to sync the Queue with" " YouTube."
             msg += str(e)
             msg_type = messages.ERROR
         else:
@@ -188,9 +185,8 @@ class Queue(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
         while len(positions) != self.length:
             for pos in positions:
                 current = [
-                    entry for entry in self.all_entries
-                    if entry._position == pos
-                    ]
+                    entry for entry in self.all_entries if entry._position == pos
+                ]
                 if len(current) == 1:
                     continue
                 for index, entry in enumerate(current):
@@ -201,8 +197,7 @@ class Queue(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
 
 class Entry(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
     title = models.CharField(max_length=100)
-    p_queue = models.ForeignKey(Queue, on_delete=models.CASCADE,
-                                related_name="entries")
+    p_queue = models.ForeignKey(Queue, on_delete=models.CASCADE, related_name="entries")
     video_id = models.CharField(max_length=100)
     user = models.CharField(
         max_length=50, default="I am embarassed to have added this."
@@ -223,13 +218,13 @@ class Entry(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
     @property
     def title_abv(self):
         if len(self.title) > 30:
-            return self.title[:30]+"..."
+            return self.title[:30] + "..."
         return self.title
 
     @property
     def username(self):
-        if '@' in self.user:
-            return self.user.split('@')[0]
+        if "@" in self.user:
+            return self.user.split("@")[0]
         return self.user
 
     @property
@@ -245,8 +240,7 @@ class Entry(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
         body = {
             "snippet": {
                 "playlistId": self.playlist_id,
-                "resourceId": {"kind": "youtube#video",
-                               "videoId": self.video_id},
+                "resourceId": {"kind": "youtube#video", "videoId": self.video_id},
             }
         }
         if self.published:

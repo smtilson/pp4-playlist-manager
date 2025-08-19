@@ -23,8 +23,7 @@ TOKEN_URI = "https://oauth2.googleapis.com/token"
 
 class ProfileManager(BaseUserManager):
     # This class and the accompanying methods were taken from the above link.
-    def _create_profile(self, email, password, is_staff, is_superuser,
-                        **kwargs):
+    def _create_profile(self, email, password, is_staff, is_superuser, **kwargs):
         if not email:
             raise ValueError("An email is necessary to create a profile.")
         now = timezone.now()
@@ -49,8 +48,7 @@ class ProfileManager(BaseUserManager):
         return self._create_profile(email, password, True, True, **kwargs)
 
 
-class Profile(AbstractBaseUser, PermissionsMixin, DjangoFieldsMixin,
-              ToDictMixin):
+class Profile(AbstractBaseUser, PermissionsMixin, DjangoFieldsMixin, ToDictMixin):
     # The basis of this class was taken from the article.
     # The methods and many of the fields are original work and not taken from
     # the article.
@@ -68,10 +66,10 @@ class Profile(AbstractBaseUser, PermissionsMixin, DjangoFieldsMixin,
         blank=True,
         related_name="user",
     )
-    youtube_channel = models.CharField(max_length=100, null=True,
-                                       blank=True, default="")
-    youtube_handle = models.CharField(max_length=100, null=True,
-                                      blank=True, default="")
+    youtube_channel = models.CharField(
+        max_length=100, null=True, blank=True, default=""
+    )
+    youtube_handle = models.CharField(max_length=100, null=True, blank=True, default="")
     secret = models.CharField(max_length=20, unique=True, default=get_secret)
 
     # These three variables are taken from the article.
@@ -90,9 +88,11 @@ class Profile(AbstractBaseUser, PermissionsMixin, DjangoFieldsMixin,
     def nickname(self):
         if self.name:
             return self.name
-        return self.email.split('@')[0]
+        return self.email.split("@")[0]
 
     def to_dict(self):
+        if not self.credentials:
+            return None
         credentials = self.credentials.to_dict()
         p_dict = self.to_dict_mixin(
             self.field_names(), {"last_login", "date_joined", "credentials"}
@@ -116,7 +116,8 @@ class Profile(AbstractBaseUser, PermissionsMixin, DjangoFieldsMixin,
 
     @property
     def all_queues(self):
-        return list(self.my_queues.all())+list(self.other_queues.all())
+        # type: ignore[attr-defined]
+        return list(self.my_queues.all()) + list(self.other_queues.all())
 
     def initialize(self):
         self.credentials = Credentials()
@@ -139,8 +140,10 @@ class Profile(AbstractBaseUser, PermissionsMixin, DjangoFieldsMixin,
         has_yt_data = self.youtube_handle or self.youtube_channel
         if self.has_tokens and not has_yt_data:
             self.find_youtube_data()
-            msg = "Successfully connected the YouTube account"\
-                  f"{self.youtube_handle} to your profile."
+            msg = (
+                "Successfully connected the YouTube account"
+                f"{self.youtube_handle} to your profile."
+            )
         else:
             msg = f"Successfully updated credentials for {self.nickname}."
         return msg

@@ -3,7 +3,8 @@ from django.http import HttpResponseRedirect, Http404
 from django.utils.safestring import mark_safe
 from django.contrib import messages
 from requests.exceptions import HTTPError
-from .models import GuestProfile, make_user
+from typing import Optional, Union
+from .models import GuestProfile, make_user, Profile
 from utils import check_valid_redirect_action
 from queues.models import Queue, has_authorization
 from errors.utils import process_path
@@ -50,7 +51,7 @@ def profile(request):
         otherwise renders the appropriate "profile" page.
     """
     msg = "You must be logged in to view your profile."
-    user, auth_status, redirect_response = check_authenticated(request, msg)
+    user, auth_status, redirect_response = check_auth(request, msg)
     if not auth_status:
         return redirect_response
     else:
@@ -83,7 +84,7 @@ def set_name(request):
     Redirects to the "account_login" page if the user is not authenticated.
     """
     msg = "You must be logged in to set your name."
-    user, auth_status, redirect_response = check_authenticated(request, msg)
+    user, auth_status, redirect_response = check_auth(request, msg)
     if not auth_status:
         return redirect_response
     elif request.method != "POST":
@@ -111,8 +112,8 @@ def return_from_authorization(request):
         " authorization code will be discarded and you will have to try"
         " again after you are logged in."
     )
-    user, auth_status, redirect_response = check_authenticated(request, msg)
-    if not auth_status:
+    user, auth_status, redirect_response = check_auth(request, msg)
+    if not auth_status or user.is_guest:
         return redirect_response
     else:
         path = request.get_full_path()
@@ -141,7 +142,7 @@ def revoke_authorization(request):
     Returns: Redirect to the "profile" page.
     """
     msg = "You must be logged in to revoke your authorization."
-    user, auth_status, redirect_response = check_authenticated(request, msg)
+    user, auth_status, redirect_response = check_auth(request, msg)
     if not auth_status:
         return redirect_response
     else:
@@ -249,7 +250,8 @@ def delete_profile(request):
     Returns: Redirects to the index page with a success message.
     """
     msg = "You must be logged in to delete your account."
-    user, auth_status, redirect_response = check_authenticated(request, msg)
+    user, auth_status, redirect_response = check_auth(request, msg)
+    # redirects if user is not authenticated or is a guest
     if not auth_status:
         return redirect_response
     else:
@@ -264,13 +266,16 @@ def delete_profile(request):
     return response
 
 
-def check_authenticated(request, msg: str) -> bool:
+def check_auth(
+    request, msg: str
+) -> tuple[Union[Profile, GuestProfile], bool, Optional[HttpResponseRedirect]]:
     """
     Check if the user has valid credentials.
     Args: user (User)
     Returns: bool
     """
     user = make_user(request)
+    # redirects if user is not authenticated or is a guest
     if not user.is_authenticated:
         messages.add_message(request, messages.INFO, msg)
         response = HttpResponseRedirect(reverse("account_login"))
