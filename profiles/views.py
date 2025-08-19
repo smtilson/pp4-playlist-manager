@@ -264,7 +264,7 @@ def delete_profile(request):
     else:
         # Revoke YouTube API credentials
         revoke_tokens(user)
-        user.delete() # type: ignore [attr-defined]
+        user.delete()  # type: ignore [attr-defined]
         messages.add_message(
             request, messages.SUCCESS, "Your account has been deleted."
         )

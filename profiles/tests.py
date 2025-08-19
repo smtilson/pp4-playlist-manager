@@ -36,7 +36,7 @@ class TestProfileViews(TestCase):
     # Note: the login, logout, and sign up views are all handled by all-auth
     # and I therefore did not test them.
     def setup_users(self):
-        self.user1 = Profile.objects.create_superuser(
+        self.user1 = Profile.objects.create_superuser( # type: ignore[attr-defined]
             email="Testy1@McTestFace.com",
             password="myPassword",
         )
@@ -44,10 +44,10 @@ class TestProfileViews(TestCase):
         credentials1.save()
         self.user1.credentials = credentials1
         self.user1.save()
-        self.user2 = Profile.objects.create_superuser(
+        self.user2 = Profile.objects.create_superuser( # type: ignore[attr-defined]
             email="Testy2@McTestFace.com",
             password="myPassword",
-        )
+        ) # type: ignore [attr-defined]
         credentials2 = Credentials()
         credentials2.save()
         self.user2.credentials = credentials2

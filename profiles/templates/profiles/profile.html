@@ -91,18 +91,33 @@
                             Submit
                         </button>
                     </form>
-                    <!-- Delete Profile Button -->
-                    <form
-                        action="{% url 'delete_profile' %}"
-                        method="POST"
-                        class="delete-profile-form">
-                        {% csrf_token %}
-                        <button
-                            type="submit"
-                            class="btn btn-danger actual-button"
-                            id="delete-profile-button">
-                            Delete Profile
-                        </button>
+                    <!-- Delete Profile Modal Trigger -->
+                    <button type="button" data-bs-toggle="modal" data-bs-target="#deleteModal"
+                        class="btn btn-danger">Delete</button>
+                    <!-- Delete Profile Modal -->
+                    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel"
+                        aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="deleteModalLabel">Delete Profile</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    Are you sure you want to Delete your profile?
+                                    This will delete the revoke your credentials,
+                                     delete your profile, and remove all of your 
+                                     data from YouTube DJ, .
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary"
+                                        data-bs-dismiss="modal">Close</button>
+                                    <a href="{% url 'delete_profile' %}" class="btn btn-danger">Delete</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
