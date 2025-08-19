@@ -38,7 +38,7 @@ class Queue(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
     def synced(self):
         if not self.published:
             return True
-        for entry in self.entries.all():
+        for entry in self.entries.all():  # type: ignore [attr-defined]
             if not entry.synced:
                 return False
         return True
@@ -52,10 +52,12 @@ class Queue(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
 
     @property
     def all_entries(self):
+        # type: ignore [attr-defined]
         return [entry for entry in self.entries.all() if not entry.to_delete]
 
     @property
     def deleted_entries(self):
+        # type: ignore [attr-defined]
         return [entry for entry in self.entries.all() if entry.to_delete]
 
     def serialize(self):
@@ -94,9 +96,9 @@ class Queue(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
         entry.save()
         self.save()
 
-    def publish(self) -> str:
+    def publish(self) -> tuple[str, int]:
         if self.published:
-            return f"Queue {self.title} is already uploaded to YouTube."
+            return f"Queue {self.title} is already uploaded to YouTube.", messages.ERROR
         yt = YT(self.owner)
         try:
             response = yt.create_playlist(

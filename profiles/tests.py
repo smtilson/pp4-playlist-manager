@@ -13,7 +13,7 @@ from yt_auth.models import Credentials
 if os.path.isfile("env.py"):
     import env
 
-LOCAL = eval(os.environ.get("LOCAL"))
+LOCAL = os.environ.get("LOCAL", "False")
 if LOCAL:
     REDIRECT_URI = "http://localhost:8000/"
 else:
@@ -75,7 +75,7 @@ class TestProfileViews(TestCase):
         self.setup_users()
         self.setup_queues()
         self.guest = GuestProfile(name="Guesty", email="Guesty@McTestFace.com")
-
+        
     def google_creds(self):
         sample_token = {
             "universe_domain": "googleapis.com",
@@ -447,15 +447,18 @@ class TestProfileViews(TestCase):
         # Log in the user you want to delete
         self.client.login(email="Testy1@McTestFace.com", password="myPassword")
         initial_user_count = Profile.objects.count()
+        
         # Mock the revoke_tokens function to avoid real API calls
         with patch("profiles.views.revoke_tokens") as mock_revoke_tokens:
             mock_revoke_tokens.return_value = "Mock revoke success"
 
             # Use the .post() method, as a delete action should not be a GET request
-            response = self.client.post(reverse("delete_profile"))
+            response = self.client.post(reverse("delete_profile"), follow=True)
 
             # Assert that revoke_tokens was called
-            mock_revoke_tokens.assert_called_once_with(self.user1)
+            mock_revoke_tokens.assert_called_once()
+            called_with_user = mock_revoke_tokens.call_args[0][0]
+            self.assertEqual(called_with_user.email, self.user1.email)
 
         # Verify the user has been deleted from the database
         current_user_count = Profile.objects.count()
@@ -473,7 +476,8 @@ class TestProfileViews(TestCase):
         Tests account deletion for an authenticated user who has no API tokens.
         """
         # Create a user with no credentials attached
-        user_no_tokens = Profile.objects.create_superuser(
+        # The custom manager does have such a method.
+        user_no_tokens = Profile.objects.create_profile(  # type: ignore [attr-defined]
             email="NoTokenTest@McTestFace.com",
             password="myPassword",
         )
@@ -485,7 +489,9 @@ class TestProfileViews(TestCase):
             response = self.client.post(reverse("delete_profile"))
 
             # The revoke_tokens function should still be called
-            mock_revoke_tokens.assert_called_once_with(user_no_tokens)
+            mock_revoke_tokens.assert_called_once()
+            called_with_user = mock_revoke_tokens.call_args[0][0]
+            self.assertEqual(called_with_user.email, user_no_tokens.email)
 
         # Verify the user is deleted
         self.assertFalse(Profile.objects.filter(email=user_no_tokens.email).exists())

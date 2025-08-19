@@ -16,7 +16,7 @@ SCOPES = [
     "https://www.googleapis.com/auth/youtube",
 ]
 
-LOCAL = eval(os.environ.get("LOCAL"))
+LOCAL = eval(os.environ.get("LOCAL", "False"))
 if LOCAL:
     REDIRECT_URI = "http://localhost:8000/"
 else:

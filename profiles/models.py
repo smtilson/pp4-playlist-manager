@@ -21,9 +21,11 @@ UNIVERSE_DOMAIN = "googleapis.com"
 TOKEN_URI = "https://oauth2.googleapis.com/token"
 
 
-class ProfileManager(BaseUserManager):
+class ProfileManager(BaseUserManager["Profile"]):
     # This class and the accompanying methods were taken from the above link.
-    def _create_profile(self, email, password, is_staff, is_superuser, **kwargs):
+    def _create_profile(
+        self, email: str, password: str, is_staff: bool, is_superuser: bool, **kwargs
+    ):
         if not email:
             raise ValueError("An email is necessary to create a profile.")
         now = timezone.now()
@@ -41,10 +43,10 @@ class ProfileManager(BaseUserManager):
         profile.save(using=self._db)
         return profile
 
-    def create_profile(self, email, password, **kwargs):
+    def create_profile(self, email: str, password: str, **kwargs: dict):
         return self._create_profile(email, password, False, False, **kwargs)
 
-    def create_superuser(self, email, password, **kwargs):
+    def create_superuser(self, email: str, password: str, **kwargs: dict):
         return self._create_profile(email, password, True, True, **kwargs)
 
 
@@ -52,6 +54,7 @@ class Profile(AbstractBaseUser, PermissionsMixin, DjangoFieldsMixin, ToDictMixin
     # The basis of this class was taken from the article.
     # The methods and many of the fields are original work and not taken from
     # the article.
+    # Should I add type hints here?
     name = models.CharField(max_length=50, null=True, blank=True)
     email = models.EmailField(max_length=100, unique=True)
     is_superuser = models.BooleanField(default=False)
@@ -116,8 +119,7 @@ class Profile(AbstractBaseUser, PermissionsMixin, DjangoFieldsMixin, ToDictMixin
 
     @property
     def all_queues(self):
-        # type: ignore[attr-defined]
-        return list(self.my_queues.all()) + list(self.other_queues.all())
+        return list(self.my_queues.all()) + list(self.other_queues.all())  # type: ignore[attr-defined]
 
     def initialize(self):
         self.credentials = Credentials()
@@ -126,8 +128,8 @@ class Profile(AbstractBaseUser, PermissionsMixin, DjangoFieldsMixin, ToDictMixin
 
     @property
     def all_queue_ids(self):
-        my_queue_ids = {queue.id for queue in self.my_queues.all()}
-        other_queue_ids = {queue.id for queue in self.other_queues.all()}
+        my_queue_ids = {queue.id for queue in self.my_queues.all()}  # type: ignore[attr-defined]
+        other_queue_ids = {queue.id for queue in self.other_queues.all()}  # type: ignore[attr-defined]
         return my_queue_ids.union(other_queue_ids)
 
     def set_credentials(self, new_credentials=None):
