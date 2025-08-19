@@ -1,4 +1,5 @@
-from django.shortcuts import render, reverse, get_object_or_404
+from django.shortcuts import render, get_object_or_404
+from django.urls import reverse
 from django.http import HttpResponseRedirect, Http404
 from django.utils.safestring import mark_safe
 from django.contrib import messages
@@ -26,6 +27,7 @@ def index(request):
     path = request.get_full_path()
     user = make_user(request)
     keywords = {"?state=", "&code=", "&scope=https://www.googleapis.com/auth/youtube"}
+    queue_id = getattr(user, "queue_id", False)
     if all(word in path for word in keywords):
         response = return_from_authorization(request)
     elif "error" in path:
@@ -35,8 +37,8 @@ def index(request):
         response = HttpResponseRedirect(reverse("profile"))
     elif check_valid_redirect_action(request):
         response = HttpResponseRedirect(reverse("redirect_action"))
-    elif user.is_guest and user.queue_id:
-        response = HttpResponseRedirect(reverse("edit_queue", args=[user.queue_id]))
+    elif user.is_guest and queue_id:
+        response = HttpResponseRedirect(reverse("edit_queue", args=[queue_id]))
     else:
         response = render(request, "profiles/index.html")
     response = error_handler(request, response)
@@ -262,7 +264,7 @@ def delete_profile(request):
     else:
         # Revoke YouTube API credentials
         revoke_tokens(user)
-        user.delete()
+        user.delete() # type: ignore [attr-defined]
         messages.add_message(
             request, messages.SUCCESS, "Your account has been deleted."
         )
