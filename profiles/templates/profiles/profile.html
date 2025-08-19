@@ -1,180 +1,195 @@
 {% extends 'base.html' %} {% block content %}
 <section id="profile">
-  <section id="info-n-control-buttons">
-    <div class="row d-flex justify-content-center">
-      <div id="welcome" class="col-md-6 text-center logo-div">
-        <h2 class="logo">Welcome {{user.nickname}}</h2>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-md-6 container min-height-row">
-        <div class="my-container profile-top" id="üser-info-div">
-          <!-- Profile Info -->
-          <div class="d-flex">
-            <ul>
-              {% for key, value in info_dict.items %}
-              <li class="row my-list-item">{{key}}:&nbsp; &nbsp; {{value}}</li>
-              {% endfor %}
-              <li class="row my-list-item">{{youtube_access}}</li>
-            </ul>
-          </div>
-          <!-- Authorization and Create Queue Buttons -->
-          <div
-            id="user-buttons-div"
-            class="row text-center"
-            role="group"
-            aria-label="User Buttons"
-          >
-            {% if not user.has_tokens %}
-            <a
-              href="{{authorization_url}}"
-              class="btn actual-button btn-success"
-              >Give Youtube DJ permissions</a
-            >
-            {% else %}
-            <a
-              href="{% url 'revoke_authorization' %}"
-              class="btn btn-danger actual-button"
-              >Revoke Credentials</a
-            >
-            {% endif %}
-            <a
-              href="{% url 'create_queue' %}"
-              class="btn btn-success actual-button"
-              >Create New Queue</a
-            >
-          </div>
-        </div>
-      </div>
-      <!-- Mobile Navigation Buttons -->
-      <div class="col-md-6 container min-height-row">
-        <div
-          class="btn-group d-md-none queue-buttons-div"
-          role="group"
-          aria-label="Queue Buttons"
-        >
-          <a href="#my-queue-div" class="btn btn-secondary actual-button"
-            >My<br />Queues</a
-          >
-          <a href="#friends-queue-div" class="btn btn-secondary actual-button"
-            >Friends<br />Queues</a
-          >
-        </div>
-        <!-- Name Form -->
-        <div id="name-form-div" class="row my-container profile-top">
-          {% if not user.name %} Add a name so your friends know who you created
-          the queue or added the videos. {% else %} Care to update your name? {%
-          endif %}
-          <form action="{% url 'set_name' %}" method="POST">
-            {% csrf_token %} {% if user.name %}
-            <label for="name" id="set-name-form-label">New Name:</label
-            ><input
-              type="text"
-              name="name"
-              id="name"
-              placeholder="{{user.name}}"
-              required
-            />
-            {% else %}
-            <label for="name" id="set-name-form-label">Name:</label
-            ><input type="text" name="name" id="name" required />
-            {% endif %}
-            <button
-              type="submit"
-              class="btn btn-secondary actual-button"
-              id="set-name-form-button"
-            >
-              Submit
-            </button>
-          </form>
-          <!-- Delete Profile Button -->
-        </div>
-      </div>
-    </div>
-  </section>
-  <section id="queue-display">
-    <div class="d-flex-column d-flex-md-row row" id="both-queues-div">
-      <!-- My Queues -->
-      <div
-        id="my-queue-div"
-        class="queue-display-divs col-md-6 d-flex-column align-items-center container"
-      >
-        <div class="logo-div text-center row no-wrap">
-          <h2 class="h2 logo">My Queues</h2>
-        </div>
-        {% for queue in my_queues %}
-        <div class="my-container text-center row min-height-row">
-          <div class="col">
-            <h3 class="h4">
-              <a href="{% url 'edit_queue' queue.id %}"
-                >Edit: {{queue.title}}</a
-              >
-            </h3>
-
-            <h4 class="h5">
-              {% if queue.length != 1 %} {{queue.length}} entries {% else %} 1
-              entry {% endif %}
-            </h4>
-            <div
-              class="btn-group"
-              role="group"
-              aria-label="Share and Play buttons"
-            >
-              <a
-                href="{% url 'gain_access' queue.secret queue.owner.secret %}"
-                class="btn btn-success"
-                >Share</a
-              >
-              {% if queue.published %}
-              <a
-                href="{{queue.url}}"
-                target="_blank"
-                class="btn btn-ytube actual-button"
-                >Play</a
-              >
-              {% endif %}
+    <section id="info-n-control-buttons">
+        <div class="row d-flex justify-content-center">
+            <div id="welcome" class="col-md-6 text-center logo-div">
+                <h2 class="logo">Welcome {{user.nickname}}</h2>
             </div>
-            <p class="mt-2">Copy the "Share" button link to share.</p>
-          </div>
         </div>
-        {% endfor %}
-      </div>
-      <!-- My Friends' Queues -->
-      <div
-        id="friends-queue-div"
-        class="queue-display-divs col-md-6 d-flex-column align-items-center container"
-      >
-        <div class="logo-div text-center row no-wrap">
-          <div class="logo">
-            <h2>Friends'</h2>
-            <h2>Queues</h2>
-          </div>
+        <div class="row">
+            <div class="col-md-6 container min-height-row">
+                <div class="my-container profile-top" id="üser-info-div">
+                    <!-- Profile Info -->
+                    <div class="d-flex">
+                        <ul>
+                            {% for key, value in info_dict.items %}
+                            <li class="row my-list-item">
+                                {{key}}:&nbsp; &nbsp; {{value}}
+                            </li>
+                            {% endfor %}
+                            <li class="row my-list-item">{{youtube_access}}</li>
+                        </ul>
+                    </div>
+                    <!-- Authorization and Create Queue Buttons -->
+                    <div
+                        id="user-buttons-div"
+                        class="row text-center"
+                        role="group"
+                        aria-label="User Buttons">
+                        {% if not user.has_tokens %}
+                        <a
+                            href="{{authorization_url}}"
+                            class="btn actual-button btn-success"
+                            >Give Youtube DJ permissions</a
+                        >
+                        {% else %}
+                        <a
+                            href="{% url 'revoke_authorization' %}"
+                            class="btn btn-danger actual-button"
+                            >Revoke Credentials</a
+                        >
+                        {% endif %}
+                        <a
+                            href="{% url 'create_queue' %}"
+                            class="btn btn-success actual-button"
+                            >Create New Queue</a
+                        >
+                    </div>
+                </div>
+            </div>
+            <!-- Mobile Navigation Buttons -->
+            <div class="col-md-6 container min-height-row">
+                <div
+                    class="btn-group d-md-none queue-buttons-div"
+                    role="group"
+                    aria-label="Queue Buttons">
+                    <a
+                        href="#my-queue-div"
+                        class="btn btn-secondary actual-button">
+                        My<br />Queues
+                    </a>
+                    <a
+                        href="#friends-queue-div"
+                        class="btn btn-secondary actual-button">
+                        Friends<br />Queues
+                    </a>
+                </div>
+                <!-- Name Form -->
+                <div id="name-form-and-delete-div" class="row my-container profile-top">
+                    {% if not user.name %} Add a name so your friends know who
+                    you created the queue or added the videos. {% else %} Care
+                    to update your name? {% endif %}
+                    <form action="{% url 'set_name' %}" method="POST">
+                        {% csrf_token %} {% if user.name %}
+                        <label for="name" id="set-name-form-label"
+                            >New Name:</label
+                        >
+                        <input
+                            type="text"
+                            name="name"
+                            id="name"
+                            placeholder="{{user.name}}"
+                            required />
+                        {% else %}
+                        <label for="name" id="set-name-form-label">Name:</label>
+                        <input type="text" name="name" id="name" required />
+                        {% endif %}
+                        <button
+                            type="submit"
+                            class="btn btn-secondary actual-button"
+                            id="set-name-form-button">
+                            Submit
+                        </button>
+                    </form>
+                    <!-- Delete Profile Button -->
+                    <form
+                        action="{% url 'delete_profile' %}"
+                        method="POST"
+                        class="delete-profile-form">
+                        {% csrf_token %}
+                        <button
+                            type="submit"
+                            class="btn btn-danger actual-button"
+                            id="delete-profile-button">
+                            Delete Profile
+                        </button>
+                </div>
+            </div>
         </div>
-        {% for queue in other_queues %}
-        <div class="my-container text-center min-height-row row">
-          <h2 class="h4 row">
-            <a href="{% url 'edit_queue' queue.id %}">Edit: {{queue.title}}</a>
-          </h2>
-          <h3 class="h5">
-            {% if queue.length != 1 %} {{queue.length}} entries {% else %} 1
-            entry {% endif %}
-          </h3>
-          <div>
-            {% if queue.published %}
-            <a
-              href="{{queue.url}}"
-              target="_blank"
-              class="btn btn-ytube actual-button"
-              >Play</a
-            >
-            {% endif %}
-          </div>
+    </section>
+    <section id="queue-display">
+        <div class="d-flex-column d-flex-md-row row" id="both-queues-div">
+            <!-- My Queues -->
+            <div
+                id="my-queue-div"
+                class="queue-display-divs col-md-6 d-flex-column align-items-center container">
+                <div class="logo-div text-center row no-wrap">
+                    <h2 class="h2 logo">My Queues</h2>
+                </div>
+                {% for queue in my_queues %}
+                <div class="my-container text-center row min-height-row">
+                    <div class="col">
+                        <h3 class="h4">
+                            <a href="{% url 'edit_queue' queue.id %}">
+                                Edit: {{queue.title}}
+                            </a>
+                        </h3>
+                        <h4 class="h5">
+                            {% if queue.length != 1 %} {{queue.length}} entries
+                            {% else %} 1 entry {% endif %}
+                        </h4>
+                        <div
+                            class="btn-group"
+                            role="group"
+                            aria-label="Share and Play buttons">
+                            <a
+                                href="{% url 'gain_access' queue.secret queue.owner.secret %}"
+                                class="btn btn-success"
+                                >Share</a
+                            >
+                            {% if queue.published %}
+                            <a
+                                href="{{queue.url}}"
+                                target="_blank"
+                                class="btn btn-ytube actual-button"
+                                >Play</a
+                            >
+                            {% endif %}
+                        </div>
+                        <p class="mt-2">
+                            Copy the "Share" button link to share.
+                        </p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <!-- My Friends' Queues -->
+            <div
+                id="friends-queue-div"
+                class="queue-display-divs col-md-6 d-flex-column align-items-center container">
+                <div class="logo-div text-center row no-wrap">
+                    <div class="logo">
+                        <h2>Friends'</h2>
+                        <h2>Queues</h2>
+                    </div>
+                </div>
+                {% for queue in other_queues %}
+                <div class="my-container text-center min-height-row row">
+                    <h2 class="h4 row">
+                        <a href="{% url 'edit_queue' queue.id %}"
+                            >Edit: {{queue.title}}</a
+                        >
+                    </h2>
+                    <h3 class="h5">
+                        {% if queue.length != 1 %} {{queue.length}} entries {%
+                        else %} 1 entry {% endif %}
+                    </h3>
+                    <div>
+                        {% if queue.published %}
+                        <a
+                            href="{{queue.url}}"
+                            target="_blank"
+                            class="btn btn-ytube actual-button"
+                            >Play</a
+                        >
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
         </div>
-        {% endfor %}
-      </div>
-    </div>
-  </section>
-  <!-- Pushes Content above footer -->
-  <div class="last">&nbsp;</div>
+    </section>
+    <!-- Pushes Content above footer -->
+    <div class="last">&nbsp;</div>
 </section>
 {% endblock content %}
