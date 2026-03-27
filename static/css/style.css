@@ -310,6 +310,35 @@ Bootstrap styles.*/
     width: fit-content;
 }
 
+#style-override #delete-profile-section {
+    margin-top: 1rem;
+    padding-top: 0.9rem;
+    border-top: 1px solid #5a5a5a;
+}
+
+#style-override #delete-profile-section .danger-zone-label {
+    color: #ff6b6b;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    margin-bottom: 0.35rem;
+}
+
+#style-override #delete-profile-section .danger-zone-copy {
+    margin-bottom: 0.7rem;
+}
+
+#style-override #delete-profile-button {
+    width: 100%;
+    max-width: 280px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    box-shadow: 0 0 0 2px rgba(231, 26, 26, 0.25);
+}
+
+#style-override #delete-profile-button:hover {
+    box-shadow: 0 0 0 2px rgba(231, 26, 26, 0.5);
+}
+
 #style-override #both-queues-div {
     margin-left: -3%;
 }

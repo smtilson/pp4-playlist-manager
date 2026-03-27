@@ -439,7 +439,7 @@ class TestProfileViews(TestCase):
         # Verify no user was deleted
         self.assertEqual(Profile.objects.count(), initial_user_count)
 
-    def test_delete_profile_authenticated(self):
+    def test_delete_profile_authenticated_w_tokens(self):
         """
         Tests that an authenticated user's account is correctly deleted
         and they are redirected to the signup page.

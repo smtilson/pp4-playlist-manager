@@ -251,20 +251,22 @@ def delete_profile(request):
     Args: request (HttpRequest)
     Returns: Redirects to the index page with a success message.
     """
-    method = request.method
-    if not method == "POST":
-        msg = "Invalid request method. Please use POST to delete your account."
-        messages.add_message(request, messages.ERROR, msg)
-        return error_handler(request, HttpResponseRedirect(reverse("profile")))
     msg = "You must be logged in to delete your account."
     user, auth_status, redirect_response = check_auth(request, msg)
     # redirects if user is not authenticated or is a guest
     if not auth_status:
         return redirect_response
+    # TODO: This should be changed to delete http method, but that seems to require a JS api call.
+    elif request.method not in {"POST", "DELETE"}:
+        msg = "Invalid request method. Please use POST or DELETE to delete your account."
+        messages.add_message(request, messages.ERROR, msg)
+        return error_handler(request, HttpResponseRedirect(reverse("profile")))
     else:
         # Revoke YouTube API credentials
         revoke_tokens(user)
+        # Remove user data from the database
         user.delete()  # type: ignore [attr-defined]
+        # TODO: Logout user from session?
         messages.add_message(
             request, messages.SUCCESS, "Your account has been deleted."
         )

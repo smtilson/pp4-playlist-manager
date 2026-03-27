@@ -91,9 +91,21 @@
                             Submit
                         </button>
                     </form>
-                    <!-- Delete Profile Modal Trigger -->
-                    <button type="button" data-bs-toggle="modal" data-bs-target="#deleteModal"
-                        class="btn btn-danger">Delete</button>
+                    <div id="delete-profile-section" class="text-center" role="group" aria-label="Delete Profile">
+                        <p class="danger-zone-label">Danger Zone</p>
+                        <p class="danger-zone-copy">
+                            Delete your profile and permanently remove your YouTube DJ data.
+                        </p>
+                        <!-- Delete Profile Modal Trigger -->
+                        <button
+                            type="button"
+                            data-bs-toggle="modal"
+                            data-bs-target="#deleteModal"
+                            class="btn btn-danger"
+                            id="delete-profile-button">
+                            Delete Profile
+                        </button>
+                    </div>
                     <!-- Delete Profile Modal -->
                     <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel"
                         aria-hidden="true">
@@ -105,15 +117,17 @@
                                         aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body">
-                                    Are you sure you want to Delete your profile?
-                                    This will delete the revoke your credentials,
-                                     delete your profile, and remove all of your 
-                                     data from YouTube DJ, .
+                                    Are you sure you want to delete your profile?
+                                    This revokes your credentials, deletes your profile,
+                                    and permanently removes your YouTube DJ data.
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary"
                                         data-bs-dismiss="modal">Close</button>
-                                    <a href="{% url 'delete_profile' %}" class="btn btn-danger">Delete</a>
+                                    <form action="{% url 'delete_profile' %}" method="POST" class="m-0">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-danger">Yes, Delete Profile</button>
+                                    </form>
                                 </div>
                             </div>
                         </div>
