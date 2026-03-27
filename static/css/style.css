@@ -386,6 +386,15 @@ Bootstrap styles.*/
     text-align: left;
 }
 
+/* blech this just adds a border to the error list*/
+#style-override #login ul.errorlist {
+    border: 2px solid #ff6b6b;
+    border-radius: 8px;
+    padding: 0.65rem 0.8rem;
+    margin: 0.75rem 0;
+}
+
+
 #style-override #logout {
     width: 70%;
     left: 18%;
