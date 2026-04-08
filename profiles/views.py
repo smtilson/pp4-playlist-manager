@@ -2,12 +2,13 @@ from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
 from django.http import HttpResponseRedirect, Http404, HttpResponse
 from django.utils.safestring import mark_safe
+from django.views.decorators.http import require_POST
 from django.contrib import messages
 from requests.exceptions import HTTPError
 from typing import Optional, Union, Callable, Literal
 from functools import wraps
 from .models import GuestProfile, make_user, Profile
-from utils import check_valid_redirect_action
+from utils import check_valid_redirect_action, with_error_handling, require_auth
 from queues.models import Queue, has_authorization
 from errors.utils import process_path
 from errors.views import error_handler
@@ -17,42 +18,7 @@ from yt_auth.token_auth import (
     revoke_tokens,
 )
 
-
-# Existing types in your file
-
-
-
-def require_auth(msg: str):
-    """
-    Decorator factory that:
-    1) runs check_auth(request, msg)
-    2) short-circuits with redirect if not authenticated
-    3) injects auth_user into wrapped view via kwargs
-    """
-    def decorator(view_func: Callable[..., HttpResponse]) -> Callable[..., Optional[HttpResponse]]:
-        @wraps(view_func)
-        def wrapper(request, *args, **kwargs) -> Optional[HttpResponse]:
-            user, auth_status, redirect_response = check_auth(request, msg)
-            if not auth_status:
-                # Keep same behavior as your current views
-                return redirect_response 
-
-            # Pass user into wrapped view
-            kwargs["auth_user"] = user
-            return view_func(request, *args, **kwargs)
-
-        return wrapper
-    return decorator
-
-def with_error_handling(view_func: Callable[..., Optional[HttpResponse]]) -> Callable[..., Optional[HttpResponse]]:
-    """
-    Decorator that wraps a view function with error handling logic.
-    """
-    @wraps(view_func)
-    def wrapper(request, *args, **kwargs) -> Optional[HttpResponse]:
-        response = view_func(request, *args, **kwargs)
-        return error_handler(request, response)
-    return wrapper
+# TODO: Add type hints to all view functions. This is a bit tricky because of the way the auth_user is passed in, but it should be doable with some careful thought.
 
 @with_error_handling
 def index(request):
@@ -112,6 +78,7 @@ def profile(request, *args, auth_user: Profile, **kwargs):
 
 @with_error_handling
 @require_auth("You must be logged in to set your name.")
+@require_POST
 def set_name(request, *args, auth_user: Profile, **kwargs):
     """
     Sets the name of the user based on their input.
@@ -119,12 +86,14 @@ def set_name(request, *args, auth_user: Profile, **kwargs):
     Returns: Redirects to the "profile" page if the name is successfully set.
     Redirects to the "account_login" page if the user is not authenticated.
     """
-    if request.method != "POST":
-        messages.info(request, "Invalid request method.")
-    else:
-        auth_user.name = request.POST["name"]
-        auth_user.save()
-        messages.success(request, f"Name set to {auth_user.name}")
+    name = request.POST.get("name", "").strip()
+    if not name:
+        messages.error(request, "Name cannot be empty.")
+        return HttpResponseRedirect(reverse("profile"))
+
+    auth_user.name = name
+    auth_user.save()
+    messages.success(request, f"Name set to {auth_user.name}")
     return HttpResponseRedirect(reverse("profile"))
     
 confused_msg = (
@@ -220,8 +189,8 @@ def guest_sign_in(request):
     user = make_user(request)
     queue_id = request.session.get("queue_id")
     if queue_id is None:
-        raise Http404("A queue must be associated with this particular" "request.")
-    queue = get_object_or_404(Queue, id=request.session["queue_id"])
+        raise Http404("A queue must be associated with this particular request.")
+    queue = get_object_or_404(Queue, id=queue_id)
     # I don't understand this or statement.
     if user.is_authenticated or user.is_guest:
         messages.info(request, f"You are already logged in {user.nickname}.")
@@ -230,18 +199,21 @@ def guest_sign_in(request):
         context = {"queue": queue}
         response = render(request, "profiles/guest_sign_in.html", context)
     elif request.method == "POST":
-        name = request.POST["guest_name"]
+        name = request.POST.get("guest_name", "").strip()
+        if not name:
+            messages.error(request, "Guest name cannot be empty.")
+            return HttpResponseRedirect(reverse("guest_sign_in"))
         email = request.POST.get("guest_email")
         user = GuestProfile(
             name=name,
             email=email,
-            queue_id=queue.id,
+            queue_id=queue.pk,
             queue_secret=queue.secret,
             owner_secret=queue.owner.secret,
         )
         request.session["guest_user"] = user.serialize()
         messages.success(request, f"Guest account set up for {user.nickname}")
-        response = HttpResponseRedirect(reverse("edit_queue", args=[queue.id]))
+        response = HttpResponseRedirect(reverse("edit_queue", args=[queue.pk]))
     else:
         response = HttpResponseRedirect(reverse("index"))
     
@@ -263,29 +235,16 @@ def delete_profile(request, *args, auth_user: Profile, **kwargs):
     if request.method not in {"POST", "DELETE"}:
         messages.error(request, "Invalid request method. Please use POST or DELETE to delete your account.")
         return HttpResponseRedirect(reverse("profile"))
-    else:
+    try:
         # Revoke YouTube API credentials
         revoke_tokens(auth_user)
+    except HTTPError as e:
+        error_msg = "An unknown error occurred while revoking your credentials."
+        error_msg += str(e)
+        messages.error(request, error_msg)
         # Remove user data from the database
-        auth_user.delete()  # type: ignore [attr-defined]
-        # TODO: Logout user from session?
-        messages.success(request, "Your account has been deleted.")
+    auth_user.delete()  # type: ignore [attr-defined]
+    # TODO: Logout user from session?
+    messages.success(request, "Your account has been deleted.")
     return HttpResponseRedirect(reverse("account_signup"))
 
-
-
-def check_auth(
-    request, msg: str
-) -> Union[tuple[Profile, Literal[True], None], tuple[None, Literal[False], HttpResponseRedirect]]:
-    """
-    Check if the user has valid credentials.
-    Args: user (User)
-    Returns: bool
-    """
-    user = request.user
-    # redirects if user is not authenticated
-    if not isinstance(user, Profile):
-        messages.info(request, msg)
-        response = HttpResponseRedirect(reverse("account_login"))
-        return None, False, response
-    return user, True, None

@@ -275,9 +275,9 @@ class Entry(models.Model, DjangoFieldsMixin, ToDictMixin, ResourceID):
         e1.save()
         e2.save()
 
-    def swap_entry_positions(self, other_position) -> None:
+    def swap_entry_positions(self, other_position: int) -> tuple["Entry", "Entry"]:
         if self.position == other_position:
-            return
+            return self, self
         other_entry = self.p_queue.all_entries[other_position - 1]
         old_positions = (other_entry._position, self._position)
         self._position, other_entry._position = old_positions

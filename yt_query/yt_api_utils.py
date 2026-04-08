@@ -48,7 +48,7 @@ class YT:
         response = request.execute()
         return parse_channel_result(response)
 
-    def search_videos(self, query) -> list[str]:
+    def search_videos(self, query) -> list[dict]|dict:
         """
         Searches for videos on YouTube based on a given query. It returns their
         id, and title.
@@ -146,8 +146,8 @@ class YT:
         Returns: Tuple containing the last query and last search results.
         """
         last_queue_query = request.session.get(f"queue_{queue_id}", {})
-        last_query = last_queue_query.get("last_query")
-        last_search = last_queue_query.get("last_search")
+        last_query = last_queue_query.get("last_query", "")
+        last_search = last_queue_query.get("last_search", [])
         return last_query, last_search
 
     @classmethod
@@ -167,7 +167,7 @@ class YT:
         return request
 
 
-def process_response(response: dict):
+def process_response(response: dict)->list[dict]|dict:
     """
     Process the given response dictionary and return the appropriate result
     based on its kind.

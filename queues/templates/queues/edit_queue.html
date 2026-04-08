@@ -30,17 +30,17 @@
             <div class="my-container text-center">
                 <h2 class="h3">Control Panel</h2>
                 <div class="btn-group" role="group" aria-label="Control Queue Buttons 1">
-                    <a href="{% url 'edit_queue' queue.id %}" class="btn btn-success">Refresh</a>
+                    <a href="{% url 'edit_queue' queue.pk %}" class="btn btn-success">Refresh</a>
                     {% if is_owner %}
                     <a href="{% url 'gain_access' queue.secret queue.owner.secret %}" class="btn btn-success">Share</a>
-                    <a href=" {% url 'sync' queue.id %}" class="btn btn-success">Sync</a>
+                    <a href=" {% url 'sync' queue.pk %}" class="btn btn-success">Sync</a>
                     {% endif %}
                 </div>
                 <br>
                 <div class="btn-group" role="group" aria-label="Control Queue Buttons 2">
                     {% if user.has_tokens %}
                     {% if not queue.published %}
-                    <a href="{% url 'publish' queue.id %}" class="btn btn-success">Publish</a>
+                    <a href="{% url 'publish' queue.pk %}" class="btn btn-success">Publish</a>
                     {% else %}
                     <!-- Unpublish Modal Trigger -->
                     <button type="button" data-bs-toggle="modal" data-bs-target="#unpublishModal"
@@ -62,7 +62,7 @@
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary"
                                         data-bs-dismiss="modal">Close</button>
-                                    <a href="{% url 'unpublish' queue.id %}" class="btn btn-danger">Unpublish</a>
+                                    <a href="{% url 'unpublish' queue.pk %}" class="btn btn-danger">Unpublish</a>
                                 </div>
                             </div>
                         </div>
@@ -91,7 +91,7 @@
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary"
                                         data-bs-dismiss="modal">Close</button>
-                                    <a href="{% url 'delete_queue' queue.id %}" class="btn btn-danger">Delete</a>
+                                    <a href="{% url 'delete_queue' queue.pk %}" class="btn btn-danger">Delete</a>
                                 </div>
                             </div>
                         </div>
@@ -139,7 +139,7 @@
                                 <p><a href="http://youtu.be/{{result.id}}" target="_blank">{{result.title}}</a></p>
                             </div>
                             <div class="col-3 col-md-2">
-                                <a href="{% url 'add_entry' queue_id=queue.id video_id=result.id %}"
+                                <a href="{% url 'add_entry' queue_id=queue.pk video_id=result.id %}"
                                     class="btn btn-sm btn-success">Add</a>
                             </div>
                         </div>
@@ -174,10 +174,10 @@
                                         <div class="btn-group my-btn-border" role="group"
                                             aria-label="Position Control Buttons">
                                             <!--<div class="position-div">-->
-                                            <button type="button" data-queue="{{queue.id}}" data-entry="{{entry.id}}"
+                                            <button type="button" data-queue="{{queue.pk}}" data-entry="{{entry.id}}"
                                                 class="move-btn btn btn-sm btn-warning"
                                                 data-position="{{entry.position|add:-1}}" data-direction="+">Up</button>
-                                            <button type="button" data-queue="{{queue.id}}" data-entry="{{entry.id}}"
+                                            <button type="button" data-queue="{{queue.pk}}" data-entry="{{entry.id}}"
                                                 class="move-btn btn btn-sm btn-warning"
                                                 data-position="{{entry.position|add:1}}"
                                                 data-direction="-">Down</button>
@@ -185,7 +185,7 @@
                                                 class="swap-input d-none d-md-inline form-control">
                                             <label for="new-position-{{entry.id}}" id="label-{{entry.id}}"
                                                 class="js-form-label btn btn-sm d-md-block btn-warning swap-button d-none"
-                                                data-entry="{{entry.id}}" data-queue="{{queue.id}}">Swap</label>
+                                                data-entry="{{entry.id}}" data-queue="{{queue.pk}}">Swap</label>
                                         </div>
                                         {% endif %}
 
@@ -194,7 +194,8 @@
                                 {%if is_owner %}
                                 <div class="col-3 col-md-2 remove-button">
                                     <!-- Remove Entry Modal Trigger-->
-                                    <button type="button" data-bs-toggle="modal" data-bs-target="#removeEntryModal-{{entry.id}}"
+                                    <button type="button" data-bs-toggle="modal"
+                                        data-bs-target="#removeEntryModal-{{entry.id}}"
                                         class="btn btn-sm btn-danger">Remove</button>
                                     <!-- Remove Entry Modal-->
                                     <div class="modal fade" id="removeEntryModal-{{entry.id}}" tabindex="-1"
@@ -202,7 +203,8 @@
                                         <div class="modal-dialog">
                                             <div class="modal-content">
                                                 <div class="modal-header">
-                                                    <h5 class="modal-title" id="removeEntryModalLabel-{{entry.id}}">Remove
+                                                    <h5 class="modal-title" id="removeEntryModalLabel-{{entry.id}}">
+                                                        Remove
                                                         {{entry.title}}
                                                     </h5>
                                                     <button type="button" class="btn-close" data-bs-dismiss="modal"
@@ -215,7 +217,7 @@
                                                 <div class="modal-footer">
                                                     <button type="button" class="btn btn-secondary"
                                                         data-bs-dismiss="modal">Close</button>
-                                                    <a href="{% url 'delete_entry' queue_id=queue.id entry_id=entry.id %}"
+                                                    <a href="{% url 'delete_entry' queue_id=queue.pk entry_id=entry.id %}"
                                                         class="btn btn-danger">Remove</a>
                                                 </div>
                                             </div>

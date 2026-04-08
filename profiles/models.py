@@ -12,7 +12,10 @@ from utils import get_secret
 from yt_auth.models import Credentials
 from yt_query.yt_api_utils import YT
 from mixins import ToDictMixin, DjangoFieldsMixin
-from typing import Union
+from typing import Union, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from queues.models import Queue
 
 
 # Create your models here.
@@ -55,6 +58,9 @@ class Profile(AbstractBaseUser, PermissionsMixin, DjangoFieldsMixin, ToDictMixin
     # The methods and many of the fields are original work and not taken from
     # the article.
     # Should I add type hints here?
+    if TYPE_CHECKING:
+        my_queues: models.Manager["Queue"]
+        other_queues: models.Manager["Queue"]
     name = models.CharField(max_length=50, null=True, blank=True)
     email = models.EmailField(max_length=100, unique=True)
     is_superuser = models.BooleanField(default=False)
@@ -128,8 +134,8 @@ class Profile(AbstractBaseUser, PermissionsMixin, DjangoFieldsMixin, ToDictMixin
 
     @property
     def all_queue_ids(self):
-        my_queue_ids = {queue.id for queue in self.my_queues.all()}  # type: ignore[attr-defined]
-        other_queue_ids = {queue.id for queue in self.other_queues.all()}  # type: ignore[attr-defined]
+        my_queue_ids = {queue.pk for queue in self.my_queues.all()}  # type: ignore[attr-defined]
+        other_queue_ids = {queue.pk for queue in self.other_queues.all()}  # type: ignore[attr-defined]
         return my_queue_ids.union(other_queue_ids)
 
     def set_credentials(self, new_credentials=None):

@@ -1,6 +1,16 @@
 import ast
 from django.utils.crypto import get_random_string
+from django.contrib import messages
+from django.http import HttpResponseRedirect, HttpResponse
+from django.shortcuts import reverse
 
+from typing import Callable, Optional, Union, Literal, TYPE_CHECKING
+from functools import wraps
+from errors.views import error_handler
+
+
+if TYPE_CHECKING:
+    from profiles.models import Profile
 
 def json_to_dict(json) -> dict:
     """
@@ -67,3 +77,56 @@ def abbreviate(string: str, cutoff: int) -> str:
     if len(string) > cutoff:
         return string[:cutoff] + "..."
     return string
+
+
+
+
+def check_auth(
+    request, msg: str
+) -> Union[tuple['Profile', Literal[True], None], tuple[None, Literal[False], HttpResponseRedirect]]:
+    """
+    Check if the user has valid credentials.
+    Args: user (User)
+    Returns: bool
+    """
+    user = request.user
+    # redirects if user is not authenticated
+    if not getattr(user, "is_authenticated", False):
+        messages.info(request, msg)
+        response = HttpResponseRedirect(reverse("account_login"))
+        return None, False, response
+    return user, True, None
+
+
+
+def require_auth(msg: str):
+    """
+    Decorator factory that:
+    1) runs check_auth(request, msg)
+    2) short-circuits with redirect if not authenticated
+    3) injects auth_user into wrapped view via kwargs
+    """
+    def decorator(view_func: Callable[..., HttpResponse]) -> Callable[..., Optional[HttpResponse]]:
+        @wraps(view_func)
+        def wrapper(request, *args, **kwargs) -> Optional[HttpResponse]:
+            user, auth_status, redirect_response = check_auth(request, msg)
+            if not auth_status:
+                # Keep same behavior as your current views
+                return redirect_response 
+
+            # Pass user into wrapped view
+            kwargs["auth_user"] = user
+            return view_func(request, *args, **kwargs)
+
+        return wrapper
+    return decorator
+
+def with_error_handling(view_func: Callable[..., Optional[HttpResponse]]) -> Callable[..., Optional[HttpResponse]]:
+    """
+    Decorator that wraps a view function with error handling logic.
+    """
+    @wraps(view_func)
+    def wrapper(request, *args, **kwargs) -> Optional[HttpResponse]:
+        response = view_func(request, *args, **kwargs)
+        return error_handler(request, response)
+    return wrapper

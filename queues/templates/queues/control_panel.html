@@ -4,142 +4,152 @@
 <div class="my-container text-center d-md-none">
     <h3>Control Panel</h3>
     <div class="btn-group" role="group" aria-label="Control Queue Buttons 1">
-        <form method="get"  style="display: inline" action="{% url 'edit_queue' queue.id %}"><button type="button" class="btn btn-success">Refresh</button></form>
+        <form method="get" style="display: inline" action="{% url 'edit_queue' queue.pk %}"><button type="button"
+                class="btn btn-success">Refresh</button></form>
         {% if is_owner %}
-        <a href="{% url 'gain_access' queue.secret queue.owner.secret %}"><button
-                class="btn btn-success">Share</button></form>
-        {% if not queue.synced %}
-        <a href=" {% url 'sync' queue.id %}"><button class="btn btn-success">Sync</button></form>
-        {% endif %}
-        {% endif %}
+        <a href="{% url 'gain_access' queue.secret queue.owner.secret %}"><button class="btn btn-success">Share</button>
+            </form>
+            {% if not queue.synced %}
+            <a href=" {% url 'sync' queue.pk %}"><button class="btn btn-success">Sync</button></form>
+                {% endif %}
+                {% endif %}
     </div>
     <div class="btn-group" role="group" aria-label="Control Queue Buttons 2">
         {% if user.has_tokens %}
         {% if not queue.published %}
-        <a href="{% url 'publish' queue.id %}"><button class="btn btn-success">Publish</button></form>
-        {% else %}
-        <!-- Unpublish Modal Trigger -->
-        <button type="button" data-bs-toggle="modal" data-bs-target="#unpublishModal"
-            class="btn btn-danger">Unpublish</button>
-        <!-- Unpublish Modal -->
-        <div class="modal fade" id="unpublishModal" tabindex="-1" aria-labelledby="unpublishModalLabel"
-            aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="unpublishModalLabel">Unpublish {{queue.title}}</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        Are you sure you want to unpublish?
-                        This will remove the playlist from YouTube, but not delete the Queue on YouTube DJ.
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-danger">Unpublish</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        {% endif %}
-        {% endif %}
-        {% if is_owner %}
-        <!-- Delete Modal Trigger -->
-        <button type="button" data-bs-toggle="modal" data-bs-target="#deleteModal"
-            class="btn btn-danger">Delete</button>
-        <!-- Delete Modal -->
-        <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="deleteModalLabel">Delete {{queue.title}}</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        Are you sure you want to Delete queue.title?
-                        This will delete the queue from YouTube DJ, but not delete the playlist from
-                        YouTube.
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <a href="{% url 'delete_queue' queue.id %}"><button class="btn btn-danger">Delete</button></form>
+        <a href="{% url 'publish' queue.pk %}"><button class="btn btn-success">Publish</button></form>
+            {% else %}
+            <!-- Unpublish Modal Trigger -->
+            <button type="button" data-bs-toggle="modal" data-bs-target="#unpublishModal"
+                class="btn btn-danger">Unpublish</button>
+            <!-- Unpublish Modal -->
+            <div class="modal fade" id="unpublishModal" tabindex="-1" aria-labelledby="unpublishModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="unpublishModalLabel">Unpublish {{queue.title}}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            Are you sure you want to unpublish?
+                            This will remove the playlist from YouTube, but not delete the Queue on YouTube DJ.
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-danger">Unpublish</button>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        {% endif %}
+            {% endif %}
+            {% endif %}
+            {% if is_owner %}
+            <!-- Delete Modal Trigger -->
+            <button type="button" data-bs-toggle="modal" data-bs-target="#deleteModal"
+                class="btn btn-danger">Delete</button>
+            <!-- Delete Modal -->
+            <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="deleteModalLabel">Delete {{queue.title}}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            Are you sure you want to Delete queue.title?
+                            This will delete the queue from YouTube DJ, but not delete the playlist from
+                            YouTube.
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <a href="{% url 'delete_queue' queue.pk %}"><button class="btn btn-danger">Delete</button>
+                                </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {% endif %}
     </div>
 </div>
 <!-- Control Panel Desktop -->
 <div class="my-container text-center">
     <h3>Control Panel</h3>
     <div class="btn-group d-none d-md-block" role="group" aria-label="Control Queue Buttons">
-        <a href="{% url 'edit_queue' queue.id %}"><button type="button" class="btn btn-success">Refresh</button></form>
-        {% if is_owner %}
-        <a href="{% url 'gain_access' queue.secret queue.owner.secret %}"><button
-                class="btn btn-success">Share</button></form>
-        {% if not queue.synced %}
-        <a href=" {% url 'sync' queue.id %}"><button class="btn btn-success">Sync</button></form>
-        {% endif %}
-        {% endif %}
-        {% if user.has_tokens %}
-        {% if not queue.published %}
-        <a href="{% url 'publish' queue.id %}"><button class="btn btn-success">Publish</button></form>
-        {% else %}
-        <!-- Unpublish Modal Trigger -->
-        <button type="button" data-bs-toggle="modal" data-bs-target="#unpublishModal"
-            class="btn btn-danger">Unpublish</button>
-        <!-- Unpublish Modal -->
-        <div class="modal fade" id="unpublishModal" tabindex="-1" aria-labelledby="unpublishModalLabel"
-            aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="unpublishModalLabel">Unpublish {{queue.title}}</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        Are you sure you want to unpublish?
-                        This will remove the playlist from YouTube, but not delete the Queue on YouTube DJ.
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-danger">Unpublish</button>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <a href="{% url 'edit_queue' queue.pk %}"><button type="button" class="btn btn-success">Refresh</button></form>
+            {% if is_owner %}
+            <a href="{% url 'gain_access' queue.secret queue.owner.secret %}"><button
+                    class="btn btn-success">Share</button></form>
+                {% if not queue.synced %}
+                <a href=" {% url 'sync' queue.pk %}"><button class="btn btn-success">Sync</button></form>
+                    {% endif %}
+                    {% endif %}
+                    {% if user.has_tokens %}
+                    {% if not queue.published %}
+                    <a href="{% url 'publish' queue.pk %}"><button class="btn btn-success">Publish</button></form>
+                        {% else %}
+                        <!-- Unpublish Modal Trigger -->
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#unpublishModal"
+                            class="btn btn-danger">Unpublish</button>
+                        <!-- Unpublish Modal -->
+                        <div class="modal fade" id="unpublishModal" tabindex="-1" aria-labelledby="unpublishModalLabel"
+                            aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="unpublishModalLabel">Unpublish {{queue.title}}</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        Are you sure you want to unpublish?
+                                        This will remove the playlist from YouTube, but not delete the Queue on YouTube
+                                        DJ.
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                            data-bs-dismiss="modal">Close</button>
+                                        <button type="button" class="btn btn-danger">Unpublish</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
-        {% endif %}
-        {% endif %}
-        {% if is_owner %}
-        <!-- Delete Modal Trigger -->
-        <button type="button" data-bs-toggle="modal" data-bs-target="#deleteModal"
-            class="btn btn-danger">Delete</button>
-        <!-- Delete Modal -->
-        <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="deleteModalLabel">Delete {{queue.title}}</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        Are you sure you want to Delete queue.title?
-                        This will delete the queue from YouTube DJ, but not delete the playlist from
-                        YouTube.
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <a href="{% url 'delete_queue' queue.id %}"><button class="btn btn-danger">Delete</button></form>
-                    </div>
-                </div>
-            </div>
-        </div>
+                        {% endif %}
+                        {% endif %}
+                        {% if is_owner %}
+                        <!-- Delete Modal Trigger -->
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#deleteModal"
+                            class="btn btn-danger">Delete</button>
+                        <!-- Delete Modal -->
+                        <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel"
+                            aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="deleteModalLabel">Delete {{queue.title}}</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        Are you sure you want to Delete queue.title?
+                                        This will delete the queue from YouTube DJ, but not delete the playlist from
+                                        YouTube.
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                            data-bs-dismiss="modal">Close</button>
+                                        <a href="{% url 'delete_queue' queue.pk %}"><button
+                                                class="btn btn-danger">Delete</button></form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
-        {% endif %}
+                        {% endif %}
     </div>
 </div>
 
@@ -148,57 +158,64 @@
 <div class="my-container text-center">
     <h3>Control Panel</h3>
     <div class="btn-group d-none d-md-block" role="group" aria-label="Control Queue Buttons">
-        <a href="{% url 'edit_queue' queue.id %}"><button type="button" class="btn btn-success">Refresh</button></form>
-        <a href="{% url 'gain_access' queue.secret queue.owner.secret %}"><button
-                class="btn btn-success">Share</button></form>
-        <a href=" {% url 'sync' queue.id %}"><button class="btn btn-success">Sync</button></form>
-        <a href="{% url 'publish' queue.id %}"><button class="btn btn-success">Publish</button></form>
-        <!-- Unpublish Modal Trigger -->
-        <button type="button" data-bs-toggle="modal" data-bs-target="#unpublishModal"
-            class="btn btn-danger">Unpublish</button>
-        <!-- Unpublish Modal -->
-        <div class="modal fade" id="unpublishModal" tabindex="-1" aria-labelledby="unpublishModalLabel"
-            aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="unpublishModalLabel">Unpublish {{queue.title}}</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        Are you sure you want to unpublish?
-                        This will remove the playlist from YouTube, but not delete the Queue on YouTube DJ.
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-danger">Unpublish</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- Delete Modal Trigger -->
-        <button type="button" data-bs-toggle="modal" data-bs-target="#deleteModal"
-            class="btn btn-danger">Delete</button>
-        <!-- Delete Modal -->
-        <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="deleteModalLabel">Delete {{queue.title}}</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        Are you sure you want to Delete queue.title?
-                        This will delete the queue from YouTube DJ, but not delete the playlist from
-                        YouTube.
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <a href="{% url 'delete_queue' queue.id %}"><button class="btn btn-danger">Delete</button></form>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <a href="{% url 'edit_queue' queue.pk %}"><button type="button" class="btn btn-success">Refresh</button></form>
+            <a href="{% url 'gain_access' queue.secret queue.owner.secret %}"><button
+                    class="btn btn-success">Share</button></form>
+                <a href=" {% url 'sync' queue.pk %}"><button class="btn btn-success">Sync</button></form>
+                    <a href="{% url 'publish' queue.pk %}"><button class="btn btn-success">Publish</button></form>
+                        <!-- Unpublish Modal Trigger -->
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#unpublishModal"
+                            class="btn btn-danger">Unpublish</button>
+                        <!-- Unpublish Modal -->
+                        <div class="modal fade" id="unpublishModal" tabindex="-1" aria-labelledby="unpublishModalLabel"
+                            aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="unpublishModalLabel">Unpublish {{queue.title}}</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        Are you sure you want to unpublish?
+                                        This will remove the playlist from YouTube, but not delete the Queue on YouTube
+                                        DJ.
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                            data-bs-dismiss="modal">Close</button>
+                                        <button type="button" class="btn btn-danger">Unpublish</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Delete Modal Trigger -->
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#deleteModal"
+                            class="btn btn-danger">Delete</button>
+                        <!-- Delete Modal -->
+                        <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel"
+                            aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="deleteModalLabel">Delete {{queue.title}}</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        Are you sure you want to Delete queue.title?
+                                        This will delete the queue from YouTube DJ, but not delete the playlist from
+                                        YouTube.
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                            data-bs-dismiss="modal">Close</button>
+                                        <a href="{% url 'delete_queue' queue.pk %}"><button
+                                                class="btn btn-danger">Delete</button></form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
     </div>
 </div>
 
@@ -206,20 +223,20 @@
 <div class="neumorphism">Neumorphism</div>
 
 <style>
-.neumorphism {
-    width: 200px;
-    height: 100px;
-    background: #e0e0e0;
-    border-radius: 10px;
-    box-shadow: 9px 9px 16px #bebebe,
-                -9px -9px 16px #ffffff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.2em;
-    color: #333;
-    margin: 20px;
-}
+    .neumorphism {
+        width: 200px;
+        height: 100px;
+        background: #e0e0e0;
+        border-radius: 10px;
+        box-shadow: 9px 9px 16px #bebebe,
+            -9px -9px 16px #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2em;
+        color: #333;
+        margin: 20px;
+    }
 </style>
 
 <div class="perspective-container">
@@ -227,24 +244,24 @@
 </div>
 
 <style>
-.perspective-container {
-    perspective: 1000px;
-    width: 200px;
-    height: 200px;
-    margin: 20px;
-}
+    .perspective-container {
+        perspective: 1000px;
+        width: 200px;
+        height: 200px;
+        margin: 20px;
+    }
 
-.perspective-box {
-    width: 100%;
-    height: 100%;
-    background-color: #3498db;
-    transform: rotateY(30deg) rotateX(20deg);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 1.2em;
-}
+    .perspective-box {
+        width: 100%;
+        height: 100%;
+        background-color: #3498db;
+        transform: rotateY(30deg) rotateX(20deg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.2em;
+    }
 </style>
 <div class="layered-elements">
     <div class="layer base">Base Layer</div>
@@ -253,41 +270,41 @@
 </div>
 
 <style>
-.layered-elements {
-    position: relative;
-    width: 200px;
-    height: 100px;
-    margin: 20px;
-}
+    .layered-elements {
+        position: relative;
+        width: 200px;
+        height: 100px;
+        margin: 20px;
+    }
 
-.layer {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    padding: 20px;
-    text-align: center;
-    border-radius: 8px;
-    color: white;
-}
+    .layer {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        padding: 20px;
+        text-align: center;
+        border-radius: 8px;
+        color: white;
+    }
 
-.base {
-    background-color: #3498db;
-    z-index: 1;
-}
+    .base {
+        background-color: #3498db;
+        z-index: 1;
+    }
 
-.middle {
-    background-color: #2980b9;
-    top: 10px;
-    left: 10px;
-    z-index: 2;
-}
+    .middle {
+        background-color: #2980b9;
+        top: 10px;
+        left: 10px;
+        z-index: 2;
+    }
 
-.top {
-    background-color: #1abc9c;
-    top: 20px;
-    left: 20px;
-    z-index: 3;
-}
+    .top {
+        background-color: #1abc9c;
+        top: 20px;
+        left: 20px;
+        z-index: 3;
+    }
 </style>
 <div>
     <p>2</p>

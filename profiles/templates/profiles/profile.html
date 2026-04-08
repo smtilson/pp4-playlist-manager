@@ -21,46 +21,25 @@
                         </ul>
                     </div>
                     <!-- Authorization and Create Queue Buttons -->
-                    <div
-                        id="user-buttons-div"
-                        class="row text-center"
-                        role="group"
-                        aria-label="User Buttons">
+                    <div id="user-buttons-div" class="row text-center" role="group" aria-label="User Buttons">
                         {% if not user.has_tokens %}
-                        <a
-                            href="{{authorization_url}}"
-                            class="btn actual-button btn-success"
-                            >Give Youtube DJ permissions</a
-                        >
+                        <a href="{{authorization_url}}" class="btn actual-button btn-success">Give Youtube DJ
+                            permissions</a>
                         {% else %}
-                        <a
-                            href="{% url 'revoke_authorization' %}"
-                            class="btn btn-danger actual-button"
-                            >Revoke Credentials</a
-                        >
+                        <a href="{% url 'revoke_authorization' %}" class="btn btn-danger actual-button">Revoke
+                            Credentials</a>
                         {% endif %}
-                        <a
-                            href="{% url 'create_queue' %}"
-                            class="btn btn-success actual-button"
-                            >Create New Queue</a
-                        >
+                        <a href="{% url 'create_queue' %}" class="btn btn-success actual-button">Create New Queue</a>
                     </div>
                 </div>
             </div>
             <!-- Mobile Navigation Buttons -->
             <div class="col-md-6 container min-height-row">
-                <div
-                    class="btn-group d-md-none queue-buttons-div"
-                    role="group"
-                    aria-label="Queue Buttons">
-                    <a
-                        href="#my-queue-div"
-                        class="btn btn-secondary actual-button">
+                <div class="btn-group d-md-none queue-buttons-div" role="group" aria-label="Queue Buttons">
+                    <a href="#my-queue-div" class="btn btn-secondary actual-button">
                         My<br />Queues
                     </a>
-                    <a
-                        href="#friends-queue-div"
-                        class="btn btn-secondary actual-button">
+                    <a href="#friends-queue-div" class="btn btn-secondary actual-button">
                         Friends<br />Queues
                     </a>
                 </div>
@@ -71,23 +50,13 @@
                     to update your name? {% endif %}
                     <form action="{% url 'set_name' %}" method="POST">
                         {% csrf_token %} {% if user.name %}
-                        <label for="name" id="set-name-form-label"
-                            >New Name:</label
-                        >
-                        <input
-                            type="text"
-                            name="name"
-                            id="name"
-                            placeholder="{{user.name}}"
-                            required />
+                        <label for="name" id="set-name-form-label">New Name:</label>
+                        <input type="text" name="name" id="name" placeholder="{{user.name}}" required />
                         {% else %}
                         <label for="name" id="set-name-form-label">Name:</label>
                         <input type="text" name="name" id="name" required />
                         {% endif %}
-                        <button
-                            type="submit"
-                            class="btn btn-secondary actual-button"
-                            id="set-name-form-button">
+                        <button type="submit" class="btn btn-secondary actual-button" id="set-name-form-button">
                             Submit
                         </button>
                     </form>
@@ -97,12 +66,8 @@
                             Delete your profile and permanently remove your YouTube DJ data.
                         </p>
                         <!-- Delete Profile Modal Trigger -->
-                        <button
-                            type="button"
-                            data-bs-toggle="modal"
-                            data-bs-target="#deleteModal"
-                            class="btn btn-danger"
-                            id="delete-profile-button">
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#deleteModal"
+                            class="btn btn-danger" id="delete-profile-button">
                             Delete Profile
                         </button>
                     </div>
@@ -139,9 +104,7 @@
     <section id="queue-display">
         <div class="d-flex-column d-flex-md-row row" id="both-queues-div">
             <!-- My Queues -->
-            <div
-                id="my-queue-div"
-                class="queue-display-divs col-md-6 d-flex-column align-items-center container">
+            <div id="my-queue-div" class="queue-display-divs col-md-6 d-flex-column align-items-center container">
                 <div class="logo-div text-center row no-wrap">
                     <h2 class="h2 logo">My Queues</h2>
                 </div>
@@ -149,7 +112,7 @@
                 <div class="my-container text-center row min-height-row">
                     <div class="col">
                         <h3 class="h4">
-                            <a href="{% url 'edit_queue' queue.id %}">
+                            <a href="{% url 'edit_queue' queue.pk %}">
                                 Edit: {{queue.title}}
                             </a>
                         </h3>
@@ -157,22 +120,11 @@
                             {% if queue.length != 1 %} {{queue.length}} entries
                             {% else %} 1 entry {% endif %}
                         </h4>
-                        <div
-                            class="btn-group"
-                            role="group"
-                            aria-label="Share and Play buttons">
-                            <a
-                                href="{% url 'gain_access' queue.secret queue.owner.secret %}"
-                                class="btn btn-success"
-                                >Share</a
-                            >
+                        <div class="btn-group" role="group" aria-label="Share and Play buttons">
+                            <a href="{% url 'gain_access' queue.secret queue.owner.secret %}"
+                                class="btn btn-success">Share</a>
                             {% if queue.published %}
-                            <a
-                                href="{{queue.url}}"
-                                target="_blank"
-                                class="btn btn-ytube actual-button"
-                                >Play</a
-                            >
+                            <a href="{{queue.url}}" target="_blank" class="btn btn-ytube actual-button">Play</a>
                             {% endif %}
                         </div>
                         <p class="mt-2">
@@ -183,9 +135,7 @@
                 {% endfor %}
             </div>
             <!-- My Friends' Queues -->
-            <div
-                id="friends-queue-div"
-                class="queue-display-divs col-md-6 d-flex-column align-items-center container">
+            <div id="friends-queue-div" class="queue-display-divs col-md-6 d-flex-column align-items-center container">
                 <div class="logo-div text-center row no-wrap">
                     <div class="logo">
                         <h2>Friends'</h2>
@@ -195,9 +145,7 @@
                 {% for queue in other_queues %}
                 <div class="my-container text-center min-height-row row">
                     <h2 class="h4 row">
-                        <a href="{% url 'edit_queue' queue.id %}"
-                            >Edit: {{queue.title}}</a
-                        >
+                        <a href="{% url 'edit_queue' queue.pk %}">Edit: {{queue.title}}</a>
                     </h2>
                     <h3 class="h5">
                         {% if queue.length != 1 %} {{queue.length}} entries {%
@@ -205,12 +153,7 @@
                     </h3>
                     <div>
                         {% if queue.published %}
-                        <a
-                            href="{{queue.url}}"
-                            target="_blank"
-                            class="btn btn-ytube actual-button"
-                            >Play</a
-                        >
+                        <a href="{{queue.url}}" target="_blank" class="btn btn-ytube actual-button">Play</a>
                         {% endif %}
                     </div>
                 </div>
